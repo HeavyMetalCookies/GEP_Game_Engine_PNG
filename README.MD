@@ -11,3 +11,8 @@
 # GEP: Game Engine PNG
 
 > [RGBA Byte Array]<===>[.PNG Binary]
+
+- ZERO dependencies
+- Works on client side
+- Single File Payload
+- Written in with intention to make easy to transcribe to C99
