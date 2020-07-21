@@ -1,0 +1,6 @@
+
+    01.PNG: 1x1 image. Opaque white. ( 255 all channels )
+            Made with Paint.net
+
+    02.PNG: 1x1 image. Opaque white. ( 255 all channels )
+            Made with Windows 10 Paint.
