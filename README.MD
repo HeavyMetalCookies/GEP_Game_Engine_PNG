@@ -1,7 +1,7 @@
 
 <a href="https://github.com/HeavyMetalCookies/GEP_Game_Engine_PNG">
 <img 
-    src="https://i.imgur.com/stbGPFS.png" 
+    src="https://i.imgur.com/HO3Fwpi.png" 
     title="GEP"
     alt="GEP"
     width="256px"
