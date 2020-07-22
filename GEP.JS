@@ -30,6 +30,19 @@
     //:      heb: HEx_Byte (Int/Char in range 0-255 / 0-0xFF)
     //:  ELE_IOT: EasyLoopEntry_IncrementsOnTop
 
+    
+    //://////////////////////////////////////////////////////://
+    //:[ CDIE : Constants_Defines_And_Informal_Enumerations ]://
+
+        //: VIT: Variable_Integer_Tags (S_Types)
+            const VIT_GPC_SOB =( 1 );
+
+
+
+    //:[ CDIE : Constants_Defines_And_Informal_Enumerations ]://
+    //://////////////////////////////////////////////////////://
+
+
     //:CP:C99_Polyfills:(BELOW):-----------------------------://
     //:CPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCP://
     //:                                                      ://
@@ -193,8 +206,419 @@
         //|FFFFFFFFFFFFFFF[ FUNCTION_DIVIDER ]FFFFFFFFFFFFFFF|//
 
 
+            //:MT:Member_Types:(BELOW):----------------------://
+            //:MTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMT://
+
+            //:Used to denote type information in
+            //:structs since javascript is loosly typed.
+            //:The odd numbers are just bogus values to
+            //:simulated the undefined behavior of using
+            //:un-initialized values.
+
+            const POI_Unsigned_Char = function(){ 
+            "use strict"
+                return( 1212121 /** Uninited_Pointer **/ );
+            };;
+            const VAL_Unsigned_Long = function(){ 
+            "use strict"
+                return( 1843412 /** Uninited_Value **/ );
+            };;
+            const VAL_Unsigned_Int = function(){
+                return( 9001    /** Uninited_Value **/ ); 
+            };;
+            const VAL_Int = function(){ 
+            "use strict"
+                return( 9482242 /** Uninited_Value **/ );
+            };;
+            const VAL_Jum_Buf = function(){
+                return( 6435442 /** Uninited_Value **/ );
+            };;
+
+            //:MTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMT://
+
+        //|FFFFFFFFFFFFFFF[ FUNCTION_DIVIDER ]FFFFFFFFFFFFFFF|//
+
     //:CPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCP://
     //:CP:C99_Polyfills:(ABOVE):-----------------------------://
+
+//:PPPPPPPPPPPPPPPPPPPP[ PUFF.C : BELOW ]PPPPPPPPPPPPPPPPPPPP://
+ 
+    //:GPC:GEP_PUFF_C: Namespace for everything in this 
+    //:                section. Not using "GEP" because
+    //:                then I would have to prefix everything
+    //:                with "GEP_PUF_*" and that is a bit
+    //:                too verbose.
+
+    const GPC_NUM_FIX = 288 ; //: NUMBER_FIXED_LITERAL_CODES
+    const GPC_MAX_BIT =  15 ; //: MAX_BITS_IN_A_CODE 
+    const GPC_MAX_LIT = 286 ; //: MAX_LITERAL_LENGTH_CODES
+    const GPC_MAX_DIS =  30 ; //: MAX_NUMBER_OF_DISTANCE_CODES
+    const GPC_MAX_L_D =(  0   //: MAX_CODE_LENGTHS_TO_READ
+    +     GPC_MAX_LIT        
+    +     GPC_MAX_DIS  );;
+
+    
+    //: longjmp: Basically throwing an error.
+    const GPC_Lon_Jum=function( j_b_env ){ "use strict"
+
+        throw("[GPC:Lon_Jum:ERROR]");
+
+    };;
+   
+    //:# #poi_gpc_sob# #://
+    const NEW_gpc_sob=function(){ "use strict"
+    return(Object.seal({
+
+        //: Conventions:
+        //:       poi_*: Denote pointer type.
+        //:       val_*: Denote value   type. (non-pointer)
+
+        //:Observations:
+        //:     inn_cou: Can be thought of as inn_pos
+        //:     out_cou: Can be thought of as out_pos
+        
+        //:Output_State:
+        //:     out_buf: Output Buffer
+        //:     out_len: Available space at out_buf
+        //:     out_cou: Bytes:WRITTEN_TO:out_buf:so_far
+
+        //: Input_State:
+        //:     inn_buf: Input_Buffer
+        //:     inn_len: Available input at inn_buf
+        //:     inn_cou: Bytes:READ_FROM::inn_buf:so_far
+    
+        //:     bit_buf: Bit_Buffer
+        //:     bit_cou: Number_Of_Bits_In:bit_buf
+        
+        //:  MISC_OTHER:
+        //:     j_b_env: Jump buffer environment
+
+        vit : VIT_GPC_SOB
+
+    ,   poi_out_buf : POI_Unsigned_Char( )
+    ,   val_out_len : VAL_Unsigned_Long( )
+    ,   val_out_cou : VAL_Unsigned_Long( )
+        
+    ,   poi_inn_buf : POI_Unsigned_Char( )
+    ,   val_inn_len : VAL_Unsigned_Long( )
+    ,   val_inn_cou : VAL_Unsigned_Long( )
+    
+    ,   val_bit_buf : VAL_Int( )
+    ,   val_bit_cou : VAL_Int( )
+
+    ,   val_j_b_env : VAL_Jum_Buf( )
+
+    }));;};;
+
+    
+    //+------------------------------------------------------+//
+    //| Return [ val_nee_bit # bits ] from the input stream. |//
+    //| Always leaves less than [ 8 ] bits in the buffer.    |//
+    //| GPC_Bit() works properly for[ val_nee_bit == 0 ]     |//
+    //|                                                      |//
+    //| Format notes:                                        |//
+    //|                                                      |//
+    //| Bits are stored in bytes from the least significant  |//
+    //| bit to the most significant bit. Therefore bits are  |//
+    //| dropped from the bottom of the bit buffer,using shift|//
+    //| right,and new bytes are appended to the top of the   |//
+    //| bit buffer,using shift left.                         |//
+    //|                                                      |//
+    //| JMIM NOTE: This function is only dropping bits with  |//
+    //|            RIGHT_SHIFT( >> ), nothing is being added |//
+    //|            using LEFT_SHIFT( << )                    |//
+    //+------------------------------------------------------+//
+    const GPC_Bit=function( //://////////////////////////////://
+        poi_gpc_sob /** Pointer to: gpc_sob   **/
+    ,   val_nee_bit /** Needed_Number_Of_Bits **/
+    ){ "use strict"
+
+        //:NOTES:
+        //:     (FORCE_SIGNED___SHIFT << X )>>0
+        //:     (FORCE_UNSIGNED_SHIFT << X )>>>0
+
+        //:The comments say we have a 20 bit accumulator,
+        //:so I [[[ THINK ]]] it would be erroneous to ask
+        //:for more than 20 bits. -JMIM
+        if( val_nee_bit > 20 ){
+            throw("[20_BIT_ACCUMULATOR:THINK_ERROR]");
+        };;
+
+        const SOB =( poi_gpc_sob       ); //:State_OBject
+        const I_M =( 0xFFFFFFFF        ); //:Integer_Mask
+        const L_M =( 0xFFFFFFFFFFFFFFFF); //:Long____Mask
+ 
+        //:A 20 bit accumulator. 
+        let bit_buf = VAL_Signed_Long(); 
+            bit_buf = SOB.val_bit_buf;  
+        while(  
+            //:Load at least[ val_nee_bit ]into[ bit_buf ]
+            SOB.val_bit_cou //:Bit___Count
+            <   val_nee_bit //:Needed_Bits
+        ){
+            if( SOB.val_inn_cou  
+            >=  SOB.val_inn_len
+            ){
+                //:ERROR:OUT_OF_INPUT:
+                GPC_Lon_Jum( SOB.env, 1 );
+            };;
+
+            //+----------------------------------------------+//
+            //|    +=( 1 )|[ val_inn_cou ]>>>>>>>>>>>>>>>>>| |//
+            //|           |    0     |    1     |    2     | |//
+            //|           | inn_cou  | inn_cou  | inn_cou  | |//
+            //|           |          |          |          | |//
+            //|poi_inn_buf[ 11111111 | 11111111 | 11111111 ] |//
+            //|           |    8     |    16    |    24    | |//
+            //|           | bit_cou  | bit_cou  | bit_cou  | |//
+            //|    +=( 8 )[ val_bit_cou ]>>>>>>>>>>>>>>>>>>| |//
+            //+----------------------------------------------+//
+            //|READ:>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>|//
+            //|inn_buf[ 11111111 | 11111111 | 11111111 ]     |//
+            //|    MSB[    A     |     B    |     C    ]LSB  |//
+            //|            |           |                     |//
+            //|            +----------------------+          |//
+            //|                        |          |          |//
+            //|    MSB(    C           B          A    )LSB  |//
+            //|bit_buf( 11111111   11111111   11111111 )     |//
+            //|<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<:WRITE|//
+            //+----------------------------------------------+//
+
+            //:Load 8 bits: //:888888888888888888888888888888://
+            bit_buf = bit_buf | (
+
+                (L_M) //:Hackish_Cast_To_Long_By_Masking
+                &&
+                (( 
+                    SOB.poi_inn_buf[ SOB.val_inn_cou ] 
+                    << 
+                    SOB.val_bit_cou
+                )>>0)  //:Signed_Shift. Why bit_buf is
+                       //:a signed integer, no clue.
+
+            );; //:888888888888888888888888888888888888888888://
+
+            (SOB.val_inn_cou)+=( 1 ); //:1 more byte(s) read.
+            (SOB.val_bit_cou)+=( 8 ); //:8 more byte(s) load.
+
+        };;
+
+        //: Drop[ val_nee_bit ](s) and update buffer, 
+        //: always[ 0 -to- 7 ]bits left. 
+        SOB.val_bit_buf=(I_M)&((bit_buf >> val_nee_bit)>>0);
+        //|                  |    20 bit integer cast    |   |//
+        //|   OOB      OOB   |<----- & 0xFFFFFF -------->|   |//
+        //| !!!!!!!! !!!!!!!! CCCCCCCC BBBBBBBB 87654321 |   |//
+        //| val_nee_bit==8 :  >>>>>>>> CCCCCCCC BBBBBBBB |   |//
+        
+        //:Number of bits we just erased by pushing them
+        //:off the edge like a [ coin pusher machine ].
+        (SOB.val_bit_cou)=-( val_nee_bit ); 
+
+        //|     |   0xFF  |   0xFF  |   0xFF  |              |//
+        //| BIN: 0000 0000 0000 0000 0000 0001               |//
+        //| <<<: 0000 0000 0000 0001 0000 0000 <<val_nee_bit |//
+        //| SUB: 0000 0000 0000 0000 1111 1111  -1           |//
+        //|                          \_______/               |//
+        //|                            --+--                 |//
+        //|                              |                   |//
+        //|                             N_B                  |//
+        const N_B=( ((0x00000001 << val_nee_bit)>>>0) -1);
+        
+        //:Return the bits you shoved off the edge
+        //:of [ SOB.val_bit_buf ]
+        const BIT=( (I_M)&(( bit_buf & N_B )) );
+
+        return( BIT );
+
+        /** #UNDEF( sob ) : State_Object_Bundle              **/
+        /** #UNDEF( N_B ) : Needed_Bits                      **/
+        /** #UNDEF( I_M ) : Integer_Mask for_hackish_cast    **/
+        /** #UNDEF( L_M ) : Long____Mask for_hackish_cast    **/ 
+        /** #UNDEF( BIT ) : The_Bits_You_Needed              **/
+    };; //:///////////////////////////////////////| GPC_Bit |://
+
+    //+------------------------------------------------------+//
+    //| Process a stored block.                              |//
+    //+------------------------------------------------------+//
+    //| Format notes:                                        |//
+    //+------------------------------------------------------+//
+    //|After the two-bit stored block type (00),the stored   |//
+    //|block length and stored bytes are byte-aligned for    |//
+    //|fast copying. Therefore any leftover bits in the byte |//
+    //|that has the last bit of the type,as many as seven,are|//
+    //|discarded. The value of the discarded bits are not    |//
+    //|defined and should not be checked against any         |//
+    //|expectation.                                          |//
+    //+------------------------------------------------------+//
+    //|The second inverted copy of the stored block length   |//
+    //|does not have to be checked,but it's probably a good  |//
+    //|idea to do so anyway.                                 |//
+    //+------------------------------------------------------+//
+    //|A stored block can have zero length. This is sometimes|//
+    //|used to byte-align                                    |//
+    //+------------------------------------------------------+//
+    const GPC_Pro_Sto_Blo=function(
+        poi_gpc_sob /** Pointer to: gpc_sob   **/
+    ){ "use strict"
+    
+        const SOB=( poi_gpc_sob             );
+        const INN=( poi_gpc_sob.poi_inn_buf );
+        const OUT=( poi_gpc_sob.poi_out_buf );
+
+        let len=VAL_Unsigned_Int(); //:Length_Of_Stored_Block
+        let chk=VAL_Unsigned_Int(); //:Error_Check_Compliment
+
+        //:Discard leftover bits from current byte.
+        //:Assumes ( SOB.bit_cou < 8 )
+        if( SOB.val_bit_cou >= 8 ){
+            throw("[GPC:Assumes:bit_cou:LessThan8]");
+        };;
+        SOB.val_bit_buf = 0;
+        SOB.val_bit_cou = 0;
+
+        //:==================================================://
+        //:Get length & check against its one's compliment.
+        //:Q: Why the +4 ? Because[ val_in_cou++ ]4 times?
+        //:Q: Is 2 an error code for not enough input?
+        //:Q: is len assumed to be a 16 bit short?
+        //:==================================================://
+        if( SOB.val_inn_cou + 4 > SOB.val_inn_len ){
+            return( 0 + 2 ); /** Not enough Input **/
+        }else{
+
+            //|  INN[  AA , BB , CC , DD ]   ----------------|//
+            //|  len(  BB   AA           )   ----------------|//
+            //|  chk(            DD   CC )   ----------------|//
+            len  =( 0x0000 );
+            chk  =( 0x0000 );
+            let AA = INN[ SOB.val_inn_cou++ ];
+            let BB = INN[ SOB.val_inn_cou++ ];
+            let CC = INN[ SOB.val_inn_cou++ ];
+            let DD = INN[ SOB.val_inn_cou++ ];
+
+            len |=( AA << 0 )>>>0; //: 0x BB AA
+            len |=( BB << 8 )>>>0; //: 0x BB AA
+            chk |=( CC << 0 )>>>0; //: 0x CC DD
+            chk |=( DD << 8 )>>>0; //: 0x CC DD
+
+            if( len != ( ~chk ) ){
+                /** Didn't match complement!**/
+                return( 0 - 2 ); 
+            };;
+        };;
+        //:==================================================://
+
+        //| Copy len bytes from[ INN ]to[ OUT ]              |//
+        //| As of DATE[2020_07_22] madler's puff.c has an    |//
+        //| off-by-1 error in this comparison.               |//
+        //| Line 182 of puff.c                               |//
+        //| github.com/madler/                               |//
+        //| zlib/blob/master/contrib/puff/puff.c             |//
+        if( SOB.val_inn_cou + len  //:Last_Byte_Index
+          > SOB.val_inn_len +  0   //:First_Out_Of_Bounds_Byte
+    
+            //|  The DATA[ index++ ] pattern I am seeing     |//
+            //|  tells me val_inn_cou RESTS on data that     |//
+            //|  has NOT been consumed yet.                  |//
+            //|                                              |//
+            //|  I think this code has a bug.                |//
+            //|  CUR: val_inn_cou + len >  val_inn_len       |//
+            //|  FIX: val_inn_cou + len >= val_inn_len       |//
+            //|- - - - - - - - - - - -- - - - - - - - - - - -|//
+            //|  IF:         len == 4                        |//
+            //|  IF: val_inn_cou == 2                        |//
+            //|  IF: val_inn_len == 7                        |//
+            //|          |<--- TAKE 4 -->| OOB               |//
+            //|  [ 0 | 1 | 2 | 3 | 4 | 5 ][ 6 ]              |//
+            //|  [        cou  1   2   3    4 ]              |//
+            //|  |<----- val_inn_len==7 ----->|              |//
+            //|- - - - - - - - - - - -- - - - - - - - - - - -|//
+            //|  If you have an array with 1 byte:           |//
+            //|  And you try to take 2 bytes...              |//
+            //|  SOB.val_inn_cou + 2 == ( 0 + 2 ) == 2       |//
+            //|  SOB.val_inn_len =================== 1       |//
+            //|  This is out of bounds, but ( 2 > 2 )        |//
+            //|  is false.                                   |//
+            //|                                              |//
+            //|  Unless val_inn_cou starts counting at 1...  |//
+            //|  But that wouldn't make sense.               |//
+            //|  And... val_inn_cou does NOT.                |//
+            //|- - - - - - - - - - - -- - - - - - - - - - - -|//
+            //| NO. You are wrong. Comparison is ">" not ">="|//
+            //|                                              |//
+            //| [ 0 ]                                        |//
+            //|   |                                          |//
+            //|  cou==0                                      |//
+            //|  cou+len==1 (if taking just 1)               |//
+            //| ( cou + len ) > ( val_inn_len )              |//
+            //| (  0  +  1  ) > (      1      ) ? NO         |//
+            //|                                              |//
+            //| Take 2 instead of 1.                         |//
+            //| (  0  +  2  ) > (      1      ) ? YES        |//
+
+        ){  
+
+            //:Not enough input.
+            //:JMIM NOTE: Seems that val_inn_cou
+            //:           can be thought of as a "count"
+            //:           or "seek position" variable.
+            //:           I didn't get what this block was
+            //:           for until I realized this.
+            return( 2 ); 
+
+        };;
+
+        if( OUT != null ){
+
+            //:                                              ://
+            //:   val_out_cou == 0                           ://
+            //:        |                                     ://
+            //:     [ 0xFF ] <--OUT (output buffer)          ://
+            //:                  val_out_len==1              ://
+            //:                                              ://
+            //:   Try taking 2 instead of 1 byte:            ://
+            //:   ( val_out_cou + 2 ) > ( val_out_len )?     ://
+            //:   Yes it is. Comparison is ">" NOT ">="      ://
+            if( SOB.val_out_cou + len 
+              > SOB.val_out_len 
+            ){
+                return( 1 ); //:Not enough output space.
+            };;
+            while( len-- ){
+                OUT[ SOB.val_out_cou++ ]=(
+                INN[ SOB.val_inn_cou++ ]
+                );;
+            };;
+
+        }else{
+            //:Just scanning.
+            //:I think this is the 1st pass of a 2 pass hack.
+            //:Algorithm requires you to know the final size
+            //:of the decompressed data so you can allocate
+            //:enough space for output buffer. Since I am going
+            //:to use this code to deflate PNG files, I should
+            //:NOT need this branch of code as I can calculate
+            //:size of uncompressed data from headers.
+            //:However, keeping the 2-pass method in might
+            //:help avoid buffer overflow attacks since I can
+            //:verify deflated data matches header.
+            ( SOB.val_out_cou ) += ( len );
+            ( SOB.val_inn_cou ) += ( len );
+        };;
+        
+        return(  0  ); //:Return_Status_Code_Zero
+
+    };; //:///////////////////////////////| GPC_Pro_Sto_Blo |://
+
+
+    GEP_UND( GPC_NUM_FIX /** puff.c : FIXLCODES    **/ );
+    GEP_UND( GPC_MAX_BIT /** puff.c : MAXBITS      **/ );
+    GEP_UND( GPC_MAX_LIT /** puff.c : MAXLCODES    **/ );
+    GEP_UND( GPC_MAX_DIS /** puff.c : MAXDCODES    **/ );
+    GEP_UND( GPC_MAX_L_D /** puff.c : MAXCODES     **/ );
+ 
+//:PPPPPPPPPPPPPPPPPPPP[ PUFF.C : ABOVE ]PPPPPPPPPPPPPPPPPPPP://
 
     //:FS:File_Scope_Variables:(BELOW):----------------------://
     //:FSFSFSFSFSFSFSFSFSFSFSFSFSFSFSFSFSFSFSFSFSFSFSFSFSFSFS://
