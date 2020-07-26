@@ -23,8 +23,9 @@
     //:[ CDIE : Constants_Defines_And_Informal_Enumerations ]://
 
         //: VIT: Variable_Integer_Tags (S_Types)
-            const VIT_GPC_SOB =( 1 );
-            const VIT_GPC_HUF =( 2 );
+            const VIT_GPC_SOB     =( 1 );
+            const VIT_GPC_HUF     =( 2 );
+            const VIT_GPC_ARG_PUF =( 3 );
 
 
     //:[ CDIE : Constants_Defines_And_Informal_Enumerations ]://
@@ -257,11 +258,59 @@
 
 //:PPPPPPPPPPPPPPPPPPPP[ PUFF.C : BELOW ]PPPPPPPPPPPPPPPPPPPP://
 //:SUB_SECTION_INDEX:(BELOW):================================://
-
-//:GPC_001: Defines/Consts
-//:GPC_002: State Object
-
-
+//:GPC_001: Defines/Consts                                   ://
+//:         puff.c : C99 #define (Macros)                    ://
+//:                                                          ://
+//:GPC_002: NEW_gpc_sob(...) ( gpc_sob / poi_gpc_sob )       ://
+//:         puff.c : struct state                            ://
+//:         State object struct                              ://
+//:                                                          ://
+//:GPC_003: GPC_Bit(...)                                     ://
+//:         puff.c : bits(...)                               ://
+//:         Get sample bits from bytestream.                 ://
+//:                                                          ://
+//:GPC_004: GPC_Sto(...)                                     ://
+//:         puff.c : stored(...)                             ://
+//:         Process a stored (codes?) block.                 ://
+//:                                                          ://
+//:GPC_005: NEW_gpc_huf(...) && VAL_gpc_huf(...)             ://
+//:         puff.c : struct huffman                          ://
+//:         huffman ( table? ) struct.                       ://
+//:                                                          ://
+//:GPC_006: GPC_Dec_Slo(...)                                 ://
+//:         puff.c : decode(...) (SLOW)                      ://
+//:         Decode_a_code_from_stream.                       ://
+//:                                                          ://
+//:GPC_007: GPC_Dec_Fas(...)                                 ://
+//:         puff.c : decode(...) (FAST)                      ://
+//:         Decode_a_code_from_stream                        ://
+//:                                                          ://
+//:GPC_008: GPC_Con(...)                                     ://
+//:         puff.c : construct(...)                          ://
+//:         Construct canonical huffman code table           ://
+//:         from a list of symbol frequencies.               ://
+//:                                                          ://
+//:GPC_009: GPC_Cod(...)                                     ://
+//:         puff.c : codes(...)                              ://
+//:         Decode until end of block.                       ://
+//:                                                          ://
+//:GPC_010: GPC_Fix(...)                                     ://
+//:         puff.c : fixed(...)                              ://
+//:         Process a fixed codes block                      ://
+//:                                                          ://
+//:GPC_011: GPC_Dyn(...)                                     ://
+//:         puff.c : dynamic(...)                            ://
+//:                                                          ://
+//:                                                          ://
+//:GPC_012: NEW_gpc_arg_puf(...)                             ://
+//:         Does not exist in original puff.c                ://
+//:         This argument object exist in .JS                ://
+//:         version to cope with lack of pointers            ://
+//:         in JavaScript.                                   ://
+//:                                                          ://
+//:GPC_013: GPC_Puf(...)                                     ://
+//:         puff.c : puff(...)                               ://
+//:                                                          ://
 //:SUB_SECTION_INDEX:(ABOVE):================================://
 //:GPC_001:==================================================://
 
@@ -467,8 +516,8 @@
         /** #UNDEF( BIT ) : The_Bits_You_Needed              **/
     };; //:///////////////////////////////////////| GPC_Bit |://
 
-//:==================================================:GPC_###://
-//:GPC_###:==================================================://
+//:==================================================:GPC_003://
+//:GPC_004:==================================================://
 
     //+------------------------------------------------------+//
     //| Process a stored block.                              |//
@@ -490,7 +539,7 @@
     //|A stored block can have zero length. This is sometimes|//
     //|used to byte-align                                    |//
     //+------------------------------------------------------+//
-    const GPC_Pro_Sto_Blo=function(
+    const GPC_Sto=function(
         poi_gpc_sob /** Pointer to: gpc_sob   **/
     ){ "use strict"
     
@@ -661,10 +710,10 @@
         
         return(  0  ); //:Return_Status_Code_Zero
 
-    };; //:///////////////////////////////| GPC_Pro_Sto_Blo |://
+    };; //:///////////////////////////////////////| GPC_Sto |://
 
-//:==================================================:GPC_###://
-//:GPC_###:==================================================://
+//:==================================================:GPC_004://
+//:GPC_005:==================================================://
 
     //+------------------------------------------------------+//
     //|  Huffman code decoding tables. count[1..MAX_BIT] is  |//
@@ -702,9 +751,11 @@
         return( NEW_gpc_huf() );
     };;
 
-//:==================================================:GPC_###://
-//:GPC_###:==================================================://
+//:==================================================:GPC_005://
+//:GPC_006:==================================================://
 
+    //+------------------------------------------------------+//
+    //|  GPC_Dec_Slo : decode (SLOW)                         |//
     //+------------------------------------------------------+//
     //|  Decode a code from the stream s using huffman       |//
     //|  table h. Return the symbol or a negative value if   |//
@@ -762,6 +813,8 @@
     //|              struct state *s                         |//
     //|          ,   const struct huffman *h)                |//
     //+------------------------------------------------------+//
+    //|  GPC_Dec_Slo : decode (SLOW)                         |//
+    //+------------------------------------------------------+//
     const GPC_Dec_Slo=function(
         poi_gpc_sob /** pointer to gpc_sob **/
     ,   poi_gpc_huf /** pointer to gpc_huf **/
@@ -771,10 +824,13 @@
     };; //:///////////////////////////////////| GPC_Dec_Slo |://
 
 
-//:==================================================:GPC_###://
-//:GPC_###:==================================================://
+//:==================================================:GPC_006://
+//:GPC_007:==================================================://
 
 
+    //+------------------------------------------------------+//
+    //|  GPC_Dec_Fas : decode (FAST)                         |//
+    //+------------------------------------------------------+//
     //|A faster version of decode() for real applications of |//
     //|this code. It's not as readable,but it makes puff()   |//
     //|twice as fast. And it only makes the code a few       |//
@@ -784,6 +840,9 @@
     //|    By transcribing both the slow and fast methods,   |//
     //|    I can hackishly unit test by seeing if the two    |//
     //|    algorithms produce the same data.                 |//
+    //+------------------------------------------------------+//
+    //|  GPC_Dec_Fas : decode (FAST)                         |//
+    //+------------------------------------------------------+//
     const GPC_Dec_Fas=function(
         poi_gpc_sob /** pointer to gpc_sob **/
     ,   poi_gpc_huf /** pointer to gpc_huf **/
@@ -793,8 +852,8 @@
     };; //:///////////////////////////////////| GPC_Dec_Fas |://
     
 
-//:==================================================:GPC_###://
-//:GPC_###:==================================================://
+//:==================================================:GPC_007://
+//:GPC_008:==================================================://
 
     //+======================================================+//
     //|  GPC_Con : Construct                                 |//
@@ -874,9 +933,8 @@
     };; //:///////////////////////////////////////| GPC_Con |://
     //+======================================================+//
 
-
-        
-    
+//:==================================================:GPC_008://
+//:GPC_009:==================================================://
     
     //+------------------------------------------------------+//
     //|  GPC_Cod: GPC_Codes                                  |//
@@ -1010,7 +1068,8 @@
 
     };; //:///////////////////////////////////////| GPC_Cod |://
 
-
+//:==================================================:GPC_009://
+//:GPC_010:==================================================://
     
     //+------------------------------------------------------+//
     //|  GPC_Fix : GPC_Fixed                                 |//
@@ -1080,6 +1139,9 @@
 
 
     };; //:///////////////////////////////////////| GPC_Fix |://
+
+//:==================================================:GPC_010://
+//:GPC_011:==================================================://
 
     //+------------------------------------------------------+//
     //| GPC_Dyn : GPC_Dynamic                                |//
@@ -1512,51 +1574,121 @@
 
     };; //:///////////////////////////////////////| GPC_Dyn |://
 
-/*
- * Inflate source to dest.  On return, destlen and sourcelen are updated to the
- * size of the uncompressed data and the size of the deflate data respectively.
- * On success, the return value of puff() is zero.  If there is an error in the
- * source data, i.e. it is not in the deflate format, then a negative value is
- * returned.  If there is not enough input available or there is not enough
- * output space, then a positive error is returned.  In that case, destlen and
- * sourcelen are not updated to facilitate retrying from the beginning with the
- * provision of more input data or more output space.  In the case of invalid
- * inflate data (a negative error), the dest and source pointers are updated to
- * facilitate the debugging of deflators.
- *
- * puff() also has a mode to determine the size of the uncompressed output with
- * no output written.  For this dest must be (unsigned char *)0.  In this case,
- * the input value of *destlen is ignored, and on return *destlen is set to the
- * size of the uncompressed output.
- *
- * The return codes are:
- *
- *   2:  available inflate data did not terminate
- *   1:  output space exhausted before completing inflate
- *   0:  successful inflate
- *  -1:  invalid block type (type == 3)
- *  -2:  stored block length did not match one's complement
- *  -3:  dynamic block code description: too many length or distance codes
- *  -4:  dynamic block code description: code lengths codes incomplete
- *  -5:  dynamic block code description: repeat lengths with no first length
- *  -6:  dynamic block code description: repeat more than specified lengths
- *  -7:  dynamic block code description: invalid literal/length code lengths
- *  -8:  dynamic block code description: invalid distance code lengths
- *  -9:  dynamic block code description: missing end-of-block code
- * -10:  invalid literal/length or distance code in fixed or dynamic block
- * -11:  distance is too far back in fixed or dynamic block
- *
- * Format notes:
- *
- * - Three bits are read for each block to determine the kind of block and
- *   whether or not it is the last block.  Then the block is decoded and the
- *   process repeated if it was not the last block.
- *
- * - The leftover bits in the last byte of the deflate data after the last
- *   block (if it was a fixed or dynamic block) are undefined and have no
- *   expected values to check.
- */
+//:==================================================:GPC_011://
+//:GPC_012:==================================================://
 
+    const NEW_gpc_arg_puf=function(/**void**/){ "use strict"
+    return(Object.seal({
+
+        //: val_arg_puf == VAL_gpc_arg_puf );
+        //: poi_arg_puf == &(  val_arg_puf );
+
+    /**/        vit : (  VIT_GPC_ARG_PUF  )
+
+    ,   poi_des_arr  /* pointer to destination pointer */
+    ,   poi_des_len  /* amount of output space         */
+
+    ,   poi_sou_arr  /* pointer to source data pointer */
+    ,   poi_sou_len  /* amount of input available      */
+
+    }));};;
+
+    //:Denotes either:
+    //:     1: Stack allocated value type
+    //:     2: Value type allocated as member of struct.
+    //:     In other words, when coverting to C99, instances
+    //:     of this function call with NOT result in malloc.
+    const VAL_gpc_arg_puf=function( /**void**/){ "use struct"
+        return( NEW_gpc_arg_puf() );
+    };;
+
+//:==================================================:GPC_012://
+//:GPC_013:==================================================://
+
+    //+------------------------------------------------------+//
+    //|  Inflate source to dest. On return,destlen and       |//
+    //|  sourcelen are updated to the size of the            |//
+    //|  uncompressed data and the size of the deflate data  |//
+    //|  respectively. On success,the return value of        |//
+    //|  puff() is zero. If there is an error in the source  |//
+    //|  data,i.e. it is not in the deflate format,then a    |//
+    //|  negative value is returned. If there is not enough  |//
+    //|  input available or there is not enough output       |//
+    //|  space,then a positive error is returned. In that    |//
+    //|  case,destlen and sourcelen are not updated to       |//
+    //|  facilitate retrying from the beginning with the     |//
+    //|  provision of more input data or more output space.  |//
+    //|  In the case of invalid inflate data (a negative     |//
+    //|  error),the dest and source pointers are updated to  |//
+    //|  facilitate the debugging of deflators.              |//
+    //|                                                      |//
+    //|  JMIM_COMMENT:                                       |//
+    //|     We need to change this around a bit since        |//
+    //|     JavaScript cannot pass around integers by        |//
+    //|     reference. Unless you pass it an array of        |//
+    //|     1 element, but that might be error prone.        |//
+    //|                                                      |//
+    //|     Using an arry of length 1 might be what          |//
+    //|     you call "too clever".                           |//
+    //|------------------------------------------------------|//
+    //|  puff() also has a mode to determine the size of     |//
+    //|  the uncompressed output with no output written.     |//
+    //|  For this dest must be (unsigned char *)0. In this   |//
+    //|  case,the input value of *destlen is ignored,and on  |//
+    //|  return *destlen is set to the size of the           |//
+    //|  uncompressed output.                                |//
+    //|                                                      |//
+    //|  JMIM_COMMENT:                                       |//
+    //|  (unsigned char *)0 is a fancy way of saying         |//
+    //|  NIL/NULL                                            |//
+    //|                                                      |//
+    //|------------------------------------------------------|//
+    //|  The return codes are:                               |//
+    //|                                                      |//
+    //|      2:  available inflate data did not terminate    |//
+    //|                                                      |//
+    //|      1:  output space exhausted before               |//
+    //|          completing inflate                          |//
+    //|                                                      |//
+    //|      0:  successful inflate                          |//
+    //|    - 1:  invalid block type (type == 3)              |//
+    //|    - 2:  stored block length did not match           |//
+    //|          one's complement                            |//
+    //|    - 3:  DBCD: too many length or distance codes     |//
+    //|    - 4:  DBCD: code lengths codes incomplete         |//
+    //|    - 5:  DBCD: repeat lengths with no first length   |//
+    //|    - 6:  DBCD: repeat more than specified lengths    |//
+    //|    - 7:  DBCD: invalid literal/length code lengths   |//
+    //|    - 8:  DBCD: invalid distance code lengths         |//
+    //|    - 9:  DBCD: missing end-of-block code             |//
+    //|    -10:  invalid literal/length or distance code     |//
+    //|          in fixed or dynamic block                   |//
+    //|    -11:  distance is too far back in                 |//
+    //|         fixed or dynamic block                       |//
+    //|------------------------------------------------------|//
+    //|  Format notes:                                       |//
+    //|------------------------------------------------------|//
+    //|  Three bits are read for each block to determine     |//
+    //|  the kind of block and whether or not it is the      |//
+    //|  last block. Then the block is decoded and the       |//
+    //|  process repeated if it was not the last block.      |//
+    //|------------------------------------------------------|//
+    //|  The leftover bits in the last byte of the deflate   |//
+    //|  data after the last block (if it was a fixed or     |//
+    //|  dynamic block) are undefined and have no expected   |//
+    //|  values to check.                                    |//
+    //+------------------------------------------------------+//
+    //| GPC_Puf: GPC_Puff                                    |//
+    //+------------------------------------------------------+//
+    const GPC_Puf=function(
+        poi_arg_puf //:Argument_Object:arg_puf pointer
+    ){
+
+
+    };; //:///////////////////////////////////////| GPC_Puf |://
+        
+//:==================================================:GPC_013://
+//:GPC_###:==================================================://
 
     GEP_UND( GPC_NUM_FIX /** puff.c : FIXLCODES    **/ );
     GEP_UND( GPC_MAX_BIT /** puff.c : MAXBITS      **/ );
@@ -2193,6 +2325,8 @@ KEY: (ONE_LINE_DEFINITIONS)
   LEN_DIST_PAIR: Length distance pair
   LITERAL_BYTES: Literal bytes, copy as is.
             HGH: Histogram_Grouped_By_Height (Height==Lens)
+           DBCD: dynamic block code description
+GPC_Pro_Sto_Blo: longhanded name for GPC_Sto(...)
 
 HTC: (Hash_Tag_Comments)
 
