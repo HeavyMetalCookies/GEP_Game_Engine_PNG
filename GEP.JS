@@ -15,28 +15,16 @@
     const GEP_MAC_JAS=( 1 ); //:This_Is_JavaScript_Code
     const GEP_MAC_C99=( 0 ); //:This_Is____NOT_C99_Code
 
-    //:INDEX:
+    //:FUNCTION_INDEX:
     //:     [#]: C99_Polyfills
     //:     [#]: File_Scope_Variables
-
-    //:KEY:  
-    //:      GEP: Namespace:Game_Engine_PNG
-    //:      MAC: Denotes_A_MACRO, use #define in C99
-    //:      POI: Pointer
-    //:      JAS: JavaScript
-    //:  poi_car: SEE[ car_poi ]
-    //:  car_poi: Pointer_To_Character_Array (char*)
-    //:      hec: HExadecimal_Character (Ascii 0-9,A-F,a-f )
-    //:      heb: HEx_Byte (Int/Char in range 0-255 / 0-0xFF)
-    //:  ELE_IOT: EasyLoopEntry_IncrementsOnTop
-
     
     //://////////////////////////////////////////////////////://
     //:[ CDIE : Constants_Defines_And_Informal_Enumerations ]://
 
         //: VIT: Variable_Integer_Tags (S_Types)
             const VIT_GPC_SOB =( 1 );
-
+            const VIT_GPC_HUF =( 2 );
 
 
     //:[ CDIE : Constants_Defines_And_Informal_Enumerations ]://
@@ -215,34 +203,70 @@
             //:simulated the undefined behavior of using
             //:un-initialized values.
 
+            const POI_Signed_Short  = function(){
+                return( 1118888 /** Uninited_Pointer **/ );
+            };;
             const POI_Unsigned_Char = function(){ 
             "use strict"
                 return( 1212121 /** Uninited_Pointer **/ );
             };;
             const VAL_Unsigned_Long = function(){ 
             "use strict"
-                return( 1843412 /** Uninited_Value **/ );
+                return( 1843412 /** Uninited_Value   **/ );
             };;
             const VAL_Unsigned_Int = function(){
-                return( 9001    /** Uninited_Value **/ ); 
+                return( 9001    /** Uninited_Value   **/ ); 
             };;
             const VAL_Int = function(){ 
             "use strict"
-                return( 9482242 /** Uninited_Value **/ );
+                return( 9482242 /** Uninited_Value   **/ );
             };;
             const VAL_Jum_Buf = function(){
-                return( 6435442 /** Uninited_Value **/ );
+                return( 6435442 /** Uninited_Value   **/ );
             };;
 
             //:MTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMT://
 
         //|FFFFFFFFFFFFFFF[ FUNCTION_DIVIDER ]FFFFFFFFFFFFFFF|//
 
+
+            //:Stack allocated arrays:
+            //://////////////////////////////////////////////://
+
+                //:Declare a stack allocated array variable  ://
+                //:at file scope or within a function.       ://
+                //:Can also use when declaring a             ://
+                //:value-member of struct.                   ://
+                //:                                          ://
+                //:CAREFUL!! "arrays" (arr) are pointers,    ://
+                //:so the naming convention is a bit         ://
+                //:confusing here with "VAL_*" denoting a    ://
+                //:value type and "arr_" denoting a pointer  ://
+                //:type.                                     ://
+                const GEP_VAL_arr_sho=function( 
+                    num_elm 
+                ){ "use strict"
+                    let arr_sho=( new Uint16Array( num_elm ) );
+                    return( arr_sho );
+                };;
+
+            //://////////////////////////////////////////////://
+
     //:CPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCP://
     //:CP:C99_Polyfills:(ABOVE):-----------------------------://
 
 //:PPPPPPPPPPPPPPPPPPPP[ PUFF.C : BELOW ]PPPPPPPPPPPPPPPPPPPP://
- 
+//:SUB_SECTION_INDEX:(BELOW):================================://
+
+//:GPC_001: Defines/Consts
+//:GPC_002: State Object
+
+
+//:SUB_SECTION_INDEX:(ABOVE):================================://
+//:GPC_001:==================================================://
+
+    //:#PUFF_C_TRANSCRIBE#
+
     //:GPC:GEP_PUFF_C: Namespace for everything in this 
     //:                section. Not using "GEP" because
     //:                then I would have to prefix everything
@@ -264,7 +288,10 @@
         throw("[GPC:Lon_Jum:ERROR]");
 
     };;
-   
+
+//:==================================================:GPC_001://
+//:GPC_002:==================================================://
+
     //:# #poi_gpc_sob# #://
     const NEW_gpc_sob=function(){ "use strict"
     return(Object.seal({
@@ -310,7 +337,9 @@
 
     }));;};;
 
-    
+//:==================================================:GPC_002://
+//:GPC_003:==================================================://
+
     //+------------------------------------------------------+//
     //| Return [ val_nee_bit # bits ] from the input stream. |//
     //| Always leaves less than [ 8 ] bits in the buffer.    |//
@@ -438,6 +467,9 @@
         /** #UNDEF( BIT ) : The_Bits_You_Needed              **/
     };; //:///////////////////////////////////////| GPC_Bit |://
 
+//:==================================================:GPC_###://
+//:GPC_###:==================================================://
+
     //+------------------------------------------------------+//
     //| Process a stored block.                              |//
     //+------------------------------------------------------+//
@@ -496,6 +528,26 @@
             let BB = INN[ SOB.val_inn_cou++ ];
             let CC = INN[ SOB.val_inn_cou++ ];
             let DD = INN[ SOB.val_inn_cou++ ];
+
+            //+----------------------------------------------+//
+            //| https://www.w3.org/Graphics/PNG/RFC-1951     |//
+            //|                                              |//
+            //|     0        1                               |//
+            //|                                              |//
+            //| +--------+--------+                          |//
+            //|                                              |//
+            //| |00001000|00000010|                          |//
+            //|                                              |//
+            //| +--------+--------+                          |//
+            //|                                              |//
+            //|  ^        ^                                  |//
+            //|                                              |//
+            //|  |        |                                  |//
+            //|                                              |//
+            //|  |        + more significant byte = 2 x 256  |//
+            //|                                              |//
+            //|  + less significant byte = 8                 |//
+            //+----------------------------------------------+//
 
             len |=( AA << 0 )>>>0; //: 0x BB AA
             len |=( BB << 8 )>>>0; //: 0x BB AA
@@ -610,6 +662,900 @@
         return(  0  ); //:Return_Status_Code_Zero
 
     };; //:///////////////////////////////| GPC_Pro_Sto_Blo |://
+
+//:==================================================:GPC_###://
+//:GPC_###:==================================================://
+
+    //+------------------------------------------------------+//
+    //|  Huffman code decoding tables. count[1..MAX_BIT] is  |//
+    //|  the number of symbols of each length,which for a    |//
+    //|  canonical code are stepped through in order.        |//
+    //|  symbol[] are the symbol values in canonical order,  |//
+    //|  where the number of entries is the sum of the       |//
+    //|  counts in count[]. The decoding process can be      |//
+    //|  seen in the function decode() below.                |//
+    //+------------------------------------------------------+//
+    //|  JMIM_THOUGHT: You don't have to store the huffman   |//
+    //|                tree with the data IF you have a      |//
+    //|                predictable way to create the huffman |//
+    //|                tree from frequency table.            |//
+    //+------------------------------------------------------+//
+    const NEW_gpc_huf=function(/**void**/){ "use strict"
+    return(Object.seal({
+
+    /**/    vit : (  VIT_GPC_HUF  )
+
+        /* number of symbols of each length            */
+        /* I think the name frequency (arr_fre) would  */
+        /* make more sense here than count (arr_cou ). */
+    ,   arr_fre : POI_Signed_Short()  //:Arrays_Are_Pointers
+    ,   arr_sym : POI_Signed_Short()  //:Arrays_Are_Pointers
+
+    }));};;
+
+    //:Denotes either:
+    //:     1: Stack allocated value type
+    //:     2: Value type allocated as member of struct.
+    //:     In other words, when coverting to C99, instances
+    //:     of this function call with NOT result in malloc.
+    const VAL_gpc_huf=function( /**void**/){ "use struct"
+        return( NEW_gpc_huf() );
+    };;
+
+//:==================================================:GPC_###://
+//:GPC_###:==================================================://
+
+    //+------------------------------------------------------+//
+    //|  Decode a code from the stream s using huffman       |//
+    //|  table h. Return the symbol or a negative value if   |//
+    //|  there is an error. If all of the lengths are zero,  |//
+    //|  i.e. an empty code,or if the code is incomplete     |//
+    //|  and an invalid code is received,then -10 is         |//
+    //|  returned after reading MAX_BIT bits.                |//
+    //+------------------------------------------------------+//
+    //|  Format notes:                                       |//
+    //+------------------------------------------------------+//
+    //|  The codes as stored in the compressed data are      |//
+    //|  bit-reversed relative to a simple integer ordering  |//
+    //|  of codes of the same lengths. Hence below the bits  |//
+    //|  are pulled from the compressed data one at a time   |//
+    //|  and used to build the code value reversed from      |//
+    //|  what is in the stream in order to permit simple     |//
+    //|  integer comparisons for decoding. A table-based     |//
+    //|  decoding scheme (as used in zlib) does not need to  |//
+    //|  do this reversal.                                   |//
+    //+------------------------------------------------------+//
+    //|  The first code for the shortest length is all       |//
+    //|  zeros. Subsequent codes of the same length are      |//
+    //|  simply integer increments of the previous code.     |//
+    //|  When moving up a length,a zero bit is appended to   |//
+    //|  the code. For a complete code,the last code of the  |//
+    //|  longest length will be all ones.                    |//
+    //+------------------------------------------------------+//
+    //|  JMIM NOTE:                                          |//
+    //|     Canonical huffman codes are sorted first by      |//
+    //|     bit length of their sequence. Then sequences     |//
+    //|     that have the same length (frequency) are sorted |//
+    //|     alphabetically.                                  |//
+    //|                                                      |//
+    //| CC |  AC |  BC |  CA |  CB |   AA |   AB |   BA | AB |//
+    //| 10 | 110 | 001 | 111 | 011 | 0000 | 0001 | 0101 |0110|//
+    //|  2 |   3 |   3 |   3 |   3 |    4 |    4 |    4 |   4|//
+    //| 00 | 010 | 011 | 100 | 101 | 1100 | 1101 | 1110 |1111|//
+    //| When you get to the next code length:                |//
+    //|     1: Add 1 to previous code.                       |//
+    //|     2: THEN append 0 to right hand side of code.     |//
+    //|     3: You now have first code in the set of codes   |//
+    //|        of that length.                               |//
+    //|                                                      |//
+    //| https://www.youtube.com/watch?v=yXM4wq_arB0          |//
+    //|                                                      |//
+    //|                                                      |//
+    //+------------------------------------------------------+//
+    //|  Incomplete codes are handled by this decoder,since  |//
+    //|  they are permitted * in the deflate format. See     |//
+    //|  the format notes for fixed() and dynamic().         |//
+    //+------------------------------------------------------+//  
+    //|#PCFN#                                                |//
+    //|     #ifdef SLOW                                      |//
+    //|          local int decode(                           |//
+    //|              struct state *s                         |//
+    //|          ,   const struct huffman *h)                |//
+    //+------------------------------------------------------+//
+    const GPC_Dec_Slo=function(
+        poi_gpc_sob /** pointer to gpc_sob **/
+    ,   poi_gpc_huf /** pointer to gpc_huf **/
+    ){
+
+
+    };; //:///////////////////////////////////| GPC_Dec_Slo |://
+
+
+//:==================================================:GPC_###://
+//:GPC_###:==================================================://
+
+
+    //|A faster version of decode() for real applications of |//
+    //|this code. It's not as readable,but it makes puff()   |//
+    //|twice as fast. And it only makes the code a few       |//
+    //|percent larger.                                       |//
+    //|                                                      |//
+    //|JMIM_COMMENT:                                         |//
+    //|    By transcribing both the slow and fast methods,   |//
+    //|    I can hackishly unit test by seeing if the two    |//
+    //|    algorithms produce the same data.                 |//
+    const GPC_Dec_Fas=function(
+        poi_gpc_sob /** pointer to gpc_sob **/
+    ,   poi_gpc_huf /** pointer to gpc_huf **/
+    ){
+
+
+    };; //:///////////////////////////////////| GPC_Dec_Fas |://
+    
+
+//:==================================================:GPC_###://
+//:GPC_###:==================================================://
+
+    //+======================================================+//
+    //|  GPC_Con : Construct                                 |//
+    //+======================================================+//
+    //|  Given the list of code lengths length[0..NPI-1]     |//
+    //|  representing a canonical Huffman code for NPI       |//
+    //|  symbols,construct the tables required to decode     |//
+    //|  those codes. Those tables are the number of codes   |//
+    //|  of each length,and the symbols sorted by length,    |//
+    //|  retaining their original order within each length.  |//
+    //|  The return value is zero for a complete code set,   |//
+    //|  negative for an over- subscribed code set,and       |//
+    //|  positive for an incomplete code set. The tables     |//
+    //|  can be used if the return value is zero or          |//
+    //|  positive,but they cannot be used if the return      |//
+    //|  value is negative. If the return value is zero,it   |//
+    //|  is not possible for decode() using that table to    |//
+    //|  return an error--any stream of enough bits will     |//
+    //|  resolve to a symbol. If the return value is         |//
+    //|  positive,then it is possible for decode() using     |//
+    //|  that table to return an error for received codes    |//
+    //|  past the end of the incomplete lengths.             |//
+    //|                                                      |//
+    //|JMIM: TL;DR ------------------------------------------|//
+    //|     TABLES:                                          |//
+    //|     1: Code lengths grouped by frequency.            |//
+    //|                                                      |//
+    //|     2:  Symbols sorted by length.                    |//
+    //|         Same length symbols sorted lexographically.  |//
+    //|         Aka: Symbols within group alphabetized.      |//
+    //|                                                      |//
+    //|RETURN_CODE(R_C)TABLE:                                |//
+    //|     R_C| TYPE_OF_CODE_SET | USE ?  | CAN_THROW?|     |//
+    //|     NEG: Over-Subscribed  ( NO_USE :   N/A     )     |//
+    //|     ZER:        Complete  ( USABLE : NOTHROWME )     |//
+    //|     POS:     IN-complete  ( USABLE : THROWABLE )     |//
+    //|------------------------------------------------------|//    
+    //|  Not used by decode(),but used for error checking,   |//
+    //|  [ poi_gpc_huf->count[0] ] is the number of the      |//
+    //|  [ NPI ] symbols not in the code.                    |//
+    //|  So                                                  |//
+    //|     ( NPI - (poi_gpc_huf.count[0] ) )                |//
+    //|  is the number of codes.                             |//
+    //|                                                      |//
+    //|  This is useful for checking for incomplete codes    |//
+    //|  that have more than one symbol,which is an error    |//
+    //|  in a dynamic block.                                 |//
+    //|------------------------------------------------------|//
+    //|  Assumption:                                         |//
+    //|  for all i in 0..NPI-1,0 <= length[i] <= MAXBITS     |//
+    //|  This is assured by the construction of the length   |//
+    //|  arrays in dynamic() and fixed() and is not          |//
+    //|  verified by construct().                            |//
+    //|------------------------------------------------------|//
+    //|  JMIM TL;DR: arr_cod_len[#] is non-negative.         |//
+    //|              arr_cod_len[#] is LESS than MAXBITS     |//
+    //|                                                      |//
+    //| Format notes:                                        |//
+    //|                                                      |//
+    //| - Permitted and expected examples of incomplete      |//
+    //|   codes are one of the fixed codes and any code with |//
+    //|   a single symbol which in deflate is coded as one   |//
+    //|   bit instead of zero bits. See the format notes for |//
+    //|   fixed() and dynamic().                             |//
+    //|                                                      |//
+    //|                                                      |//
+    //|   - Within a given code length,the symbols are kept  |//
+    //|   in ascending order for the code bits definition.   |//
+    //+======================================================+//
+    const GPC_Con=function(  //://///////////////////////////://
+        poi_gpc_huf //: Pointer to huffman struct.           ://
+    ,   arr_cod_len //: Code Lengths array, pointer to short.://
+    ){  "use strict"//:///////////////////////////| GPC_Con |://
+
+        //:TODO
+
+    };; //:///////////////////////////////////////| GPC_Con |://
+    //+======================================================+//
+
+
+        
+    
+    
+    //+------------------------------------------------------+//
+    //|  GPC_Cod: GPC_Codes                                  |//
+    //+------------------------------------------------------+//
+    //|  Decode literal/length and distance codes until an   |//
+    //|  end-of-block code.                                  |//
+    //|------------------------------------------------------|//
+    //|  Format notes:                                       |//
+    //|------------------------------------------------------|//
+    //|  Compressed data that is after the block type if     |//
+    //|  fixed or after the code description if dynamic is   |//
+    //|  a combination of literals and length/distance       |//
+    //|  pairs terminated by and end-of-block code.          |//
+    //|                                                      |//
+    //|  Literals are simply Huffman coded bytes. A          |//
+    //|  length/distance pair is a coded length followed by  |//
+    //|  a coded distance to represent a string that occurs  |//
+    //|  earlier in the uncompressed data that occurs again  |//
+    //|  at the current location.                            |//
+    //|                                                      |//
+    //|  JMIM_UNDERSTANDING: - - - - - - - - - - - - - - - - |//
+    //|                                                      |//
+    //|  if( IS_COMPRESSED_DATA( data ) ){                   |//
+    //|  if((AFT_BLK_TYP( dat ) && IS_FIX( data ) )          |//
+    //|  || (AFT_COD_DES( dat ) && IS_DYN( data ) )          |//
+    //|  ){                                                  |//
+    //|      IS_COMBINATION:                                 |//
+    //|          1. Literals                                 |//
+    //|          2. [ length , distance ] pairs (len_dis)    |//
+    //|          3. </end_of_block>                          |//
+    //|                                                      |//
+    //|  };;                                                 |//
+    //|                                                      |//
+    //|  LITERAL: Huffuman encoded byte.                     |//
+    //|  len_dis: huffman  encoded byte with                 |//
+    //|           "length" and "distance" values             |//
+    //|           bitpacked into it. (I think)               |//
+    //|                                                      |//
+    //|------------------------------------------------------|//
+    //|  Literals,lengths,and the end-of-block code are      |//
+    //|  combined into a single code of up to 286 symbols.   |//
+    //|  They are 256 literals (0..255),29 length symbols    |//
+    //|  (257..285),and the end-of-block symbol (256).       |//
+    //| - - - - - - - - - - - - ---- - - - - - - - - - - - - |//
+    //|  [  0  - 255 ] : 0x000 - 0x0FF : LITERALS            |//
+    //|  [ 256 - 256 ] : 0x100 - 0x100 : END_OF_BLOCK_SYMBOL |//
+    //|  [ 257 - 285 ] : 0x101 - 0x11D : LENGTH Symbols      |//
+    //|------------------------------------------------------|//
+    //|  There are 256 possible lengths (3..258),and so 29   |//
+    //|  symbols are not enough to represent all of those.   |//
+    //|  Lengths 3..10 and 258 are in fact represented by    |//
+    //|  just a length symbol. Lengths 11..257 are           |//
+    //|  represented as a symbol and some number of extra    |//
+    //|  bits that are added as an integer to the base       |//
+    //|  length of the length symbol. The number of extra    |//
+    //|  bits is determined by the base length symbol.       |//
+    //|  These are in the static arrays below,lens[] for     |//
+    //|  the base lengths and lext[] for the corresponding   |//
+    //|  number of extra bits.                               |//
+    //| - - - - - - - - - - - - ---- - - - - - - - - - - - - |//
+    //|  [ 3 - 258 ]: 0x003 - 0x102 : Possible Lengths       |//
+    //|  [ 3 -  10 ]: 0x003 - 0x00A : JUST_A_LENGTH_SYMBOL   |//
+    //|  [   258   ]: 0x102 - 0x102 : JUST_A_LENGTH_SYMBOL   |//
+    //|  [11 - 257 ]: 0x00B - 0x101 : SYMBOL_AND_EXTRA_BITS  |//
+    //|------------------------------------------------------|//
+    //|  The reason that 258 gets its own symbol is that     |//
+    //|  the longest length is used often in highly          |//
+    //|  redundant files. Note that 258 can also be coded    |//
+    //|  as the base value 227 plus the maximum extra value  |//
+    //|  of 31. While a good deflate should never do this,   |//
+    //|  it is not an error,and should be decoded properly.  |//
+    //|                                                      |//
+    //|  ( 227 + 31 == 258 )                                 |//
+    //|------------------------------------------------------|//
+    //|  If a length is decoded,including its extra bits if  |//
+    //|  any,then it is followed a distance code. There are  |//
+    //|  up to 30 distance symbols. Again there are many     |//
+    //|  more POSSIBLE_DISTANCES (1..32768),so extra bits    |//
+    //|  are added to a base value represented by the        |//
+    //|  symbol. The distances 1..4 get their own symbol,    |//
+    //|  but the rest require extra bits. The base           |//
+    //|  distances and corresponding number of extra bits    |//
+    //|  are below in the static arrays dist[] and dext[].   |//
+    //|                                                      |//
+    //|  30                : NUMBER_OF_DISTANCE_SYMBOLS      |//
+    //| [ 1      - 32768 ] : POSSIBLE_DISTANCES              |//
+    //| [ 0x0001 - 0x8000] : POSSIBLE_DISTANCES              |//
+    //|          [ 1 - 4 ] : GET_OWN_SYMBOL                  |//
+    //|------------------------------------------------------|//
+    //|  LITERAL_BYTES are simply written to the output. A   |//
+    //|  LEN_DIST_PAIR pair is an instruction to copy        |//
+    //|  previously uncompressed bytes to the output. The    |//
+    //|  copy is from distance bytes back in the output      |//
+    //|  stream,copying for length bytes.                    |//
+    //|                                                      |//
+    //|  LITERAL_BYTES: No data transformation. (  value)    |//
+    //|  LEN_DIST_PAIR:    Backwards reference. (pointer)    |//
+    //|------------------------------------------------------|//
+    //|  Distances pointing before the beginning of the      |//
+    //|  output data are not permitted.                      |//
+    //|------------------------------------------------------|//
+    //|  Overlapped copies,where the length is greater than  |//
+    //|  the distance,are allowed and common. For example,a  |//
+    //|  distance of one and a length of 258 simply copies   |//
+    //|  the last byte 258 times. A distance of four and a   |//
+    //|  length of twelve copies the last four bytes three   |//
+    //|  times. A simple forward copy ignoring whether the   |//
+    //|  length is greater than the distance or not          |//
+    //|  implements this correctly. You should not use       |//
+    //|  memcpy() since its behavior is not defined for      |//
+    //|  overlapped arrays. You should not use memmove() or  |//
+    //|  bcopy() since though their behavior -is- defined    |//
+    //|  for overlapping arrays,it is defined to do the      |//
+    //|  wrong thing in this case.                           |//
+    //|                                                      |//
+    //|  JMIM_COMMENT:                                       |//
+    //|     Overflow is used to encode runline sequences.    |//
+    //|     < B , L  > : < BACKWARDS_DISTANCE, LENGTH >      |//
+    //|     < 1 , 40 > : "A"    copied 40 times.             |//
+    //|     < 2 , 40 > : "AB"   copied 20 times.             |//
+    //|     < 4 , 40 > : "ABCD" copied 10 times.             |//
+    //|------------------------------------------------------|//
+    //|PCFN:local int codes(...){...}                        |//
+    //+------------------------------------------------------+//
+    const GPC_Cod=function(
+        poi_gpc_sob //:Pointer to state object
+    ,   poi_huf_len //:Huffman Struct of[Length|Literal]Codes.
+    ,   poi_huf_dis //:Huffman Struct of[   distance   ]Codes.
+    ){ "use strict"
+
+
+    };; //:///////////////////////////////////////| GPC_Cod |://
+
+
+    
+    //+------------------------------------------------------+//
+    //|  GPC_Fix : GPC_Fixed                                 |//
+    //+------------------------------------------------------+//
+    //|  Process a fixed codes block.                        |//
+    //|------------------------------------------------------|//
+    //|  Format notes:                                       |//
+    //|------------------------------------------------------|//
+    //|  This block type can be useful for compressing       |//
+    //|  small amounts of data for which the size of the     |//
+    //|  code descriptions in a dynamic block exceeds the    |//
+    //|  benefit of custom codes for that block. For fixed   |//
+    //|  codes,no bits are spent on code descriptions.       |//
+    //|  Instead the code lengths for literal/length codes   |//
+    //|  and distance codes are fixed. The specific lengths  |//
+    //|  for each symbol can be seen in the "for" loops      |//
+    //|  below.                                              |//     
+    //|                                                      |//
+    //|  JMIM_COMMENT:                                       |//
+    //|  I think this means that no meta-data like           |//
+    //|  a huffman tree, huffman table, or frequency table   |//
+    //|  is encoded alongside "fixed" type data.             |//
+    //|------------------------------------------------------|//                                                        
+    //|  The literal/length code is complete,but has two     |//
+    //|  symbols that are invalid and should result in an    |//
+    //|  error if received. This cannot be implemented       |//
+    //|  simply as an incomplete code since those two        |//
+    //|  symbols are in the "middle" of the code. They are   |//
+    //|  eight bits long and the longest literal/length      |//
+    //|  code is nine bits. Therefore the code must be       |//
+    //|  constructed with those symbols,and the invalid      |//
+    //|  symbols must be detected after decoding.            |//                                                     
+    //|                                                      |//
+    //|  JMIM_COMMENT:                                       |//
+    //|  Detected after decoding HOW much data?              |//
+    //|  Like 2 passes over all the data, or having to       |//
+    //|  intermittenly look backwards every once and         |//
+    //|   a while to see if there was an error?              |//
+    //|                                                      |//
+    //|  JMIM_COMMENT: (My understanding of above)           |//
+    //|  Erroneous data somehow does not evenly fit          |//
+    //|  into bytes and therefor is hard to detect           |//
+    //|  immediately.                                        |//
+    //|------------------------------------------------------|//
+    //|  The fixed distance codes also have two invalid      |//
+    //|  symbols that should result in an error if           |//
+    //|  received. Since all of the distance codes are the   |//
+    //|  same length,this can be implemented as an           |//
+    //|  incomplete code. Then the invalid codes are         |//
+    //|  detected while decoding.                            |//
+    //|                                                      |//
+    //|  JMIM_COMMENT: The two invalid distance codes can    |//
+    //|                be detected quickly on the fly        |//
+    //|                since all distance codes are the      |//
+    //|                same number of bits and thus          |//
+    //|                can be easily scanned by some         |//
+    //|                type of scrolling data viewport.      |//
+    //|------------------------------------------------------|//
+    //|  TL;DR:                                              |//
+    //|     1: Fixed codes for small compressed blocks.      |//
+    //|     2: Two TRAP [literal/length] codes denote error. |//
+    //|     3: Two TRAP [   distance   ] codes denote error. |//
+    //+------------------------------------------------------+//
+    const GPC_Fix=function(
+        poi_gpc_sob
+    ){ "use strict"
+
+
+    };; //:///////////////////////////////////////| GPC_Fix |://
+
+    //+------------------------------------------------------+//
+    //| GPC_Dyn : GPC_Dynamic                                |//
+    //+------------------------------------------------------+//
+    //|  Process a dynamic codes block.                      |//
+    //|------------------------------------------------------|//
+    //|  Format notes:                                       |//
+    //|------------------------------------------------------|//
+    //|  A dynamic block starts with a description of the    |//
+    //|  literal/length and distance codes for that block.   |//
+    //|  New dynamic blocks allow the compressor to rapidly  |//
+    //|  adapt to changing data with new codes optimized     |//
+    //|  for that data.                                      |//
+    //|------------------------------------------------------|//
+    //|  The codes used by the deflate format are            |//
+    //|  "canonical",which means that the actual bits of     |//
+    //|  the codes are generated in an unambiguous way       |//
+    //|  simply from the number of bits in each code.        |//
+    //|  Therefore the code descriptions are simply a list   |//
+    //|  of code lengths for each symbol.                    |//
+    //| - - - - - - - - - - - - ---- - - - - - - - - - - - - |//
+    //|  JMIM_COMMENT:                                       |//
+    //|  So the data is NOT sorted in any way to begin with. |//
+    //|  Your job to group symbols by LEN and then           |//
+    //|  lexographically sort within each group of           |//
+    //|  same LEN before assigning the proper canonical      |//
+    //|  huffman code.                                       |//
+    //|                                                      |//
+    //|  JMIM_COMMENT:( MY GUESS )                           |//
+    //|  1: LEN = ARR_LEN[ SYMBOL ]                          |//
+    //|  2: GROUP SYMBOL by LEN.                             |//
+    //|  3: Lexographically sort each SYMBOL within GROUP.   |//
+    //|------------------------------------------------------|//
+    //|  The code lengths are stored in order for the        |//
+    //|  symbols,so lengths are provided for each of the     |//
+    //|  literal/length symbols,and for each of the          |//
+    //|  distance symbols.                                   |//
+    //|                                                      |//
+    //|  JMIM_COMMENT:                                       |//
+    //|                                                      |//
+    //|  Don't know what this means.                         |//
+    //|  "Code lengths are stored in order for the symbols"  |//
+    //|  So... Does that mean:                               |//
+    //|                                                      |//
+    //|  1. Ordered+Grouped by length                        |//
+    //|     AND symbols within each group sorted.            |//
+    //|                                                      |//
+    //|  2. Simply Ordered by length. Which implies          |//
+    //|     grouping, of symbols by length, but no           |//
+    //|     sorting within group.                            |//
+    //|                                                      |//
+    //|  JMIM_COMMENT:                                       |//
+    //|  Don't know what this means:                         |//
+    //|  "So lengths are provided for each of the    "       |//
+    //|  "literal/length symbols, and for each of the"       |//
+    //|  "distance symbols.                          "       |//
+    //|                                                      |//
+    //|  Since huffman tree can be derived just from         |//
+    //|  frequency (length) information when using canonical |//
+    //|  huffman codes, I think this means there are         |//
+    //|  two huffman table structs. One for "literal/length" |//
+    //|  codes and one for "distance" codes.                 |//
+    //|                                                      |//
+    //|  ...Even if that is what they are saying...          |//
+    //|  ...I don't know why "so" is used. That implies      |//
+    //|  a "causation" or "necessitation".                   |//
+    //|------------------------------------------------------|//
+    //|  If a symbol is not used in the block,this is        |//
+    //|  represented by a zero as as the code length. This   |//
+    //|  does not mean a zero-length code,but rather that    |//
+    //|  no code should be created for this symbol. There    |//
+    //|  is no way in the deflate format to represent a      |//
+    //|  zero-length code.                                   |//
+    //|                                                      |//
+    //|  JMIM_COMMENT:                                       |//
+    //|  If symbol is NOT in encoded data:                   |//
+    //|     1: It is denoted by FREQUENCY (lenght) zero.     |//
+    //|     2: Don't waste bits creating code for symbol.    |//
+    //|                                                      |//
+    //|  Example: If your text file is:                      |//
+    //|  "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"         |//
+    //|  You only need one huffman code. So in binary        |//
+    //|  we could represent this text file as:               |//
+    //|  "00000000000000000000000000000000000000000"         |//
+    //|  assuming "A" is one SYMBOL.                         |//
+    //|                                                      |//
+    //|  Obviously, we cannot express other symbols if       |//
+    //|  our huffman code is this short. But doesn't matter  |//
+    //|  since the frequency (length) table has declared     |//
+    //|  that no other symbols exist.                        |//
+    //|------------------------------------------------------|//
+    //|                                                      |//
+    //|  The maximum number of bits in a code is 15,         |//
+    //|  so the possible lengths for any code are 1..15.     |//
+    //|                                                      |//
+    //|  JMIM_COMMENT:                                       |//
+    //|  Code length is measured in bits.                    |//
+    //|  1111   : A  : Symbol "A" stored in code length==4.  |//
+    //|  111000 : B  : Symbol "B" stored in code length==6.  |//
+    //|                                                      |//
+    //|------------------------------------------------------|//
+    //|  The fact that a length of zero is not permitted     |//
+    //|  for a code has an interesting consequence.          |//
+    //|  Normally if only one symbol is used for a given     |//
+    //|  code,then in fact that code could be represented    |//
+    //|  with zero bits. However in deflate,that code has    |//
+    //|  to be at least one bit. So for example,if only a    |//
+    //|  single distance base symbol appears in a block,     |//
+    //|  then it will be represented by a single code of     |//
+    //|  length one,in particular one 0 bit. This is an      |//
+    //|  incomplete code,since if a 1 bit is received,it     |//
+    //|  has no meaning,and should result in an error. So    |//
+    //|  incomplete distance codes of one symbol should be   |//
+    //|  permitted,and the receipt of invalid codes should   |//
+    //|  be handled.                                         |//
+    //|                                                      |//
+    //|  JMIM_COMMENT:                                       |//
+    //|  If you only have 1 symbol, say "A".                 |//
+    //|  Then your current block is just a bunch of          |//
+    //|  "A" symbols like:                                   |//
+    //|  "AAAAAAAAAAAAAAAAAAAAAAAAA"                         |//
+    //|  And can be encoded as:                              |//
+    //|  "0000000000000000000000000"                         |//
+    //|  But then WTF does:                                  |//
+    //|  "1111111111111111111111111"                         |//
+    //|  Mean if you have only 1 symbol but 2 binary values? |//
+    //|                                                      |//
+    //|  ANSWER: "0" doesn't mean anything!                  |//
+    //|  IMPLICATION:                                        |//
+    //|     1. The most compact way to encode "A" is "1"     |//
+    //|     2. Single "1" bit is not a complete huffman code.|//
+    //|     3. We must allow incomplete huffman codes.       |//
+    //|------------------------------------------------------|//
+    //|  It is also possible to have a single                |//
+    //|  literal/length code,but that code must be the       |//
+    //|  end-of-block code,since every dynamic block has     |//
+    //|  one. This is not the most efficient way to create   |//
+    //|  an empty block (an empty fixed block is fewer       |//
+    //|  bits),but it is allowed by the format. So           |//
+    //|  incomplete literal/length codes of one symbol       |//
+    //|  should also be permitted.                           |//
+    //|                                                      |//
+    //|  JMIM_COMMENT:                                       |//
+    //|  An incomplete literal code of 1 bit can be used     |//
+    //|  to denote an empty block. It isn't the most         |//
+    //|  compact way to express it, but it is expressable    |//
+    //|  under the rules and thus must be allowed.           |//
+    //|                                                      |//
+    //|  Real world analogy:                                 |//
+    //|  var A = ( 10 ); //:Valid JavaScript, expresses 10.  |//
+    //|  var A = ( 1+1+1+1+1+1+1+1+1+1 ); //:Also_Valid      |//
+    //|                                                      |//
+    //|  TL;DR: [ Valid/Legal != Good_Idea ]                 |//
+    //|------------------------------------------------------|//
+    //|  If there are only literal codes and no lengths,     |//
+    //|  then there are no distance codes. This is           |//
+    //|  represented by one distance code with zero bits.    |//
+    //|                                                      |//
+    //|  JMIM_COMMENT:                                       |//
+    //|  References are stored as:                           |//
+    //|  < distance backwards in bits , length in bits >     |//
+    //|                                                      |//
+    //|  If there are NO reference, you still need the       |//
+    //|  "Length_Or_Literal" table. Because literals.        |//
+    //|                                                      |//
+    //|  But since the literal table contains no LENGTH(s)   |//
+    //|  Then there are no LENGTHS(S) to be paired with      |//
+    //|  distances, and the distances table can be empty.    |//
+    //|------------------------------------------------------|//
+    //|  The list of up to 286 length/literal lengths and    |//
+    //|  up to 30 distance lengths are themselves            |//
+    //|  compressed using Huffman codes and run-length       |//
+    //|  encoding. In the list of code lengths,a 0 symbol    |//
+    //|  means no code,a 1..15 symbol means that length,and  |//
+    //|  the symbols 16,17,and 18 are run-length             |//
+    //|  instructions. Each of 16,17,and 18 are follwed by   |//
+    //|  extra bits to define the length of the run. 16      |//
+    //|  copies the last length 3 to 6 times. 17 represents  |//
+    //|  3 to 10 zero lengths,and 18 represents 11 to 138    |//
+    //|  zero lengths. Unused symbols are common,hence the   |//
+    //|  special coding for zero lengths.                    |//
+    //|                                                      |//
+    //|  JMIM_COMMENT:                                       |//
+    //|  Yo dawg I heard you liked huffman codes so I got    |//
+    //|  you some huffman codes for your huffman codes so    |//
+    //|  that you can decode while you decode.               |//
+    //|                                                      |//
+    //|  JMIM_QUESTION:                                      |//
+    //|  What is a "0" code. Is that...                      |//
+    //|     1: A "0" bit?                                    |//
+    //|     2: A "0" byte?                                   |//
+    //|  I "THINK" the word "symbol" means "index value"     |//
+    //|  as accessor to an [ array / table ] here.           |//
+    //|                                                      |//
+    //|  Hmm.. "symbol" is only an array index if it is      |//
+    //|  a value [ 1 - 15 ] inclusive... So...               |//
+    //|  "Symbol" means a "value". But when we say "symbol"  |//
+    //|  we mean "collection of bits"?                       |//
+    //|                                                      |//
+    //|  Huffman encoding encodes "symbols" and some symbols |//
+    //|  can be "literal" and others are <distance, jumpback>|//
+    //|  pairs so... "collection of bits" I think is an      |//
+    //|  accurate understanding of author's use of the       |//
+    //|  word "symbol" here.                                 |//
+    //|------------------------------------------------------|//
+    //|  The symbols for 0..18 are Huffman coded,and so      |//
+    //|  that code must be described first. This is simply   |//
+    //|  a sequence of up to 19 three-bit values             |//
+    //|  representing no code (0) or the code length for     |//
+    //|  that symbol (1..7).                                 |//
+    //|                                                      |//
+    //|  JMIM_COMMENT:                                       |//
+    //|                                                      |//
+    //|  SYM_0_18[ 0 ]=binary( "000" ); //:Decimal: 0        |//
+    //|  SYM_0_18[ 1 ]=binary( "001" ); //:Decimal: 1        |//
+    //|  SYM_0_18[ 2 ]=binary( "010" ); //:Decimal: 2        |//
+    //|  SYM_0_18[ 3 ]=binary( "011" ); //:Decimal: 3        |//
+    //|  SYM_0_18[ 4 ]=binary( "100" ); //:Decimal: 4        |//
+    //|  SYM_0_18[ 5 ]=binary( "101" ); //:Decimal: 5        |//
+    //|  SYM_0_18[ 6 ]=binary( "110" ); //:Decimal: 6        |//
+    //|  SYM_0_18[ 7 ]=binary( "111" ); //:Decimal: 7        |//
+    //|  SYM_0_18[...]..                                     |//
+    //|  SYM_0_18[18 ] <--LAST_ENTRY                         |//
+    //|                                                      |//
+    //|  JMIM_COMMENT:                                       |//
+    //|                                                      |//
+    //|  This doesn't sound like "huffman coded" this sounds |//
+    //|  more like "3 bit integer". I guess in a way it is   |//
+    //|  technically a huffman code.                         |//
+    //|                                                      |//
+    //|  JMIM_COMMENT:                                       |//
+    //|                                                      |//
+    //|  Wait. No.. The frequency table SYM_0_18 is an       |//
+    //|  array of 3-bit integers. Arrays are just contiguous |//
+    //|  strips of memory. The canonical huffman codes       |//
+    //|  still need to be generated from this frequency      |//
+    //|  table.                                              |//
+    //|                                                      |//
+    //|  JMIM_COMMENT:                                       |//
+    //|  The author's original comment was correct, but      |//
+    //|  for a second I thought it was written               |//
+    //|  in a nonsensical but technically correct way.       |//
+    //|------------------------------------------------------|//
+    //|  A dynamic block starts with three fixed-size        |//
+    //|  counts from which is computed the number of         |//
+    //|  literal/length code lengths,the number of distance  |//
+    //|  code lengths,and the number of code length code     |//
+    //|  lengths (ok,you come up with a better name!) in     |//
+    //|  the code descriptions.                              |//
+    //| - - - - - - - - - - - - ---- - - - - - - - - - - - - |//
+    //|  JMIM_COMMENT:                                       |//
+    //|  Dynamic Block Header:                               |//
+    //|     UNIQUE_LENGTH[ 0 ]: literal/length               |//
+    //|     UNIQUE_LENGTH[ 1 ]: distance codes               |//
+    //|     UNIQUE_LENGTH[ 2 ]: code lengths                 |//
+    //|                                                      |//
+    //|  For example: If you have:                           |//
+    //|  4 distance codes:                                   |//
+    //|             "1111"                                   |//
+    //|             "1001"                                   |//
+    //|             "0110"                                   |//
+    //|             "0000"                                   |//
+    //|  And NO OTHER DISTANCE CODES.                        |//
+    //|  Then:                                               |//
+    //|     UNIQUE_LENGTH[ 1 ] == 1                          |//
+    //|                                                      |//
+    //| - - - - - - - - - - - - ---- - - - - - - - - - - - - |//
+    //|  For the literal/length and                          |//
+    //|  distance codes,lengths after those provided are     |//
+    //|  considered zero,i.e. no code. The code length code  |//
+    //|  lengths are received in a permuted order (see the   |//
+    //|  order[] array below) to make a short code length    |//
+    //|  code length list more likely. As it turns out,very  |//
+    //|  short and very long codes are less likely to be     |//
+    //|  seen in a dynamic code description,hence what may   |//
+    //|  appear initially to be a peculiar ordering.         |//
+    //|                                                      |//
+    //|  JMIM_COMMENT:                                       |//
+    //|  I "THINK" they are saying:                          |//
+    //|  " The hardcoded data looks weird but trust us "     |//
+    //|  " we got these numbers by observation.        "     |//
+    //|------------------------------------------------------|//
+    //|  Given the number of literal/length code lengths     |//
+    //|  (nlen) and distance code lengths (ndist),then they  |//
+    //|  are treated as one long list of nlen + ndist code   |//
+    //|  lengths. Therefore run-length coding can and often  |//
+    //|  does cross the boundary between the two sets of     |//
+    //|  lengths.                                            |//
+    //|                                                      |//
+    //|  JMIM_COMMENT:                                       |//
+    //|  The two lists are in to sub-sections (partitions)   |//
+    //|  of the same array, and decompression algorithm      |//
+    //|  just sees one big chunk of bits. Don't worry.       |//
+    //|------------------------------------------------------|//
+    //|  So to summarize,the code description at the start   |//
+    //|  of a dynamic block is three counts for the number   |//
+    //|  of code lengths for the literal/length codes,the    |//
+    //|  distance codes,and the code length codes. This is   |//
+    //|  followed by the code length code lengths,three      |//
+    //|  bits each. This is used to construct the code       |//
+    //|  length code which is used to read the remainder of  |//
+    //|  the lengths. Then the literal/length code lengths   |//
+    //|  and distance lengths are read as a single set of    |//
+    //|  lengths using the code length codes. Codes are      |//
+    //|  constructed from the resulting two sets of lengths  |//
+    //|  ,and then finally you can start decoding actual     |//
+    //|  compressed data in the block.                       |//
+    //|                                                      |//
+    //|  JMIM_COMMENT:                                       |//
+    //|  1: Header:                                          |//
+    //|     Header[ 0 ]: HGH:[Literal/Length (codes)]        |//
+    //|     Header[ 1 ]: HGH:[Distance       (codes)]        |//
+    //|     Header[ 2 ]: HGH:[Code Lengths   (codes)]        |//
+    //|                                                      |//
+    //|  2: Code length code lengths. 3 bits each.           |//
+    //|     Use to decode the REST of the code lengths       |//
+    //|     to follow.                                       |//
+    //|                                                      |//
+    //|  3: Read [literal/length]+[distance] tables.         |//
+    //|                                                      |//
+    //|  4: Construct huffman codes.                         |//
+    //|                                                      |//
+    //|  5. Decode the compressed data using the huffman     |//
+    //|     codes created in steps [1-4].                    |//
+    //|------------------------------------------------------|//
+    //|                                                      |//                           
+    //|  For reference, a "typical" size for the code        |//
+    //|  description in a dynamic block is around 80 bytes.  |//
+    //|                                                      |//
+    //+------------------------------------------------------+//
+    //| GPC_Dyn : GPC_Dynamic                                |//
+    //+------------------------------------------------------+//
+    //[ #PCFN#[ local int dynamic(struct state *s) ]         ]//
+    const GPC_Dyn=function( 
+        poi_gpc_sob /** pointer to gpc_sob **/ 
+    ){ "use strict"
+
+        //:JMIM NOTE: Pretty sure where author of puff.c
+        //:           says "count" they mean "frequency".
+        //:           Within this function anyhow. In other
+        //:           functions within puff.c "count" means
+        //:           a position in an array.
+
+        //:Original Comment:Number of lengths in descriptor 
+        let num_len ;  //:Length_Of_Something_Not_Sure
+        let num_dis ;  //:Number_Of_Distances_I_Guess
+        let num_cod ;  //:Number_Of_Codes_Of_Some_Sort
+
+        let     dex ;  //:index of lengths[ ]
+        let     err ;  //:construct() return value
+
+
+        //://////////////////////////////////////////////////://
+
+        //: JMIM NOTE: Not 100% sure these variable re-names ://
+        //:            are properly descriptive as I am      ://
+        //:            re-naming based on PUFF.C original    ://
+        //:            name and comment information.         ://
+        //:            Will stick with these names until     ://
+        //:            done porting function. Then will      ://
+        //:            re-asses if names are good.           ://
+        //: JMIM NOTE: [ len_fre ]AND[ len_sym ] might be    ://
+        //:            better named [ lal_fre ]AND[ lal_sym ]://
+        //:            For [ literal_and_length ].           ://
+        //:            QUOTE: RFC_1951:                      ://
+        //:            "using one code tree for literals"    ://
+        //:            "and lengths and a separate code "    ://
+        //:            "tree for distances ...          "    ://
+        
+        //: Signed short arrays (0xFFFF / BYTE*2) holding
+        //: different types of data. Remember that arrays
+        //: are always pointers to a datatype in C99.
+        //: arr_l_d : lengths[MAXCODES]
+        let arr_l_d = GEP_VAL_arr_sho( MAX_L_D );
+
+        //: arr_len_fre: len_fre ( len_cou / lencnt[MAXBITS+1] )
+        //: arr_len_sym: len_sym (           lensym[MAXLCODES] )
+        let len_fre = GEP_VAL_arr_sho( MAX_BIT + 1 );
+        let len_sym = GEP_VAL_arr_sho( MAX_LIT     );
+
+        //: arr_len_fre: len_fre ( len_cou /distcnt[MAXBITS+1] )
+        //: arr_len_sym: len_sym (          distsym[MAXDCODES] )
+        let dis_fre = GEP_VAL_arr_sho( MAX_BIT + 1 );
+        let dis_sym = GEP_VAL_arr_sho( MAX_DIS     );
+
+        //://////////////////////////////////////////////////://
+
+        let len_cod = VAL_gpc_huf( ); //:lencode
+        let dis_cod = VAL_gpc_huf( ); //:distcode
+
+        //:Permuations of code length codes:            -----://
+        //:SEE[    www.w3.org/Graphics/PNG/RFC-1951 ]   -----://
+        //:SEARCH[ 10, 5, 11, 4, 12, 3              ]   -----://
+        //:SECTION[                                     -----://
+        //:     3.2.7. Compression with dynamic         -----://
+        //:     Huffman codes (BTYPE=10)                -----://
+        //:]SECTION                                     -----://
+        let     ord = GEP_VAL_arr_sho( 19 );
+                ord[ 0 ]=( 16 ); //: 0x10 , b: 0001_0000
+                ord[ 1 ]=( 17 ); //: 0x11 , b: 0001_0001
+                ord[ 1 ]=( 18 ); //: 0x12 , b: 0001_0010
+                ord[ 1 ]=(  0 ); //: 0x00 , b: 0000_0000
+                ord[ 1 ]=(  8 ); //: 0x08 , b: 0000_1000
+                ord[ 1 ]=(  7 ); //: 0x07 , b: 0000_0111
+                ord[ 1 ]=(  9 ); //: 0x09 , b: 0000_1001
+                ord[ 1 ]=(  6 ); //: 0x06 , b: 0000_0110
+                ord[ 1 ]=( 10 ); //: 0x0A , b: 0000_1010
+                ord[ 1 ]=(  5 ); //: 0x05 , b: 0000_0101
+                ord[ 1 ]=( 11 ); //: 0x0B , b: 0000_1011
+                ord[ 1 ]=(  4 ); //: 0x04 , b: 0000_0100
+                ord[ 1 ]=( 12 ); //: 0x0C , b: 0000_1100
+                ord[ 1 ]=(  3 ); //: 0x03 , b: 0000_0011
+                ord[ 1 ]=( 13 ); //: 0x0D , b: 0000_1101
+                ord[ 1 ]=(  2 ); //: 0x02 , b: 0000_0002
+                ord[ 1 ]=( 14 ); //: 0x0E , b: 0000_1110
+                ord[ 1 ]=(  1 ); //: 0x01 , b: 0000_0001
+                ord[ 1 ]=( 15 ); //: 0x0F , b: 0000_1111
+    
+
+        /** construct lencode and distcode **/
+        //:--------------------------------------------------://
+        len_cod.arr_fre=( len_fre );
+        len_cod.arr_sym=( len_sym );
+
+        dis_cod.arr_fre=( dis_fre );
+        dis_cod.arr_sym=( dis_sym );
+        //:--------------------------------------------------://
+
+
+
+    };; //:///////////////////////////////////////| GPC_Dyn |://
+
+/*
+ * Inflate source to dest.  On return, destlen and sourcelen are updated to the
+ * size of the uncompressed data and the size of the deflate data respectively.
+ * On success, the return value of puff() is zero.  If there is an error in the
+ * source data, i.e. it is not in the deflate format, then a negative value is
+ * returned.  If there is not enough input available or there is not enough
+ * output space, then a positive error is returned.  In that case, destlen and
+ * sourcelen are not updated to facilitate retrying from the beginning with the
+ * provision of more input data or more output space.  In the case of invalid
+ * inflate data (a negative error), the dest and source pointers are updated to
+ * facilitate the debugging of deflators.
+ *
+ * puff() also has a mode to determine the size of the uncompressed output with
+ * no output written.  For this dest must be (unsigned char *)0.  In this case,
+ * the input value of *destlen is ignored, and on return *destlen is set to the
+ * size of the uncompressed output.
+ *
+ * The return codes are:
+ *
+ *   2:  available inflate data did not terminate
+ *   1:  output space exhausted before completing inflate
+ *   0:  successful inflate
+ *  -1:  invalid block type (type == 3)
+ *  -2:  stored block length did not match one's complement
+ *  -3:  dynamic block code description: too many length or distance codes
+ *  -4:  dynamic block code description: code lengths codes incomplete
+ *  -5:  dynamic block code description: repeat lengths with no first length
+ *  -6:  dynamic block code description: repeat more than specified lengths
+ *  -7:  dynamic block code description: invalid literal/length code lengths
+ *  -8:  dynamic block code description: invalid distance code lengths
+ *  -9:  dynamic block code description: missing end-of-block code
+ * -10:  invalid literal/length or distance code in fixed or dynamic block
+ * -11:  distance is too far back in fixed or dynamic block
+ *
+ * Format notes:
+ *
+ * - Three bits are read for each block to determine the kind of block and
+ *   whether or not it is the last block.  Then the block is decoded and the
+ *   process repeated if it was not the last block.
+ *
+ * - The leftover bits in the last byte of the deflate data after the last
+ *   block (if it was a fixed or dynamic block) are undefined and have no
+ *   expected values to check.
+ */
 
 
     GEP_UND( GPC_NUM_FIX /** puff.c : FIXLCODES    **/ );
@@ -1224,3 +2170,77 @@
     GEP_UND(  GEP_MAC_LOG         ); //:Logging_Messages_Macro
     GEP_UND(  GEP_MAC_JAS         ); //:Platform_Is_JavaScript
     GEP_UND(  GEP_MAC_C99         ); //:Platform_Is_C99_Code
+
+
+/**-********************************************************-***
+
+TODO: Every single token (variable, function, string, etc)
+      should have a short 1-line explanation of what it is.
+
+KEY: (ONE_LINE_DEFINITIONS)
+                
+            GEP: Namespace:Game_Engine_PNG
+            MAC: Denotes_A_MACRO, use #define in C99
+            POI: Pointer
+            JAS: JavaScript
+        poi_car: SEE[ car_poi ]
+        car_poi: Pointer_To_Character_Array (char*)
+            hec: HExadecimal_Character (Ascii 0-9,A-F,a-f )
+            heb: HEx_Byte (Int/Char in range 0-255 / 0-0xFF)
+        ELE_IOT: EasyLoopEntry_IncrementsOnTop
+            NPI: Natural_Positive_Integers (N==PI)
+            IDE: Interactive_Development_Environment
+  LEN_DIST_PAIR: Length distance pair
+  LITERAL_BYTES: Literal bytes, copy as is.
+            HGH: Histogram_Grouped_By_Height (Height==Lens)
+
+HTC: (Hash_Tag_Comments)
+
+    #PUFF_C_TRANSCRIBE#:
+        Section of code where I am transcribing the puff.c
+        algorithm from: 
+        github.com/madler/zlib/blob/master/contrib/puff/puff.c
+
+    ##PCFN#: 
+        Puff_C_Function_Name: The name of function in PUFF.C
+
+DEF: (MULTI_LINE_DEFINITIONS):
+
+    NPI: 
+        Natural_Positive_Integers
+        Replacing "N" in code and comments with "NPI" because
+        a small token like "N" is difficult to use with:
+
+            1: CTRL+F
+            2: Highlight Matching Tokens On Click in IDE.
+
+    poi_huf_len:
+        Pointer to huffman struct storing length codes.
+        Length codes can be length or LITERAL from what
+        I've read. So it might be good to refactor this
+        to be: poi_huf_lal. Where lal=="Length_And_Literal"
+        Or... lol=="Lenght_Or_Literal" code.
+
+    JMIM_COMMENT:
+        My ( John Mark Isaac Madison / JMIM ) comments.
+        If these comments are commentary on comments
+        within the original PUF.C comments, these comments
+        might be WRONG as they represent my understanding
+        or guesses of what is going on.
+
+        But better to have a faulty assumption that can
+        be re-worked into something more correct, than
+        no mental conception at all.
+
+    HGH:
+        Histogram Grouped By Height.
+        My way to conceptualize part of the algorithm
+        description.
+        HGH[ 1 ]= 5 , there are 5 short people.
+                      A, B, C, D, E
+        HGH[ 2 ]= 3 , there are 3 medium height people.
+                      AA, BB, CC 
+        HGH[ 3 ]= 2 , there are 2 tall height people.
+                      AAA, BBB
+
+***-********************************************************-**/
