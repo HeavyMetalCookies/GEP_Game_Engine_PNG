@@ -1,0 +1,43 @@
+        
+    
+    gpc_sob / sob -------------------------
+
+        poi_out_buf  : POI_Unsigned_Char( ) //: s.out
+        val_out_len  : VAL_Unsigned_Long( ) //: s.outlen
+        val_out_cou  : VAL_Unsigned_Long( ) //: s.outcnt
+                    
+        poi_inn_buf  : POI_Unsigned_Char( ) //: s.in
+        val_inn_len  : VAL_Unsigned_Long( ) //: s.inlen
+        val_inn_cou  : VAL_Unsigned_Long( ) //: s.incnt
+                    
+        val_bit_buf  : VAL_Int( )           //: s.bitbuf
+        val_bit_cou  : VAL_Int( )           //: s.bitcnt
+                    
+        val_j_b_env  : VAL_Jum_Buf( )       //: s.env
+
+    ---------------------------------------
+
+    gpc_arg_puf / poi_arg_puf / ARG -------
+
+        des_arr : MEM_UnsignedCharPointer()
+        des_len : MEM_UnsignedLongPointer()
+            
+        sou_arr : MEM_ConstUnsignedCharPointer()
+        sou_len : MEM_UnsignedLongPointer()
+
+    ---------------------------------------
+
+    
+    GEP:        | PUFF.C:     | TYPE:
+    num_len     | nlen        |
+    num_dis     | ndist       |
+    num_cod     | ncode       |
+                | bits        |
+                |             |
+    poi_gpc_sob | s           |
+            SOB | s           |
+                |             |
+                | construct   |
+
+
+    

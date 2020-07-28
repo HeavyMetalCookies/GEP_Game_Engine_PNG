@@ -228,6 +228,17 @@
 
             //:MTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMT://
 
+            const MEM_UnsignedCharPointer = function(){
+                return( 111000222 /** Uninited_Pointer **/ );
+            };;
+            const MEM_UnsignedLongPointer = function(){
+                return( 333000444 /** Uninited_Pointer **/ );
+            };;
+            const MEM_ConstUnsignedCharPointer = function(){
+                return( 555000666 /** Uninited_Pointer **/ );
+            };;
+            //:MTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMT://
+
         //|FFFFFFFFFFFFFFF[ FUNCTION_DIVIDER ]FFFFFFFFFFFFFFF|//
 
 
@@ -258,6 +269,9 @@
 
 //:PPPPPPPPPPPPPPPPPPPP[ PUFF.C : BELOW ]PPPPPPPPPPPPPPPPPPPP://
 //:SUB_SECTION_INDEX:(BELOW):================================://
+//:                                                          ://
+//:GPC_HEL: Helper_Functions_Not_In_Original_PUFF.C          ://
+//:                                                          ://
 //:GPC_001: Defines/Consts                                   ://
 //:         puff.c : C99 #define (Macros)                    ://
 //:                                                          ://
@@ -300,7 +314,7 @@
 //:                                                          ://
 //:GPC_011: GPC_Dyn(...)                                     ://
 //:         puff.c : dynamic(...)                            ://
-//:                                                          ://
+//:         Process a dynamic codes block.                   ://
 //:                                                          ://
 //:GPC_012: NEW_gpc_arg_puf(...)                             ://
 //:         Does not exist in original puff.c                ://
@@ -312,6 +326,30 @@
 //:         puff.c : puff(...)                               ://
 //:                                                          ://
 //:SUB_SECTION_INDEX:(ABOVE):================================://
+//:GPC_HEL:==================================================://
+
+    //:For declaring a file scope, stack-allocated array.
+    const GPC_DEC_AND_INI_STA_CON_SHO=function(
+        num_elm //:Number_Of_Elements
+    ,   arr_elm //:Array__Of_Elements
+    ){ "use strict"
+
+        if( num_elm != arr_elm.length ){
+            throw("[INITIALIZER_LIST_NOT_MATCH_DECLARED_SIZE]");
+        };;
+
+        //:In C code, this object will be stack allocated,
+        //:NOT_Malloced.
+        let arr_sho=( new Uint16Array( num_elm ) );
+
+        for( let i = 0; i < num_elm; i++ ){
+            arr_sho[ i ]=( arr_elm[ i ] );
+        };;
+
+        return( arr_sho );
+    };;
+
+//:==================================================:GPC_HEL://
 //:GPC_001:==================================================://
 
     //:#PUFF_C_TRANSCRIBE#
@@ -330,11 +368,83 @@
     +     GPC_MAX_LIT        
     +     GPC_MAX_DIS  );;
 
+    //:CO:GPC_Cod:Static_Arrays:(BELOW):---------------------://
+    //:COCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCO://
+    //:[ puff.c lens == GPC_Cod_ARR_LEN ]
+    /* Size base for length codes 257..285 */
+    let GPC_Cod_ARR_LEN=GPC_DEC_AND_INI_STA_CON_SHO(29,[
+    //::001: 002: 003: 004: 005: 006: 007: 008: 009: 010:::::://
+    /**/  3,   4,   5,   6,   7,   8,   9,  10,  11,  13   //:01 
+    ,    15,  17,  19,  23,  27,  31,  35,  43,  51,  59   //:02 
+    ,    67,  83,  99, 115, 131, 163, 195, 227, 258        //:03 
+    //::001: 002: 003: 004: 005: 006: 007: 008: 009: 010::::::// 
+    ]);;
+
+    //:[ puff.c lext == GPC_Cod_EXT_LEN ]
+    /* Extra bits for length codes 257..285 */
+    let GPC_Cod_EXT_LEN=GPC_DEC_AND_INI_STA_CON_SHO(29,[
+    //::001: 002: 003: 004: 005: 006: 007: 008: ###: ###:::::://
+    /**/  0,   0,   0,   0,   0,   0,   0,   0   //: 001 (8) ://
+    ,     1,   1,   1,   1                       //: 002 (4) ://
+    ,     2,   2,   2,   2                       //: 003 (4) ://
+    ,     3,   3,   3,   3                       //: 004 (4) ://
+    ,     4,   4,   4,   4                       //: 005 (4) ://
+    ,     5,   5,   5,   5                       //: 006 (4) ://
+    ,     0                                      //: 007 (1) ://
+    //::001: 002: 003: 004: 005: 006: 007: 008: ###: ###:::::://
+    ]);;
+
+    //:[ puff.c dists == GPC_Cod_ARR_DIS ]
+    /* Offset base for distance codes 0..29 */
+    let GPC_Cod_ARR_DIS=GPC_DEC_AND_INI_STA_CON_SHO(30,[
+    //::001:    002:    003:    004:    005:     //: ###     ://
+    /**/  1,      2,      3,      4,      5      //: 001     ://
+    ,     7,      9,     13,     17,     25      //: 002     ://
+    ,    33,     49,     65,     97,    129      //: 003     ://
+    ,   193,    257,    385,    513,    769      //: 004     ://
+    ,  1025,   1537,   2049,   3073,   4097      //: 005     ://
+    ,  6145,   8193,  12289,  16385,  24577      //: 006     ://
+    //::001:    002:    003:    004:    005:     //: ###     ://
+    ]);;
+
+    //:[ puff.c dext == GPC_Cod_EXT_DIS ]
+    /* Extra bits for distance codes 0..29 */
+    let GPC_Cod_EXT_DIS=GPC_DEC_AND_INI_STA_CON_SHO(30,[
+    //::001: 002: 003: 004: ###: ###: ###: ###: ###: ###:::::://
+    /**/  0,   0,   0,   0  //:: 001  :://           //:-----://
+    ,     1,   1,   2,   2  //:: 002  :://           //:-----://
+    ,     3,   3            //:: 003  :://           //:-----://
+    ,     4,   4            //:: 004  :://           //:-----://
+    ,     5,   5            //:: 005  :://           //:-----://
+    ,     6,   6            //:: 006  :://           //:-----://
+    ,     7,   7            //:: 007  :://           //:-----://
+    ,     8,   8            //:: 008  :://           //:-----://
+    ,     9,   9            //:: 009  :://           //:-----://
+    ,    10,  10            //:: 010  :://           //:-----://
+    ,    11,  11            //:: 011  :://           //:-----://
+    ,    12,  12            //:: 012  :://           //:-----://
+    ,    13,  13            //:: 013  :://           //:-----://
+    //::001: 002: 003: 004: ###: ###: ###: ###: ###: ###:::::://
+    ]);;
+    //:COCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCO://
+
     
     //: longjmp: Basically throwing an error.
     const GPC_Lon_Jum=function( j_b_env ){ "use strict"
 
         throw("[GPC:Lon_Jum:ERROR]");
+
+    };;
+
+    //: setjmp : If this were C code, the branch taken
+    //:          changes if there was an error or not.
+    //:          However, we don't have instruction
+    //:          pointer manipulation in JavaScript,
+    //:          so stub in to alway return NON-ERROR
+    //:          code of zero.
+    const GPC_Set_Jum=function( j_b_env ){ "use strict"
+
+        return( 0 );
 
     };;
 
@@ -371,20 +481,24 @@
 
         vit : VIT_GPC_SOB
 
-    ,   poi_out_buf : POI_Unsigned_Char( )
-    ,   val_out_len : VAL_Unsigned_Long( )
-    ,   val_out_cou : VAL_Unsigned_Long( )
+    ,   out_buf : POI_Unsigned_Char( )
+    ,   out_len : VAL_Unsigned_Long( )
+    ,   out_cou : VAL_Unsigned_Long( )
         
-    ,   poi_inn_buf : POI_Unsigned_Char( )
-    ,   val_inn_len : VAL_Unsigned_Long( )
-    ,   val_inn_cou : VAL_Unsigned_Long( )
+    ,   inn_buf : POI_Unsigned_Char( )
+    ,   inn_len : VAL_Unsigned_Long( )
+    ,   inn_cou : VAL_Unsigned_Long( )
     
-    ,   val_bit_buf : VAL_Int( )
-    ,   val_bit_cou : VAL_Int( )
+    ,   bit_buf : VAL_Int( )
+    ,   bit_cou : VAL_Int( )
 
-    ,   val_j_b_env : VAL_Jum_Buf( )
+    ,   j_b_env : VAL_Jum_Buf( )
 
     }));;};;
+
+    const VAL_gpc_sob=function(){ "use strict"
+    return( NEW_gpc_sob() );
+    };;
 
 //:==================================================:GPC_002://
 //:GPC_003:==================================================://
@@ -428,28 +542,28 @@
  
         //:A 20 bit accumulator. 
         let bit_buf = VAL_Signed_Long(); 
-            bit_buf = SOB.val_bit_buf;  
+            bit_buf = SOB.bit_buf;  
         while(  
             //:Load at least[ val_nee_bit ]into[ bit_buf ]
-            SOB.val_bit_cou //:Bit___Count
+            SOB.bit_cou //:Bit___Count
             <   val_nee_bit //:Needed_Bits
         ){
-            if( SOB.val_inn_cou  
-            >=  SOB.val_inn_len
+            if( SOB.inn_cou  
+            >=  SOB.inn_len
             ){
                 //:ERROR:OUT_OF_INPUT:
                 GPC_Lon_Jum( SOB.env, 1 );
             };;
 
             //+----------------------------------------------+//
-            //|    +=( 1 )|[ val_inn_cou ]>>>>>>>>>>>>>>>>>| |//
+            //|    +=( 1 )|[ inn_cou ]>>>>>>>>>>>>>>>>>| |//
             //|           |    0     |    1     |    2     | |//
             //|           | inn_cou  | inn_cou  | inn_cou  | |//
             //|           |          |          |          | |//
-            //|poi_inn_buf[ 11111111 | 11111111 | 11111111 ] |//
+            //|inn_buf[ 11111111 | 11111111 | 11111111 ] |//
             //|           |    8     |    16    |    24    | |//
             //|           | bit_cou  | bit_cou  | bit_cou  | |//
-            //|    +=( 8 )[ val_bit_cou ]>>>>>>>>>>>>>>>>>>| |//
+            //|    +=( 8 )[ bit_cou ]>>>>>>>>>>>>>>>>>>| |//
             //+----------------------------------------------+//
             //|READ:>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>|//
             //|inn_buf[ 11111111 | 11111111 | 11111111 ]     |//
@@ -468,22 +582,22 @@
                 (L_M) //:Hackish_Cast_To_Long_By_Masking
                 &&
                 (( 
-                    SOB.poi_inn_buf[ SOB.val_inn_cou ] 
+                    SOB.inn_buf[ SOB.inn_cou ] 
                     << 
-                    SOB.val_bit_cou
+                    SOB.bit_cou
                 )>>0)  //:Signed_Shift. Why bit_buf is
                        //:a signed integer, no clue.
 
             );; //:888888888888888888888888888888888888888888://
 
-            (SOB.val_inn_cou)+=( 1 ); //:1 more byte(s) read.
-            (SOB.val_bit_cou)+=( 8 ); //:8 more byte(s) load.
+            (SOB.inn_cou)+=( 1 ); //:1 more byte(s) read.
+            (SOB.bit_cou)+=( 8 ); //:8 more byte(s) load.
 
         };;
 
         //: Drop[ val_nee_bit ](s) and update buffer, 
         //: always[ 0 -to- 7 ]bits left. 
-        SOB.val_bit_buf=(I_M)&((bit_buf >> val_nee_bit)>>0);
+        SOB.bit_buf=(I_M)&((bit_buf >> val_nee_bit)>>0);
         //|                  |    20 bit integer cast    |   |//
         //|   OOB      OOB   |<----- & 0xFFFFFF -------->|   |//
         //| !!!!!!!! !!!!!!!! CCCCCCCC BBBBBBBB 87654321 |   |//
@@ -491,7 +605,7 @@
         
         //:Number of bits we just erased by pushing them
         //:off the edge like a [ coin pusher machine ].
-        (SOB.val_bit_cou)=-( val_nee_bit ); 
+        (SOB.bit_cou)=-( val_nee_bit ); 
 
         //|     |   0xFF  |   0xFF  |   0xFF  |              |//
         //| BIN: 0000 0000 0000 0000 0000 0001               |//
@@ -504,7 +618,7 @@
         const N_B=( ((0x00000001 << val_nee_bit)>>>0) -1);
         
         //:Return the bits you shoved off the edge
-        //:of [ SOB.val_bit_buf ]
+        //:of [ SOB.bit_buf ]
         const BIT=( (I_M)&(( bit_buf & N_B )) );
 
         return( BIT );
@@ -544,19 +658,19 @@
     ){ "use strict"
     
         const SOB=( poi_gpc_sob             );
-        const INN=( poi_gpc_sob.poi_inn_buf );
-        const OUT=( poi_gpc_sob.poi_out_buf );
+        const INN=( poi_gpc_sob.inn_buf );
+        const OUT=( poi_gpc_sob.out_buf );
 
         let len=VAL_Unsigned_Int(); //:Length_Of_Stored_Block
         let chk=VAL_Unsigned_Int(); //:Error_Check_Compliment
 
         //:Discard leftover bits from current byte.
         //:Assumes ( SOB.bit_cou < 8 )
-        if( SOB.val_bit_cou >= 8 ){
+        if( SOB.bit_cou >= 8 ){
             throw("[GPC:Assumes:bit_cou:LessThan8]");
         };;
-        SOB.val_bit_buf = 0;
-        SOB.val_bit_cou = 0;
+        SOB.bit_buf = 0;
+        SOB.bit_cou = 0;
 
         //:==================================================://
         //:Get length & check against its one's compliment.
@@ -564,7 +678,7 @@
         //:Q: Is 2 an error code for not enough input?
         //:Q: is len assumed to be a 16 bit short?
         //:==================================================://
-        if( SOB.val_inn_cou + 4 > SOB.val_inn_len ){
+        if( SOB.inn_cou + 4 > SOB.inn_len ){
             return( 0 + 2 ); /** Not enough Input **/
         }else{
 
@@ -573,10 +687,10 @@
             //|  chk(            DD   CC )   ----------------|//
             len  =( 0x0000 );
             chk  =( 0x0000 );
-            let AA = INN[ SOB.val_inn_cou++ ];
-            let BB = INN[ SOB.val_inn_cou++ ];
-            let CC = INN[ SOB.val_inn_cou++ ];
-            let DD = INN[ SOB.val_inn_cou++ ];
+            let AA = INN[ SOB.inn_cou++ ];
+            let BB = INN[ SOB.inn_cou++ ];
+            let CC = INN[ SOB.inn_cou++ ];
+            let DD = INN[ SOB.inn_cou++ ];
 
             //+----------------------------------------------+//
             //| https://www.w3.org/Graphics/PNG/RFC-1951     |//
@@ -616,35 +730,35 @@
         //| Line 182 of puff.c                               |//
         //| github.com/madler/                               |//
         //| zlib/blob/master/contrib/puff/puff.c             |//
-        if( SOB.val_inn_cou + len  //:Last_Byte_Index
-          > SOB.val_inn_len +  0   //:First_Out_Of_Bounds_Byte
+        if( SOB.inn_cou + len  //:Last_Byte_Index
+          > SOB.inn_len +  0   //:First_Out_Of_Bounds_Byte
     
             //|  The DATA[ index++ ] pattern I am seeing     |//
-            //|  tells me val_inn_cou RESTS on data that     |//
+            //|  tells me inn_cou RESTS on data that     |//
             //|  has NOT been consumed yet.                  |//
             //|                                              |//
             //|  I think this code has a bug.                |//
-            //|  CUR: val_inn_cou + len >  val_inn_len       |//
-            //|  FIX: val_inn_cou + len >= val_inn_len       |//
+            //|  CUR: inn_cou + len >  inn_len       |//
+            //|  FIX: inn_cou + len >= inn_len       |//
             //|- - - - - - - - - - - -- - - - - - - - - - - -|//
             //|  IF:         len == 4                        |//
-            //|  IF: val_inn_cou == 2                        |//
-            //|  IF: val_inn_len == 7                        |//
+            //|  IF: inn_cou == 2                        |//
+            //|  IF: inn_len == 7                        |//
             //|          |<--- TAKE 4 -->| OOB               |//
             //|  [ 0 | 1 | 2 | 3 | 4 | 5 ][ 6 ]              |//
             //|  [        cou  1   2   3    4 ]              |//
-            //|  |<----- val_inn_len==7 ----->|              |//
+            //|  |<----- inn_len==7 ----->|              |//
             //|- - - - - - - - - - - -- - - - - - - - - - - -|//
             //|  If you have an array with 1 byte:           |//
             //|  And you try to take 2 bytes...              |//
-            //|  SOB.val_inn_cou + 2 == ( 0 + 2 ) == 2       |//
-            //|  SOB.val_inn_len =================== 1       |//
+            //|  SOB.inn_cou + 2 == ( 0 + 2 ) == 2       |//
+            //|  SOB.inn_len =================== 1       |//
             //|  This is out of bounds, but ( 2 > 2 )        |//
             //|  is false.                                   |//
             //|                                              |//
-            //|  Unless val_inn_cou starts counting at 1...  |//
+            //|  Unless inn_cou starts counting at 1...  |//
             //|  But that wouldn't make sense.               |//
-            //|  And... val_inn_cou does NOT.                |//
+            //|  And... inn_cou does NOT.                |//
             //|- - - - - - - - - - - -- - - - - - - - - - - -|//
             //| NO. You are wrong. Comparison is ">" not ">="|//
             //|                                              |//
@@ -652,7 +766,7 @@
             //|   |                                          |//
             //|  cou==0                                      |//
             //|  cou+len==1 (if taking just 1)               |//
-            //| ( cou + len ) > ( val_inn_len )              |//
+            //| ( cou + len ) > ( inn_len )              |//
             //| (  0  +  1  ) > (      1      ) ? NO         |//
             //|                                              |//
             //| Take 2 instead of 1.                         |//
@@ -661,7 +775,7 @@
         ){  
 
             //:Not enough input.
-            //:JMIM NOTE: Seems that val_inn_cou
+            //:JMIM NOTE: Seems that inn_cou
             //:           can be thought of as a "count"
             //:           or "seek position" variable.
             //:           I didn't get what this block was
@@ -673,22 +787,22 @@
         if( OUT != null ){
 
             //:                                              ://
-            //:   val_out_cou == 0                           ://
+            //:   out_cou == 0                           ://
             //:        |                                     ://
             //:     [ 0xFF ] <--OUT (output buffer)          ://
-            //:                  val_out_len==1              ://
+            //:                  out_len==1              ://
             //:                                              ://
             //:   Try taking 2 instead of 1 byte:            ://
-            //:   ( val_out_cou + 2 ) > ( val_out_len )?     ://
+            //:   ( out_cou + 2 ) > ( out_len )?     ://
             //:   Yes it is. Comparison is ">" NOT ">="      ://
-            if( SOB.val_out_cou + len 
-              > SOB.val_out_len 
+            if( SOB.out_cou + len 
+              > SOB.out_len 
             ){
                 return( 1 ); //:Not enough output space.
             };;
             while( len-- ){
-                OUT[ SOB.val_out_cou++ ]=(
-                INN[ SOB.val_inn_cou++ ]
+                OUT[ SOB.out_cou++ ]=(
+                INN[ SOB.inn_cou++ ]
                 );;
             };;
 
@@ -704,8 +818,8 @@
             //:However, keeping the 2-pass method in might
             //:help avoid buffer overflow attacks since I can
             //:verify deflated data matches header.
-            ( SOB.val_out_cou ) += ( len );
-            ( SOB.val_inn_cou ) += ( len );
+            ( SOB.out_cou ) += ( len );
+            ( SOB.inn_cou ) += ( len );
         };;
         
         return(  0  ); //:Return_Status_Code_Zero
@@ -1065,7 +1179,168 @@
     ,   poi_huf_dis //:Huffman Struct of[   distance   ]Codes.
     ){ "use strict"
 
+        //:##################################################://
+        //: I am not going to [ declare | define ]           ://
+        //: "INFLATE_ALLOW_INVALID_DISTANCE_TOOFAR_ARRR"     ://
+        //: In this re-write of puff.c. I think it is a bad  ://
+        //: idea, but left it here for completeness.         ://
+        let BE_AN_IDIOT=(0-1);
+        let BE_A_SMARTY=(0-1);
+        if( INFLATE_ALLOW_INVALID_DISTANCE_TOOFAR_ARRR != 0 ){
+            BE_AN_IDIOT=( 1 );
+            BE_A_SMARTY=( 0 );
+        }else{
+            BE_AN_IDIOT=( 0 );
+            BE_A_SMARTY=( 1 );
+        };;
+        if( BE_AN_IDIOT == BE_A_SMARTY ){
+            throw("[CANT_BE_BOTH_AT_THE_SAME_TIME]");
+        };;
+        //:##################################################://
 
+        let SOB=( poi_gpc_sob );
+        let sym=GPC_DEC_SIG_INT(); /*  decoded sym   */
+        let len=GPC_DEC_SIG_INT(); /*  len for copy  */
+        let dis=GPC_DEC_UNS_INT(); /*  dis for copy  */
+        
+        /* ARR_LEN : Size   base for   length codes 257..285 */
+        /* EXT_LEN : Extra  bits for   length codes 257..285 */
+        /* ARR_DIS : Offset base for distance codes   0..29  */
+        /* EXT_DIS : Extra  bits for distance codes   0..29  */
+        const ARR_LEN=( GPC_Cod_ARR_LEN );
+        const EXT_LEN=( GPC_Cod_EXT_LEN ); //:puff.c : lext
+        const ARR_DIS=( GPC_Cod_ARR_DIS );
+        const EXT_DIS=( GPC_Cod_EXT_DIS ); //:puff.c : dext
+
+        //:DO:Do_Loop:(BELOW):-------------------------------://
+        //:DODODODODODODODODODODODODODODODODODODODODODODODODO://
+        //: decode_literals_and__length_distance__pairs      ://
+        //:DODODODODODODODODODODODODODODODODODODODODODODODODO://
+        do{  //:________________________| while_sym_NOT_256 |://
+
+        //::symEGPC_Dec_SOB_len_cod
+            sym=GPC_Dec(SOB,len_cod);  
+
+        //::if_sym_L_0:________________________| if_sym_L_0 |://
+            if(sym < 0){
+                /* negative_sym_is_invalid */
+                return sym;              
+            }else
+            if (sym < 256){            
+                /**   256: literal: sym_is_the_byte **/  
+
+                /* write_out_the_literal */
+                if (SOB.out_buf != NIL) {
+
+                    //:JMIM_COMMENT:I_THINK_THIS_IS_A_BOUNDS_CHECK
+                    if( SOB.out_cou  //:GTE_DAS_EQT
+                    ==  SOB.out_len  //:GTE_DAS_EQT
+                    ){
+                        return 1;
+                    }else
+                    if( SOB.out_cou  //:EXPECTED_ELSE
+                    <   SOB.out_len  //:EXPECTED_ELSE
+                    ){
+                        SOB.out_buf[SOB.out_cou] = sym;
+                    }else{
+                        throw("[EDCL:2020_07_28:MMRWW]");
+                    };;
+                };;
+                SOB.out_cou++;
+            }else 
+            if (sym > 256) {        
+                /*  > 256 : GUESS:symbol_is_a_length_NOT_literal  */
+
+                /* get_and_compute_length */
+                    sym -= 257;  //:[ 257==0x101 ]
+                if (sym >=  29){ //:[  29==0x01D ]
+                    /* invalid_fixed_code */
+                    return -10;             
+                };;
+
+                len = ARR_LEN[sym] + GPC_Bit(SOB, EXT_LEN[sym]);
+
+                /* get_and_check_distance */
+                sym = GPC_Dec(SOB, poi_huf_dis);
+                if (sym < 0){
+                    /* negative_sym_is_invalid */
+                    return sym;          
+                };;
+                dis = ARR_DIS[sym] + GPC_Bit(SOB, EXT_DIS[sym]);
+     
+                //:D1:IfDef_Block:1:-------------------------://
+                //:D1D1D1D1D1D1D1D1D1D1D1D1D1D1D1D1D1D1D1D1D1://
+                if( BE_AN_IDIOT > 0 ){
+
+                    //:no_error_checking_if_you_are_being
+                    //:an_idiot_and_allowing_corrupted_files
+
+                }else
+                if( BE_A_SMARTY > 0 ){
+
+                    if (dis > SOB.out_cou){      
+                         /* distance too far back */ 
+                        return -11;                  
+                    };;        
+                }else{
+                    throw("[EDCL:2020_07_28:BLUE_PENGUIN]");
+                };;
+                //:D1D1D1D1D1D1D1D1D1D1D1D1D1D1D1D1D1D1D1D1D1://
+
+                /* copy_length_bytes_from_distance_bytes_back */
+                if(null !=SOB.out_buf){
+                    if(  
+                        ( SOB.out_cou + len )
+                    >   ( SOB.out_len       )
+                    ){
+                        return 1;
+                    };;
+        
+                    //:D2:IfDef_Block:2:---------------------://
+                    //:D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2://
+                    if( BE_AN_IDIOT > 0 ){
+                    while (len--) { //:-------------| while |://
+                        SOB.out_buf[SOB.out_cou]=(
+                            dis > SOB.out_cou 
+                            ?
+                            0   
+                            :
+                            SOB.out_buf[
+                           (SOB.out_cou - dis)]
+                        );;
+                        SOB.out_cou++;
+                    };; //:-------------------------| while |://
+                    }else
+                    if( BE_A_SMARTY > 0 ){
+                    while (len--) { //:-------------| while |://
+                    
+                        //:JMIM_COMMENT_BACKWARDS_REFERENCE::://
+                        SOB.out_buf[SOB.out_cou      ]=(
+                        SOB.out_buf[SOB.out_cou - dis] );;
+                                        SOB.out_cou++;
+
+                    };; //:-------------------------| while |://
+                    }else{
+                        throw("[EDCL:2020_07_28_1224PM]");
+                    };;
+                    //:D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2://
+                }else{
+                    SOB.out_cou += len;
+                };;
+            };;
+        }while (sym != 256); //:________| while_sym_NOT_256 |://
+        /* sym === 256 === end_of_block_sym */
+        //:DODODODODODODODODODODODODODODODODODODODODODODODODO://
+        //:DO:Do_Loop:(ABOVE):-------------------------------://
+    
+        /* done with a valid fixed or dynamic block */
+        return 0;
+
+        GPC_UND(     SOB );
+        GEP_UND( ARR_LEN );
+        GEP_UND( EXT_LEN );
+        GEP_UND( ARR_DIS );
+        GEP_UND( EXT_DIS );
     };; //:///////////////////////////////////////| GPC_Cod |://
 
 //:==================================================:GPC_009://
@@ -1425,8 +1700,8 @@
     //|  " we got these numbers by observation.        "     |//
     //|------------------------------------------------------|//
     //|  Given the number of literal/length code lengths     |//
-    //|  (nlen) and distance code lengths (ndist),then they  |//
-    //|  are treated as one long list of nlen + ndist code   |//
+    //|  (num_len) and distance code lengths (num_dis),then they  |//
+    //|  are treated as one long list of num_len + num_dis code   |//
     //|  lengths. Therefore run-length coding can and often  |//
     //|  does cross the boundary between the two sets of     |//
     //|  lengths.                                            |//
@@ -1479,6 +1754,8 @@
         poi_gpc_sob /** pointer to gpc_sob **/ 
     ){ "use strict"
 
+        const SOB=( poi_gpc_sob );
+
         //:JMIM NOTE: Pretty sure where author of puff.c
         //:           says "count" they mean "frequency".
         //:           Within this function anyhow. In other
@@ -1486,13 +1763,22 @@
         //:           a position in an array.
 
         //:Original Comment:Number of lengths in descriptor 
-        let num_len ;  //:Length_Of_Something_Not_Sure
-        let num_dis ;  //:Number_Of_Distances_I_Guess
-        let num_cod ;  //:Number_Of_Codes_Of_Some_Sort
+        let num_len ;  //: Length_Of_Something_Not_Sure      ://
+        let num_dis ;  //: Number_Of_Distances_I_Guess       ://
+        let num_cod ;  //: Number_Of_Codes_Of_Some_Sort      ://
+                                                           
+        let     dex ;  //: index of lengths[ ]               ://
+        let     err ;  //: construct() return value          ://
 
-        let     dex ;  //:index of lengths[ ]
-        let     err ;  //:construct() return value
+        //:Original "puf.c" declares these inside loop,
+        //:I don't know why since.
+        //:     1. No variable collision if declared here.
+        //:     2. Declaring in loop is wasteful.
+        //:     3. Author usually front loads var declarations.
+        let     sym ;  //: symbol: decoded value             ://
+        let     len ;  //: len   : last length to repeat     ://
 
+    //:GPC_Dyn- - - - - - - - - -==- - - - - - - - - -GPC_Dyn://
 
         //://////////////////////////////////////////////////://
 
@@ -1510,6 +1796,8 @@
         //:            "using one code tree for literals"    ://
         //:            "and lengths and a separate code "    ://
         //:            "tree for distances ...          "    ://
+
+    //:GPC_Dyn- - - - - - - - - -==- - - - - - - - - -GPC_Dyn://
         
         //: Signed short arrays (0xFFFF / BYTE*2) holding
         //: different types of data. Remember that arrays
@@ -1531,6 +1819,16 @@
 
         let len_cod = VAL_gpc_huf( ); //:lencode
         let dis_cod = VAL_gpc_huf( ); //:distcode
+
+        //:JMIM Hack. Create pointer variable for
+        //:huffan structs so less calls to meaningless
+        //:"GEP_POI" function. GEP_POI is used to
+        //:denote  "&" operator. Or, GEP_AOS 
+        //:GEP_AOS=="AddressOfStruct"
+        let poi_len_cod=GEP_AOS( len_cod );
+        let_poi_dis_cod=GEP_AOS( dis_cod );
+
+    //:GPC_Dyn- - - - - - - - - -==- - - - - - - - - -GPC_Dyn://
 
         //:Permuations of code length codes:            -----://
         //:SEE[    www.w3.org/Graphics/PNG/RFC-1951 ]   -----://
@@ -1559,9 +1857,12 @@
                 ord[ 1 ]=( 14 ); //: 0x0E , b: 0000_1110
                 ord[ 1 ]=(  1 ); //: 0x01 , b: 0000_0001
                 ord[ 1 ]=( 15 ); //: 0x0F , b: 0000_1111
+                //: {16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 
+                //:     4, 12, 3, 13, 2, 14, 1, 15}
     
+    //:GPC_Dyn- - - - - - - - - -==- - - - - - - - - -GPC_Dyn://
 
-        /** construct lencode and distcode **/
+        /** construct len_cod and dis_cod **/
         //:--------------------------------------------------://
         len_cod.arr_fre=( len_fre );
         len_cod.arr_sym=( len_sym );
@@ -1570,8 +1871,249 @@
         dis_cod.arr_sym=( dis_sym );
         //:--------------------------------------------------://
 
+        /* get number of lengths in each table, check lengths */
+        num_len = GPC_Bit(SOB, 5) + 257; /** nlen  **/
+        num_dis = GPC_Bit(SOB, 5) +   1; /** ndist **/
+        num_cod = GPC_Bit(SOB, 4) +   4; /** ncode **/
+
+        if(num_len > MAX_LIT //:Literals_Or_Lengths
+        || num_dis > MAX_DIS //:Distances_Backwards
+        ){
+            return -3;      /* bad counts */
+        };;
+
+        /** read code length code lengths (really), **/
+        /** missing lengths are zero                **/
+        for (dex = 0; dex < num_cod; dex++){
+            arr_l_d[ ord[dex] ] = GPC_Bit(SOB, 3);
+        };;
+        for (; dex < 19; dex++){
+            arr_l_d[ ord[dex] ] = 0;
+        };;
+
+    //:GPC_Dyn- - - - - - - - - -==- - - - - - - - - -GPC_Dyn://
+
+        //:C:Code_Length_Codes:------------------------------://
+        //:CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC://
+        //:  build huffman table for code lengths codes      ://
+        //:  (use poi_len_cod temporarily)                   ://
+        //:CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC://
+        
+            //:CONSTRUCT:::::::::::::::::::::::::::::::::::::://
+            err =(  construct(
+            /**/        poi_len_cod
+            /**/    ,   arr_l_d
+            /**/    ,   19
+            ) /***/ );;
+        
+            //:CHECK_FOR_PROBLEMS::::::::::::::::::::::::::::://
+            if (err != 0){  
+                /* require complete code set here */
+                return -4;
+            };;
+        //:CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC://
+
+        //: read :
+        //:     1: [ length/literal ] CODE_LENGTH_TABLES
+        //:     2: [    distance    ] CODE_LENGTH_TABLES
+        dex = 0;
+    //::while_dex_L_num_len_P_num_dis::::::::::::::::::::::::://
+        while(dex < num_len + num_dis ){
+
+            //:DECODE_SYMBOL_USING_STATE_OBJECT::::::::::::::://
+            sym = GPC_Dec(SOB, poi_len_cod);
+
+            //:HANDLE_SYMBOL:
+            //:     sym <  0 : INVALID
+            //:     sym < 16 : Literal Symbol Length [ 0 - 15 ]
+            //:     sym== 16 : RUN_LENGTH_ENCODING : [ 3 - 6  ]
+            //:     sym== 17 : RUN_LENGTH_ENCODING : [ 3 - 10 ]
+            //:     sym== 18 : RUN_LENGTH_ENCODING : [11 -138 ]
+            if (sym < 0){
+                /* invalid sym */
+                return sym;          
+            }else
+            if (sym < 16){
+
+                /* length in 0..15 */
+                arr_l_d[dex++] = sym;
+
+            }else{ //:REPEAT_INSTRUCTION ------------------- ://
+                         
+                /* assume repeating zeros */
+                len = 0;     
+               
+                if( 16 == sym ){   
+                    //:  - - - -://
+                    if (dex == 0){
+
+                        /* no last length! */
+                        return -5;  
+
+                    }else{
+                        /* last length */
+
+                        len = arr_l_d[dex - 1];   
+
+                        //:2_BITS: 11 : 0x3 : 3
+                        //:2_BITS + DECIMAL_3 == 6
+                        /* repeat last length 3..6 times */
+                        sym = 3 + GPC_Bit(SOB, 2);
+                    };;
+                }else 
+                if( 17 == sym ){
+
+                    //: 3_BITS: 111 : 0x7 : 7
+                    //: 3_BITS + DECIMAL_3 == 10
+                    /* repeat zero 3..10 times */
+                    sym = 3 + GPC_Bit(SOB, 3);
+
+                }else
+                if( 18 == sym ){
+                    //: 7_BITS: 11 1 111 : 0x7F : 127
+                    //: 7_BITS + DECIMAL_11 == 138
+                    /* == 18, repeat zero 11..138 times */
+                    sym = 11 + GPC_Bit(SOB, 7);
+                }else{
+                    //:In the orignal PUF.C the last 
+                    //:case for "18" was just an "else".
+                    //:But I would like to be more explicit.
+                    throw("[EDCL:THE_18_CASE_IN_PUFF_C]");
+                };;
+
+                if (dex + sym > num_len + num_dis){
+                    /* too many lengths! */
+                    return -6;              
+                };;
+
+                /* repeat last or zero sym times */
+                while( sym-- ){
+                   
+                    arr_l_d[ dex++ ] = len;
+
+                };;
+
+            };; //: ---------------------- REPEAT_INSTRUCTION://
+        };; //::::::::::::::::::while_dex_L_num_len_P_num_dis://
+
+    //:GPC_Dyn- - - - - - - - - -==- - - - - - - - - -GPC_Dyn://
+
+        /* check for end-of-block code -- there better be one! */
+        if ( 0 == arr_l_d[256] ){
+            return( 0 - 9 );
+        };;
+
+    //:GPC_Dyn- - - - - - - - - -==- - - - - - - - - -GPC_Dyn://
+
+        //:L:Literal:----------------------------------------://
+        //:LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL://
+        //:build huffman table for literal/length codes      ://
+        //:LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL://
+
+            //:CONSTRUCT:::::::::::::::::::::::::::::::::::::://
+            err = construct(
+            /**/poi_len_cod //:PointerTo:::::LOL_CODE
+            ,       arr_l_d //:lengths ( of what? )
+            ,       num_len //:NumberOfCodes:LOL_CODE
+            );;
+
+            //:CHECK_FOR_PROBLEMS::::::::::::::::::::::::::::://
+            if( err != 0 ){
+                if( err < 0 ){
+                
+                    return( 0 - 7 );
+
+                }else
+                if( err > 0 ){ 
+                    let num_fre=( 
+                        0
+                        +   len_cod.arr_fre[0] //:AKA:count[0]
+                        +   len_cod.arr_fre[1] //:AKA:count[1]
+                    );;
+                    if( num_len  != //: TYPE:LEN (LengthCodes )
+                        num_fre     //:CHECK:FRE (FrequencySum)
+                    ){
+                        /* incomplete code ok only for */
+                        /* single length 1 code        */
+                        return( 0 - 7 );
+                    };;
+                }else{
+
+                    throw("[EDCL:2020_07_27:A]");
+                };;
+            }else
+            if( err == 0 ){
+                //:No error, do nothing.
+            }else{
+                throw("[EDCL:2020_07_27:B]");
+            };;
+
+        //:LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL://
+
+    //:GPC_Dyn- - - - - - - - - -==- - - - - - - - - -GPC_Dyn://
+
+        //:D:Distance:---------------------------------------://
+        //:DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD://
+        //:build huffman table for distance codes            ://
+        //:DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD://
+
+            //:CONSTRUCT:::::::::::::::::::::::::::::::::::::://
+            err = construct(
+
+                poi_dis_cod //:PointerTo:::::DistanceCodes
+            ,
+                    arr_l_d //:WHAT_THE_HELL_IS_THIS_FOR? [WTF]
+                   +num_len //:WHAT_THE_HELL_IS_THIS_FOR? [WTF]
+            ,
+                    num_dis //:NumberOfCodes:DistanceCodes
+            );;
+
+            //:CHECK_FOR_PROBLEMS::::::::::::::::::::::::::::://
+            if( err != 0 ){
+                if( err < 0 ){
+                
+                    return( 0 - 8 );
+
+                }else
+                if( err > 0 ){ 
+                    let num_fre=( 
+                        0
+                        +   dis_cod.arr_fre[0] //:AKA:count[0]
+                        +   dis_cod.arr_fre[1] //:AKA:count[1]
+                    );;
+                    if( num_dis  != //: TYPE:DIS (DistanceCodes)
+                        num_fre     //:CHECK:FRE (FrequencySum )
+                    ){
+                        /* incomplete code ok only for */
+                        /* single length 1 code        */
+                        return( 0 - 8 );
+                    };;
+                }else{
+
+                    throw("[EDCL:2020_07_27:C]");
+                };;
+            }else
+            if( err == 0 ){
+                //:No error, do nothing.
+            }else{
+                throw("[EDCL:2020_07_27:D]");
+            };;
+
+        //:DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD://
+
+    //:GPC_Dyn- - - - - - - - - -==- - - - - - - - - -GPC_Dyn://
+
+        /* decode data until end-of-block code */
+        return(
+            GPC_Cod(
+                SOB         //:puff.c : State_Object_Bundle
+            ,   poi_len_cod //:huffman: LOL__CODES
+            ,   poi_dis_cod //:huffman: DIST_CODES
+            )
+        );;
 
 
+        GPC_UND( SOB ); /** #undef SOB **/
     };; //:///////////////////////////////////////| GPC_Dyn |://
 
 //:==================================================:GPC_011://
@@ -1585,11 +2127,15 @@
 
     /**/        vit : (  VIT_GPC_ARG_PUF  )
 
-    ,   poi_des_arr  /* pointer to destination pointer */
-    ,   poi_des_len  /* amount of output space         */
-
-    ,   poi_sou_arr  /* pointer to source data pointer */
-    ,   poi_sou_len  /* amount of input available      */
+        /* des_arr : pointer to destination pointer */
+        /* des_len : amount of output space         */
+    ,      des_arr : MEM_UnsignedCharPointer()
+    ,      des_len : MEM_UnsignedLongPointer()
+                
+        /* sou_arr : pointer to source data pointer */
+        /* sou_len : amount of input available      */
+    ,      sou_arr : MEM_ConstUnsignedCharPointer()
+    ,      sou_len : MEM_UnsignedLongPointer()
 
     }));};;
 
@@ -1664,7 +2210,9 @@
     //|    -10:  invalid literal/length or distance code     |//
     //|          in fixed or dynamic block                   |//
     //|    -11:  distance is too far back in                 |//
-    //|         fixed or dynamic block                       |//
+    //|          fixed or dynamic block                      |//
+    //|    -13:  JMIM Addition. Invalid block type           |//
+    //|          that is NOT (type==3)                       |//
     //|------------------------------------------------------|//
     //|  Format notes:                                       |//
     //|------------------------------------------------------|//
@@ -1678,13 +2226,85 @@
     //|  dynamic block) are undefined and have no expected   |//
     //|  values to check.                                    |//
     //+------------------------------------------------------+//
-    //| GPC_Puf: GPC_Puff                                    |//
+    //| GPC_Puf: GPC_Puff (puff.c: puff(...)                 |//
     //+------------------------------------------------------+//
     const GPC_Puf=function(
-        poi_arg_puf //:Argument_Object:arg_puf pointer
+        poi_arg_puf /** AKA: gpc_arg_puf / arg_puf / ARG **/
     ){
+        const ARG=( poi_arg_puf );
 
+        let sob = VAL_gpc_sob( ); /** input/ output state **/
+        let las =( 0 ); /* last: block information */
+        let typ =( 0 ); /* type: block information */
+        let err =( 0 ); /*  err: return value      */
 
+        /* initialize output state */
+        /* out_len: ignored if dest is NIL */
+        sob.out_buf = ARG.des_arr;
+        sob.out_len = ARG.des_len; 
+        sob.out_cou =( 0 );
+
+        /* initializer input state */   
+        sob.inn_buf = ARG.sou_arr;
+        sob.inn_len = ARG.sou_len;
+        sob.inn_cou = 0;
+
+        sob.bit_buf = 0;
+        sob.bit_cou = 0;
+
+        /* JMIM Addition: Pointer object to state object */
+        /* to reduce pointless calls to "GEP_POI" that   */
+        /* are only there to help transcribe back to C.  */
+        let poi_sob=GEP_POI( sob );
+
+        /* return if bits() or decode()       */
+        /* tries to read past available input */
+        if (GPC_Set_Jum(sob.j_b_env) != 0){     
+
+            /* if came back here via longjmp() */
+            /* then skip do-loop, return error */
+
+            err = 2;    
+                               
+        }else{
+            /* process blocks until last block or error */
+            do {
+
+                /* las : one if last block */
+                /* typ : block type 0..3   */
+                las = GPC_Bit( poi_sob, 1); 
+                typ = GPC_Bit( poi_sob, 2); 
+
+                if( 0 == typ ){ 
+                    err = GPC_Sto( poi_sob );
+                }else
+                if( 1 == typ ){
+                    err = GPC_Fix( poi_sob );
+                }else
+                if( 2 == typ ){
+                    err = GPC_Dyn( poi_sob );
+                }else
+                if( 3 == typ ){
+                    err = ( 0 - 1 );
+                }else{
+                    err = ( 0 - 13);
+                };;
+
+                if (err != 0){
+                    /* return with error */
+                    break;         
+                };;
+            } while ( las == 0 );
+        };;
+
+        /* update the lengths and return */
+        if (err <= 0) {
+            ARG.des_len = sob.out_cou;
+            ARG.sou_len = sob.inn_cou;
+        }
+        return err;
+
+        GEP_UND( ARG ); /** #undef arg **/
     };; //:///////////////////////////////////////| GPC_Puf |://
         
 //:==================================================:GPC_013://
@@ -2327,6 +2947,32 @@ KEY: (ONE_LINE_DEFINITIONS)
             HGH: Histogram_Grouped_By_Height (Height==Lens)
            DBCD: dynamic block code description
 GPC_Pro_Sto_Blo: longhanded name for GPC_Sto(...)
+        arr_l_d: ARRay_Length_plus_Distances (SEE: PUFF.C)
+          ndist: Puff.c's variable for num_dis
+           nlen: Puff.c's variable for num_len
+          ncode: Puff.c's variable for num_cod
+          [WTF]: Whats_This_For (AKA:I_Dont_Know_What_Iam_Doing)
+       LOL_CODE: Length_Or_Literal_Code
+     LOL__CODES: LOL_CODE but plural and extra "_"
+      LOL_CODES: LOL_CODE but plural.
+       s.outcnt: Puff.c's version of: SOB.out_cou
+          MMRWW: Maybe_My_Re_Write_Was_Wrong
+    GTE_DAS_EQT: An (>=) disguised as an (==).
+    poi_out_buf: TOO_VERBOSE_PLEASE_USE: out_buf
+    val_out_len: TOO_VERBOSE_PLEASE_USE: out_len
+    val_out_cou: TOO_VERBOSE_PLEASE_USE: out_cou     
+    poi_inn_buf: TOO_VERBOSE_PLEASE_USE: inn_buf
+    val_inn_len: TOO_VERBOSE_PLEASE_USE: inn_len
+    val_inn_cou: TOO_VERBOSE_PLEASE_USE: inn_cou     
+    val_bit_buf: TOO_VERBOSE_PLEASE_USE: bit_buf
+    val_bit_cou: TOO_VERBOSE_PLEASE_USE: bit_cou
+    val_j_b_env: TOO_VERBOSE_PLEASE_USE: j_b_env
+
+
+
+
+
+
 
 HTC: (Hash_Tag_Comments)
 
@@ -2376,5 +3022,25 @@ DEF: (MULTI_LINE_DEFINITIONS):
                       AA, BB, CC 
         HGH[ 3 ]= 2 , there are 2 tall height people.
                       AAA, BBB
+
+    GPC_DEC_AND_INI_STA_CON_SHO:
+        GPC_DECLARE_AND_INIT_STATIC_CONST_SHORT
+        But in groups of 3 because harder to typo.
+
+    GPC_DEC_SIG_INT:
+        GPC_DECLARE_SIGNED_INTEGER
+
+    GPC_DEC_UNS_INT:
+        GPC_DECLARE_UNSIGNED_INTEGER
+
+    GTE_DAS_EQT:
+        Greater_Than_or_Equal_to____DisguisedAsA____EQual_To
+        I am putting this comment in places I see "==" where
+        I think they mean:
+            if( x >= y ){ ... }
+            BUT:
+            We are so godly sure of ourselves that the first
+            true invokation will be:
+            if( x == y ){ ... }
 
 ***-********************************************************-**/

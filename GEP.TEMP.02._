@@ -1,0 +1,114 @@
+//:NO:INFLATE_ALLOW_INVALID_DISTANCE_TOOFAR_ARRR
+    do{  //:____________________________| while_sym_NOT_256 |://
+
+    //::symEGPC_Dec_SOB_len_cod
+        sym=GPC_Dec(SOB,len_cod);  
+
+    //::if_sym_L_0:____________________________| if_sym_L_0 |://
+        if(sym < 0){
+            /* negative_sym_is_invalid */
+            return sym;              
+        }else
+        if (sym < 256){            
+            /**   256: literal: sym_is_the_byte **/  
+
+            /* write_out_the_literal */
+            if (SOB.poi_out_buf != NIL) {
+
+                //:JMIM_COMMENT:I_THINK_THIS_IS_A_BOUNDS_CHECK
+                if( SOB.val_out_cou  //:GTE_DAS_EQT
+                ==  SOB.val_out_len  //:GTE_DAS_EQT
+                ){
+                    return 1;
+                }else
+                if( SOB.val_out_cou  //:EXPECTED_ELSE
+                <   SOB.val_out_len  //:EXPECTED_ELSE
+                ){
+                    SOB.poi_out_buf[SOB.val_out_cou] = sym;
+                }else{
+                    throw("[EDCL:2020_07_28:MMRWW]");
+                };;
+            };;
+            SOB.val_out_cou++;
+        }else 
+        if (sym > 256) {        
+            /*  > 256 : GUESS:symbol_is_a_length_NOT_literal  */
+
+            /* get_and_compute_length */
+                sym -= 257;  //:[ 257==0x101 ]
+            if (sym >=  29){ //:[  29==0x01D ]
+                /* invalid_fixed_code */
+                return -10;             
+            };;
+
+            len = ARR_LEN[sym] + GPC_Bit(SOB, EXT_LEN[sym]);
+
+            /* get_and_check_distance */
+            sym = GPC_Dec(SOB, poi_huf_dis);
+            if (sym < 0){
+                /* negative_sym_is_invalid */
+                return sym;          
+            };;
+            dis = ARR_DIS[sym] + GPC_Bit(SOB, EXT_DIS[sym]);
+ 
+            //:ID:#ifdef_BLOCK:------------------------------://
+            //:IDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDID://
+            if( GO_AHEAD_AND_BE_STUPID_AND_DO_THIS  > 0 ){
+
+                //:no_error_checking_if_you_are_being
+                //:an_idiot_and_allowing_corrupted_files
+
+            }else
+            if( GO_AHEAD_AND_BE_STUPID_AND_DO_THIS == 0 ){
+
+                if (dis > SOB.val_out_cou){      
+                     /* distance too far back */ 
+                    return -11;                  
+                };;        
+            }else{
+                throw("[EDCL:2020_07_28:BLUE_PENGUIN]");
+            };;
+            //:IDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDID://
+
+            /* copy_length_bytes_from_distance_bytes_back */
+            if(null !=SOB.poi_out_buf){
+                if(  
+                    ( SOB.val_out_cou + len )
+                >   ( SOB.val_out_len       )
+                ){
+                    return 1;
+                };;
+    
+                //:D2:IfDef_Block_2:-------------------------://
+                //:D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2://
+                if( GO_AHEAD_AND_BE_STUPID_AND_DO_THIS  > 0 ){
+                while (len--) { //:-----------------| while |://
+                    SOB.poi_out_buf[SOB.val_out_cou]=(
+                        dis > SOB.val_out_cou 
+                        ?
+                        0   
+                        :
+                        SOB.poi_out_buf[
+                       (SOB.val_out_cou - dis)]
+                    );;
+                    SOB.val_out_cou++;
+                };; //:-----------------------------| while |://
+                }else
+                if( GO_AHEAD_AND_BE_STUPID_AND_DO_THIS == 0 ){
+                while (len--) { //:-----------------| while |://
+                
+                    //:JMIM_COMMENT_BACKWARDS_REFERENCE::::::://
+                    SOB.poi_out_buf[SOB.val_out_cou      ]=(
+                    SOB.poi_out_buf[SOB.val_out_cou - dis] );;
+                                    SOB.val_out_cou++;
+                };; //:-----------------------------| while |://
+                }else{
+                    throw("[EDCL:2020_07_28_1224PM]");
+                };;
+                //:D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2D2://
+            }else{
+                SOB.val_out_cou += len;
+            };;
+        };;
+    }while (sym != 256); //:____________| while_sym_NOT_256 |://
+    /* sym === 256 === end_of_block_sym */
