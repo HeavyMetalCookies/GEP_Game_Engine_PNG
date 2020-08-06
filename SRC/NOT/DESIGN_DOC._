@@ -1,0 +1,16 @@
+
+//:Coding standards:
+
+//:1: Library prefix belongs in front of all functions
+//:   and variables. This trumps any other prefix such
+//:   as "VAL", "NEW", "MAC".
+//:
+//:   Reason:
+//:     1: Requires only 1 "bit" of information to realize
+//:        you are looking at "GEP" library code.
+//:
+//:     2: For old code that does NOT use "GEP_" prefix,
+//:        modification does not wreck GREP searches.
+//:
+//:        VAL_tok_tok ---> GEP_VAL_tok_tok  (can still find)
+//:        VAL_tok_tok ---> VAL_GEP_tok_tok  (harder to find)

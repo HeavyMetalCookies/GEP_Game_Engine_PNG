@@ -1,0 +1,60 @@
+
+//:T_0: Types with zero dependencies:
+//:T_1: Types that depend on T_0
+//:T_2: Types that depend on T_2
+//:T_3: Types that depend on T_3
+//:T_4: ETC.
+
+//:     Done this way so we don't have to worry about
+//:     dependency management and can also quickly see
+//:     how abstract a given type is.
+
+//:Variable_Type_Tags:
+//:CLASS_ID is bit shifted to MSB so that as long as there
+//:are less than 0xFFFF types NOT of this dependency scheme,
+//:we will not see collisions with the VIT numbers.
+    //:.....................(CLASS_ID)   (   T_#  )
+    const VIT_GEP_png_obj=( ( 1 << 16) | ( 0 << 0 ) );
+
+//:T_0:Class_Chronological_Order[ 1 ]:(BELOW):---------------://
+//:1111111111111111111111111111111111111111111111111111111111://
+
+const GEP_NEW_png_obj=function(/*void*/){"use strict"
+
+    let STRUCT_png_obj={
+
+        vit : 0 //:VIT_GEP_png_obj
+
+    ,   wid : 0 //:Width__In_Pixels
+    ,   hig : 0 //:Height_In_Pixels
+
+    //: An array of bytes representing the PNG data
+    //: we are parsing.
+    ,   buf_poi : null //:Buffer:Pointer (Array_Of_Bytes)
+    ,   buf_nob :  0   //:Buffer:Number_Of_Bytes
+
+    };;
+
+    //:Create light-weight javascript object without
+    //:all of that prototype nonsense inside of it.
+    let png_obj=Object.create( null        );
+    Object.assign( png_obj, STRUCT_png_obj );
+    Object.seal(  png_obj                  );
+    return(       png_obj                  );
+
+};;
+const GEP_VAL_png_obj=function(/*void*/){"use strict"
+    let png_obj=( GEP_NEW_png_obj() );
+    return( png_obj );
+};;
+const GEP_INI_png_obj=function( png_obj ){ "use strict" 
+
+    png_obj.vit=( VIT_GEP_png_obj );
+    png_obj.wid=( 0 );
+    png_obj.hig=( 0 );
+    png_obj.buf_poi=( null );
+    png_obj.buf_nob=(  0   );
+
+};;
+
+//:1111111111111111111111111111111111111111111111111111111111://

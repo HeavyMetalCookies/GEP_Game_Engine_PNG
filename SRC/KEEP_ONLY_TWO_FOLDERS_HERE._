@@ -1,0 +1,21 @@
+            
+    LIB:    Code needed to assemble library.
+            If there was a fire in the building and you 
+            could only take "LIB" or "NOT", you take "LIB"
+            and you would not be at much of a loss.
+
+    
+    NOT:    Everything that is NOT "LIB"
+            An "Other" folder if you will.
+
+
+    I am conflicted between a "FLAT" file system that
+    overwhelms the user when they see a ton of files in
+    the repo, and a nested file structure that helps
+    hone in on the important parts.
+
+    Try to compromise somehow.... We need to make sure that
+    someone who uses this library sees the most important
+    things FIRST.
+
+    ( Something I learned from art school. Directing the eye. )

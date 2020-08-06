@@ -1,0 +1,6 @@
+
+//:REFACTOR ME:
+//:I think a bash script that concats all source files into
+//:a single payload is a good compromise between the low
+//:adminastrative overhead of one giant file with everything
+//:and the ease of organization multiple files gives.

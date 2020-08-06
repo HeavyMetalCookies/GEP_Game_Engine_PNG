@@ -1,0 +1,22 @@
+//:     The encode and decode functions only take 1 param,
+//:     you then have to use other functions to query the
+//:     results.
+//:
+//:     //: Main public functions:
+//:     TODO: GEP_Decode( png_bin )  //:Decode binary to RGBA 
+//:     TODO: GEP_Encode( ba4_hex )  //:Encode RGBA to binary
+//:
+//:     This buffer
+//:     TODO: GEP_Get_Output_Buffer_WID(  );
+//:     TODO: GEP_Get_Output_Buffer_HIG(  );
+//:     TODO: GEP_Get_Output_Buffer_LEN(  );
+//:
+//:     Since we want things "C" like we need to think about
+//:     how memory is managed. But not worry too much about
+//:     how much memory is consumed. To get the actual data
+//:     back we call "CopyInternalOutputBuffer".
+//:     To keep the system running lean you call:
+//:     "FreeInternalOutputBuffer()" to get rid of the
+//:     memory malloced by the library when processing.
+//:     TODO: GEP_CopyInternalOutputBuffer( buffer, bufferlen )
+//:     TODO: GEP_FreeInternalOutputBuffer()

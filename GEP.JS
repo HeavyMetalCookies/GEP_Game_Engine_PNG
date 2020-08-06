@@ -15,6 +15,9 @@
     const GEP_MAC_JAS=( 1 ); //:This_Is_JavaScript_Code
     const GEP_MAC_C99=( 0 ); //:This_Is____NOT_C99_Code
 
+    let   GEP_TES_RAN=( 0 ); //:Unit_Tests_Have_Been_Ran
+                             //:At_Leas_Once?
+
     //:FUNCTION_INDEX:
     //:     [#]: C99_Polyfills
     //:     [#]: File_Scope_Variables
@@ -2507,6 +2510,8 @@
 //| ----------------- ( FUNCTION_DIVIDER ) ----------------- |//
 //|FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|//
 
+    //:Convert a string representing a hex dump into an
+    //:array of bytes.
     const GEP_Str_CTO_Hex_001 =function(
         png_poi //: POINTER:PNG_HEX_DUMP
     ,   png_len //: png_poi.length
@@ -2610,6 +2615,36 @@
         );;
 
         GEP_PNG_POS=( png_pos );
+    };;
+
+    //:Get length of string NOT including null terminator.
+    const GEP_Str_Len=function( hex_dum ){ "use strict"
+
+        if( typeof( hex_dum ) != "string" ){
+            throw("[Bad_Input]");
+        };;
+
+        let str_len=( hex_dum.length );
+        return( str_len );
+    };;
+
+    //:Could be considered: GEP_Str_CTO_Hex_003.
+    //:Convert[ hex_dum ]string to[ png_bin ]byte_array
+    const GEP_hex_dum_CTO_png_bin =function(
+            hex_dum             //:ARG_INN
+        ,   png_bin  ,  png_nob //:ARG_OUT
+    ){
+
+        let hex_nob=( GEP_Str_Len( hex_dum ) );
+
+        //:I don't know why I decided to do
+        //:outputs first (ARG_OUT) for 
+        //:GEP_Str_CTO_Hex_001, but stuck with it now.
+        GEP_Str_CTO_Hex_001(
+            png_bin, png_nob, 0 //:ARG_OUT
+        ,   hex_dum, hex_nob    //:ARG_INN
+        );;
+
     };;
 
 //|FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|//
@@ -2874,22 +2909,459 @@
 //| ----------------- ( FUNCTION_DIVIDER ) ----------------- |//
 //|FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|//
 
+    //:Is[ asc / ascii ]an[ emp / empty ]character?
+    const GEP_asc_ISA_emp = function( cur_chr ){
+    "use strict"
+
+        let isa_emp =( 0 );
+
+        if( " " == cur_chr ){
+            isa_emp =( 1 );
+        }else
+        if( "\t"== cur_chr ){
+            isa_emp =( 1 );
+        }else
+        if( "\n"== cur_chr ){
+            isa_emp =( 1 );
+        };;
+
+        return( isa_emp );
+    };;
+
+    //:Explicitly Disallowed in hex dump strings:
+    //:Does NOT mean that if returns 0 the character 
+    //:is allowed, but a good sign it is allowed.
+    const GEP_asc_ISA_bad = function( cur_chr ){
+    "use strict"
+    
+        //:Not the most efficient way to do this,
+        //:but straight forward and easy to 
+        //:comprehend.
+
+        let isa_bad=( 0 );
+
+        //:G07: "G is 7 [th]  letter of alphabet.
+        //:Z26: "Z is 26[th] letter of alphabet.
+        if( "G" == cur_chr ){ isa_bad=(  7 ); }else
+        if( "H" == cur_chr ){ isa_bad=(  8 ); }else
+        if( "I" == cur_chr ){ isa_bad=(  9 ); }else
+        if( "J" == cur_chr ){ isa_bad=( 10 ); }else
+        if( "K" == cur_chr ){ isa_bad=( 11 ); }else
+        if( "L" == cur_chr ){ isa_bad=( 12 ); }else
+        if( "M" == cur_chr ){ isa_bad=( 13 ); }else
+        if( "N" == cur_chr ){ isa_bad=( 14 ); }else
+        if( "O" == cur_chr ){ isa_bad=( 15 ); }else
+        if( "P" == cur_chr ){ isa_bad=( 16 ); }else
+        if( "Q" == cur_chr ){ isa_bad=( 17 ); }else
+        if( "R" == cur_chr ){ isa_bad=( 18 ); }else
+        if( "S" == cur_chr ){ isa_bad=( 19 ); }else
+        if( "T" == cur_chr ){ isa_bad=( 20 ); }else
+        if( "U" == cur_chr ){ isa_bad=( 21 ); }else
+        if( "V" == cur_chr ){ isa_bad=( 22 ); }else
+        if( "W" == cur_chr ){ isa_bad=( 23 ); }else
+        if( "X" == cur_chr ){ isa_bad=( 24 ); }else
+        if( "Y" == cur_chr ){ isa_bad=( 25 ); }else
+        if( "Z" == cur_chr ){ isa_bad=( 26 ); }else{};
+
+        //:G07: "G is 7 [th]  letter of alphabet.
+        //:Z26: "Z is 26[th] letter of alphabet.
+        if( "g" == cur_chr ){ isa_bad=(  7 ); }else
+        if( "h" == cur_chr ){ isa_bad=(  8 ); }else
+        if( "i" == cur_chr ){ isa_bad=(  9 ); }else
+        if( "j" == cur_chr ){ isa_bad=( 10 ); }else
+        if( "k" == cur_chr ){ isa_bad=( 11 ); }else
+        if( "l" == cur_chr ){ isa_bad=( 12 ); }else
+        if( "m" == cur_chr ){ isa_bad=( 13 ); }else
+        if( "n" == cur_chr ){ isa_bad=( 14 ); }else
+        if( "o" == cur_chr ){ isa_bad=( 15 ); }else
+        if( "p" == cur_chr ){ isa_bad=( 16 ); }else
+        if( "q" == cur_chr ){ isa_bad=( 17 ); }else
+        if( "r" == cur_chr ){ isa_bad=( 18 ); }else
+        if( "s" == cur_chr ){ isa_bad=( 19 ); }else
+        if( "t" == cur_chr ){ isa_bad=( 20 ); }else
+        if( "u" == cur_chr ){ isa_bad=( 21 ); }else
+        if( "v" == cur_chr ){ isa_bad=( 22 ); }else
+        if( "w" == cur_chr ){ isa_bad=( 23 ); }else
+        if( "x" == cur_chr ){ isa_bad=( 24 ); }else
+        if( "y" == cur_chr ){ isa_bad=( 25 ); }else
+        if( "z" == cur_chr ){ isa_bad=( 26 ); }else{};
+
+        //:Misc_Symbols:
+        if( "~" == cur_chr ){ isa_bad=(101 ); }else
+        if( "`" == cur_chr ){ isa_bad=(101 ); }else
+        if( "@" == cur_chr ){ isa_bad=(101 ); }else
+        if( "#" == cur_chr ){ isa_bad=(101 ); }else
+        if( "$" == cur_chr ){ isa_bad=(101 ); }else
+        if( "%" == cur_chr ){ isa_bad=(101 ); }else
+        if( "^" == cur_chr ){ isa_bad=(101 ); }else
+        if( "&" == cur_chr ){ isa_bad=(101 ); }else
+        if( "*" == cur_chr ){ isa_bad=(101 ); }else
+        if( "-" == cur_chr ){ isa_bad=(101 ); }else
+        if( "=" == cur_chr ){ isa_bad=(101 ); }else
+        if( "_" == cur_chr ){ isa_bad=(101 ); }else
+        if( "+" == cur_chr ){ isa_bad=(101 ); }else
+        if( "," == cur_chr ){ isa_bad=(101 ); }else
+        if( "." == cur_chr ){ isa_bad=(101 ); }else{};
+
+        //:Brackets:
+        if( "[" == cur_chr ){ isa_bad=(101 ); }else
+        if( "]" == cur_chr ){ isa_bad=(101 ); }else
+        if( "{" == cur_chr ){ isa_bad=(101 ); }else
+        if( "}" == cur_chr ){ isa_bad=(101 ); }else
+        if( "(" == cur_chr ){ isa_bad=(101 ); }else
+        if( ")" == cur_chr ){ isa_bad=(101 ); }else
+        if( "<" == cur_chr ){ isa_bad=(101 ); }else
+        if( ">" == cur_chr ){ isa_bad=(101 ); }else{};
+
+        return( isa_bad );
+    };;
+
+    //:Scan over a hex dump string and figure out how 
+    //:many bytes should result after being parsed.
+    //:GEP_Str_CTO_Nob==GEP_hex_dum_CTO_png_nob
+    const GEP_hex_dum_CTO_png_nob = function( hex_dum ){
+    "use strict"
+
+        //:VD:Variable_Declaration:(BELOW):------------------://
+        //:VDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVD://
+
+        let png_nob; //:PNG_HEX_Dump_Number_Of_Bytes
+        let isa_hec; //:Is_A_HEX_Character("0"-"9" & "aA"-"fF")
+        let isa_emp; //:Is_An_Empty_Character(WhiteSpace)
+        let isa_bad; //:IS_A_BAD(DisallowedCharacter)
+        let cur_chr; //:Current_Character
+
+        let dig_sum; //:Digit_Sum
+        let emp_sum; //:Empty_Sum
+        let bad_sum; //:Bad___Sum
+        let all_sum; //:All___Sum
+
+        //:VDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVD://
+        //:VA:Variable_Assignment:(BELOW):-------------------://
+        //:VAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVA://
+
+        dig_sum=( 0 );
+        emp_sum=( 0 );
+        bad_sum=( 0 );
+        all_sum=( 0 );
+
+        //:VAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVA://
+
+        //:str_len does NOT include null terminator
+        let str_len=( GEP_Str_Len( hex_dum ) );
+        for( let str_dex = 0  
+        ;        str_dex < str_len  
+        ;        str_dex++ 
+        ){
+
+            cur_chr=( hex_dum[ str_dex ] );
+            ((all_sum)++);
+
+            //:- - - - - - - - - - - -- - - - - - - - - - - -://
+
+            if( GEP_MAC_JAS > 0 ){ //:///////////////////////://
+                if(cur_chr >= 0 || cur_chr <= 0 ){
+                    //:Not reliable check due to loosy
+                    //:goosy javascript comparisons.
+                };;
+                if( typeof( cur_chr ) != "string" ){
+                    throw("[STRINGS_ONLY!]");
+                };;
+            };; //://////////////////////////////////////////://
+
+            //:- - - - - - - - - - - -- - - - - - - - - - - -://
+
+            if( "0" == cur_chr ){
+
+                //:Hackish way to put a watch on
+                //:this function call for condition of
+                //:" 0 == cur_chr "
+                isa_hec=( GEP_asc_ISA_hec( cur_chr )  ); //:SAME
+
+            }else{
+
+                isa_hec=( GEP_asc_ISA_hec( cur_chr )  ); //:SAME
+
+            };;
+
+            //:Zero included because the returned result
+            //:is actually the ascii decimal value of the
+            //:inputted string.
+            if( isa_hec >= 0 ){ 
+                ((dig_sum)++);
+            };;
+
+            //:- - - - - - - - - - - -- - - - - - - - - - - -://
+
+            isa_emp=( GEP_asc_ISA_emp( cur_chr )  );
+            if( isa_emp ){
+                ((emp_sum)++);
+            };;
+
+            //:- - - - - - - - - - - -- - - - - - - - - - - -://
+
+            //:EC:Error_Checking:----------------------------://
+            //:ECECECECECECECECECECECECECECECECECECECECECECEC://
+            isa_bad=( GEP_asc_ISA_bad( cur_chr )  );
+            if( isa_bad >  0 ){
+                ((bad_sum)++);
+                if( "x" == cur_chr || "X" == cur_chr ){
+                    throw("[DO_NOT_PREFIX_HEX_DUMPS(0x##)]");
+                };;
+                throw("[Bad_Character_Found]");
+            }else
+            if( isa_bad <= 0 ){
+
+                if(1
+                    &&(isa_hec <  0) //:LT( <  )¯¯\__NOT_MISTAKE
+                    &&(isa_emp <= 0) //:LE( <= )__/¯¯NOT_MISTAKE
+                ){
+
+                    if( "0" == cur_chr ){
+
+                        throw("[ZERO_SLIPPED_THROUGH_CRACKS]");
+        
+                    };;
+
+                    throw("[SLIPPED_THROUGH_THE_CRACKS]");
+                };;
+
+            }else{
+                throw("[EDCL:2020_08_05:0656PM]");
+            };;
+            //:ECECECECECECECECECECECECECECECECECECECECECECEC://
+
+        };;
+
+        if( all_sum != (dig_sum + emp_sum) ){
+
+            throw("[CHECKSUM_FAIL:2020_08_05]");
+        
+        };;
+        if( dig_sum % 2 != 0 ){
+            
+            throw("[HALF_BYTES_NOT_ALLOWED:2020_08_05]");
+
+        };;
+
+        //:calculate number of bytes:
+        //:2 letters makes one byte:
+        png_nob=( dig_sum / 2 );
+
+        return( png_nob );
+    };;
+
+    const GEP_Tes_png_bin_CTO_png_obj=function( /** void **/ ){
+    "use strict"
+
+        let hex_dum=("" //:01.PNG's hex dump.
+        +   "89 50 4e 47    0d 0a 1a 0a"  //: 01 ://
+        +   "00 00 00 0d    49 48 44 52"  //: 02 ://  
+        +   "00 00 00 01    00 00 00 01"  //: 03 ://  
+        +   "08 02 00 00    00 90 77 53"  //: 04 ://
+        +   "de 00 00 00    01 73 52 47"  //: 05 ://
+        +   "42 00 ae ce    1c e9 00 00"  //: 06 ://
+        +   "00 04 67 41    4d 41 00 00"  //: 07 ://
+        +   "b1 8f 0b fc    61 05 00 00"  //: 08 ://
+        +   "00 09 70 48    59 73 00 00"  //: 09 ://
+        +   "0e c3 00 00    0e c3 01 c7"  //: 10 ://
+        +   "6f a8 64 00    00 00 19 74"  //: 11 ://
+        +   "45 58 74 53    6f 66 74 77"  //: 12 ://
+        +   "61 72 65 00    70 61 69 6e"  //: 13 ://
+        +   "74 2e 6e 65    74 20 34 2e"  //: 14 ://
+        +   "30 2e 31 36    44 69 af f5"  //: 15 ://
+        +   "00 00 00 0c    49 44 41 54"  //: 16 ://
+        +   "18 57 63 f8    ff ff 3f 00"  //: 17 ://
+        +   "05 fe 02 fe    a7 35 81 84"  //: 18 ://
+        +   "00 00 00 00    49 45 4e 44"  //: 19 ://
+        +   "ae 42 60 82               "  //: 20 ://
+        );; //: ( 19 * 8 ) + ( 4 ) == 156 bytes
+        let exp_nob=( 156 ); //:Expected_Number_Of_Bytes
+
+
+        //:Do one pass over the hex dump to figure out
+        //:the number of bytes that will results from
+        //:parsing.
+        var png_nob = GEP_hex_dum_CTO_png_nob( hex_dum );
+        if( png_nob != exp_nob ){
+            throw("[Not_The_Number_Of_Bytes_I_Expected]");
+        };;
+
+        //:Allocated number of bytes:
+        let png_bin=( new Uint8Array( png_nob ) );
+
+        //:Internally_Uses:GEP_Str_CTO_Hex
+        GEP_hex_dum_CTO_png_bin(
+            hex_dum              //:ARG_INN
+        ,   png_bin  ,  png_nob  //:ARG_OUT
+        );;
+
+        //:Quick Spot Check on first and last byte, since
+        //:we can easily see what they are from[ hex_dum ].
+        if( png_bin[ 0       ] != 0x89 //:KEEP_IT_SIMPLE_STUPID
+        ||  png_bin[ 0       ] !=  137 //:KEEP_IT_SIMPLE_STUPID
+        ){
+            throw("[SPOT_CHECK_FAIL:[0]:0x89]");
+        };;
+        if( png_bin[ 156 - 1 ] != 0x82 //:KEEP_IT_SIMPLE_STUPID 
+        ||  png_bin[ 156 - 1 ] !=  130 //:KEEP_IT_SIMPLE_STUPID
+        ){
+            throw("[SPOT_CHECK_FAIL:[LAST]:0x82]");
+        };;
+
+        //:Some of what we already did above may be replicated
+        //:in this function call, don't worry about that,
+        //:test code should be redundant.
+
+        //:Create new intermediate png_obj used to help
+        //:use parse the PNG data.
+        let png_obj=( GEP_VAL_png_obj() );
+        GEP_INI_png_obj( png_obj );
+
+////    GEP_png_bin_CTO_png_obj( 
+////        png_bin //:ARG_INN
+////    ,   png_nob //:ARG_INN
+////
+////    ,   png_obj //:ARG_OUT
+////    );;
+
+    };;
+
+    //:Run all test code:
+    const GEP_Tes=function( /** void **/ ){ "use strict" 
+
+        GEP_Put_Tes_Dat();
+        GEP_Tes_Hex_Dum();
+
+        //: Must be AFTER:GEP_Tes_Hex_Dum()          - - - - ://
+        //: Because our png binary ( png_bin ) is    - - - - ://
+        //: encoded as a long text string known as   - - - - ://
+        //: a [ text/hex dump ].                     - - - - ://
+        GEP_Tes_png_bin_CTO_png_obj();
+
+        ((GEP_TES_RAN)++);
+    };;
+
     //:C99 style library initializer function:
     const GEP_Ini=function( /** void **/ ){ "use strict"
 
-        if( GEP_MAC_DEB > 0 ){
+        //:If in debug mode and tests have not yet
+        //:Been ran, run the unit test code.
+        if(  GEP_MAC_DEB > 0  ){
+        if(!(GEP_TES_RAN > 0) ){
 
-            GEP_Put_Tes_Dat();
+            GEP_Tes( );
 
-            GEP_Tes_Hex_Dum();
+        };;};;
 
-        };;
 
     };;
 
 //|FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|//
 //| ----------------- ( FUNCTION_DIVIDER ) ----------------- |//
 //|FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|//
+
+//:PA:Public_API:(BELOW):------------------------------------://
+//:PAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPA://
+
+//:     1: GEP_Dec_Ode
+//:     2: GEP_Enc_Ode
+//:     3: GEP_Get_Wid
+//:     4: GEP_Get_Hig
+//:     5: GEP_Get_Nob
+//:     6: GEP_Cop_Buf
+//:     7: GEP_Del_Buf
+
+//:PAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPA://
+
+    //:Decodes a ".PNG file"  binary stored in a byte array,
+    //:and stores the resulting RGBA [OpenGL/Vulkan] friendly
+    //:pixel byte array in an internal buffer that can be
+    //:copied over to user memory.
+    const GEP_Dec_Ode=function( 
+        png_bin //:Abbreviation: PNG:Portable_Network_Graphics
+                //:Abbreviation: BIN:Binary (As Byte Array)
+    ){
+        gep_Dec( png_bin ); //:Private_Decode_Function
+
+        return("[USE:GEP_Get_*:ToRetrieveOutputData]");
+    };;
+
+    //:Encodes an RGBA byte array representing an
+    //:[ OpenGL / Vulkan ] friendly pixel array into
+    //:a .PNG binary that can then be saved to file system
+    //:or transmitted over the internet.
+    const GEP_Enc_Cod=function( 
+        ba4_hex //:Abbreviation: BA4:ByteArray4( 4==R,G,B,A )
+                //:Abbreviation: HEX:HEXadecimal_values
+    ){
+        gep_Enc( ba4_hex ); //:Private_Decode_Function
+
+        return("[USE:GEP_Get_*:ToRetrieveOutputData]");
+    };;
+    
+    //: If GEP_Decode( png_bin ) has just been called,
+    //: this returns the width in pixels of the image.
+    //: If GEP_Encode( ba4_hex
+    const GEP_Get_Wid=function(){
+
+        //:Return internal buffer width (buf_wid)
+        //:Width is measured in pixels.
+        return( gep_buf_wid );
+
+    };;
+    const GEP_Get_Hig=function(){
+
+        //:Return internal buffer height (buf_hig)
+        //:Height is measured in pixels.
+        return( gep_buf_hig );
+
+    };;
+
+    //:Get the number_of_bytes[ nob ]within the internal
+    //:buffer generated by[ decode ]or[ encode ]functions.
+    //:Array length is measured in[ nob ].
+    const GEP_Get_Nob=function(){ 
+
+        //:Return internal buffer number_of_bytes[ nob ]
+        return( gep_buf_nob );
+    
+    };;
+
+    //: Copies internal buffer into user allocated memory    ://
+    //: pointed to by[ arr_oct ].The reason the[ decode ]    ://
+    //: and[ encode ]functions do not return data is         ://
+    //: because in order to make this portable to "C"        ://
+    //: we need to think about memory management and         ://
+    //: who is responsible for what memory.                  ://
+    const GEP_Cop_Buf=function( 
+        arr_oct //:Array_Of_Octets (Byte/Char Array)
+    ,   arr_nob //:Number_Of_Bytes_In_Array( The Length )
+    ){
+
+        throw("[TODO:GEP_Cop_Buf:TODO]");
+
+    };;
+
+    //: GEP_Delete_Buffer: Deletes internal memory buffer    ://
+    //: used to store[ ba4_hex ]or[ png_bin ]. You can       ://
+    //: call this after calling[ GEP_Cop_Buf ]to free up     ://
+    //: memory.                                              ://
+    const GEP_Del_Buf=function( /** void **/ ){
+
+        throw("[TODO:GEP_Del_Buf:TODO]");
+
+    };;
+
+//:PAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPAPA://
+//:PA:Public_API:(ABOVE):------------------------------------://
+
+//|FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|//
+//| ----------------- ( FUNCTION_DIVIDER ) ----------------- |//
+//|FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|//
+//|EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE|//
+//| -------------------- ( END_OF_LIB ) -------------------- |//
+//|EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE|//
     
     //:------------------------------------------------------://
     //:So users of javascript version of library don't need  ://
@@ -2923,6 +3395,9 @@
     GEP_UND(  GEP_MAC_JAS         ); //:Platform_Is_JavaScript
     GEP_UND(  GEP_MAC_C99         ); //:Platform_Is_C99_Code
 
+//|EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE|//
+//| -------------------- ( END_OF_LIB ) -------------------- |//
+//|EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE|//
 
 /**-********************************************************-***
 
@@ -2967,7 +3442,8 @@ GPC_Pro_Sto_Blo: longhanded name for GPC_Sto(...)
     val_bit_buf: TOO_VERBOSE_PLEASE_USE: bit_buf
     val_bit_cou: TOO_VERBOSE_PLEASE_USE: bit_cou
     val_j_b_env: TOO_VERBOSE_PLEASE_USE: j_b_env
-
+        ARG_INN: An "input parameter"
+        ARG_OUT: An "output parameter" (Return By Reference)
 
 
 
@@ -3042,5 +3518,9 @@ DEF: (MULTI_LINE_DEFINITIONS):
             We are so godly sure of ourselves that the first
             true invokation will be:
             if( x == y ){ ... }
+
+    KEEP_IT_SIMPLE_STUPID:
+        What you are doing might be slow processing wise,
+        but it is clear and understandable.
 
 ***-********************************************************-**/

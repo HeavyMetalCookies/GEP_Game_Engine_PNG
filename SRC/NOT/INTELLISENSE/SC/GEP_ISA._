@@ -1,0 +1,7 @@
+    PIK:
+        GEP_asc_ISA_hec //:Is ascii letter valid hexidecimal character?
+        GEP_hec_ISA_asc //:Convert "0" to "15" to it's hex string.
+
+    SEE ALSO:
+        GEP_heb_CTO_hec
+        GEP_hec_CTO_heb
