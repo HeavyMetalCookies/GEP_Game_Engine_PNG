@@ -1,0 +1,256 @@
+//:==========================================================://
+//:C99._: C99 Polyfills                               (BELOW)://
+//:----------------------------------------------------------://
+
+    //:CP:C99_Polyfills:(BELOW):-----------------------------://
+    //:CPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCP://
+    //:                                                      ://
+    //: Functions below will help converting to C code       ://
+    //: easier by helping you understand the intended        ://
+    //: usage of a variable. For example, is the variable    ://
+    //: a "reference/pointer" type or a "value/non-pointer" ?://
+    //:                                                      ://
+    //:CPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCP://
+
+
+        //:Get length of string NOT including null terminator.
+        const GEP_Str_Len=function( hex_dum ){ "use strict"
+
+            if( typeof( hex_dum ) != "string" ){
+                throw("[Bad_Input]");
+            };;
+
+            let str_len=( hex_dum.length );
+            return( str_len );
+        };;
+
+        //|FFFFFFFFFFFFFFF[ FUNCTION_DIVIDER ]FFFFFFFFFFFFFFF|//
+
+        //:Value Array Function.                         :---://
+        //:If converting this code to C99, places where  :---://
+        //:"VAL_ARR" are used can be replaced with a     :---://
+        //:stack allocated  char array.                  :---://
+        //:                                              :---://
+        //:     JS:  let   str_buf=VAL_ARR( 2 )          :---://
+        //:    C99:  char  str_buf[ 2 ]={0};             :---://
+        const GEP_VAL_ARR=function( len ){ "use strict"
+        "use strict"
+
+            let     val_arr =( new Uint8Array( len ) );
+            return( val_arr );
+
+        };;
+
+        //|FFFFFFFFFFFFFFF[ FUNCTION_DIVIDER ]FFFFFFFFFFFFFFF|//
+
+        //:Value Array: Of CHaRacters:
+        //: JS: let   arr = GEP_VAL_ARR_CHR( len );
+        //:C99: char  arr[ 9 /**len**/ ] ={ 0 };
+        const GEP_VAL_ARR_CHR=function( len ){ "use strict"
+        "use strict"
+
+            let val_arr = new Array( len );
+            for( let i = 0; i < len; i++ ){
+                val_arr[ i ]=( "" );
+            };;
+
+            return( val_arr );
+        };;
+
+        //|FFFFFFFFFFFFFFF[ FUNCTION_DIVIDER ]FFFFFFFFFFFFFFF|//
+
+        //:Pointer Array: Of CHaRacters:
+        //:When converting to C99, these are malloc calls.
+        //: JS: let   arr = GEP_POI_ARR_CHR( len );
+        //:C99: char* arr = malloc( sizeof(char) * len );
+        const GEP_POI_ARR_CHR=function( len ){ "use strict"
+
+            let poi_arr = new Array( len );
+            for( let i = 0; i < len; i++ ){
+                poi_arr[ i ]=( "" );
+            };;
+
+            return( poi_arr );
+        };;
+
+        //:When declaring a char* who's values in the        ://
+        //:javascript are going to be interpreted as         ://
+        //:integers and not string.                          ://
+        const GEP_POI_ARR_BYT=function( len ){ "use strict"
+
+            let poi_arr = new Uint8Array( len );
+            for( let i = 0; i < len; i++ ){
+                poi_arr[ i ]=( 0 );
+            };;
+
+            return( poi_arr );
+        };;
+
+        //:We are working with bytes in this code, not       ://
+        //:integers. So you likely want a char*              ://
+        //:(Character Array), not a int* (integer array ).   ://
+        const GEP_POI_ARR_INT=function( len ){ "use strict"
+
+            throw("[YOU_WANT:GEP_POI_ARR_[CHR|BYT]]");
+    
+        };;
+
+        //|FFFFFFFFFFFFFFF[ FUNCTION_DIVIDER ]FFFFFFFFFFFFFFF|//
+
+        //:AOF:Address_Of_Function
+        //:
+        //:  JS:  let I = GEP_AOF( GEP_Str_CTO_Hex_002 );
+        //:
+        //: C99:  typedef void (*PFN)(void);
+        //:       let I =   &( GEP_Str_CTO_Hex_002 );
+        //:
+        const GEP_AOF=function( fun ){ "use strict"
+            return( fun );
+        };;
+
+        //|FFFFFFFFFFFFFFF[ FUNCTION_DIVIDER ]FFFFFFFFFFFFFFF|//
+
+        //:AOV:Address_Of_Variable:                        :-://
+        //:    Use when taking address of a non-function.  :-://
+        //:                                                :-://
+        //:    JS: let  poi_int = GEP_AOV( val_int );      :-://
+        //:   C99: int* poi_int =       &( val_int );      :-://
+        const GEP_AOV=function( naf_var ){
+            return( naf_var );
+        };;
+
+        const GEP_POI=function( any_var ){
+            throw("[USE:GEP_AOF|GEP_AOV]");
+        };;
+
+        //|FFFFFFFFFFFFFFF[ FUNCTION_DIVIDER ]FFFFFFFFFFFFFFF|//
+
+        //:HACK:splits the string into a character array,
+        //:     but use this to denote where &( str_var )
+        //:     should be used in C code.
+        const GEP_AOS=function( str_var ){
+
+            let arr_chr=str_var.split("");
+            return( arr_chr );
+        };;
+
+        //|FFFFFFFFFFFFFFF[ FUNCTION_DIVIDER ]FFFFFFFFFFFFFFF|//
+
+        //:UND:UNDefine
+        //:When converting to C99 code, this should be
+        //:replaced by #undef directives.
+        //:
+        //:     JS: GEP_UND( MAC_ANY )
+        //:    C99: #undef   MAC_ANY
+        //:
+        const GEP_UND=function( mac ){
+            if( !mac ){ 
+                if( mac >= 0 || mac <= 0 ){
+                    //:False alarm. Falsy integer.
+                }else{
+                    throw("[GEP:It_Doesnt_Exist]");
+                };;
+            };;
+        };;
+
+        //|FFFFFFFFFFFFFFF[ FUNCTION_DIVIDER ]FFFFFFFFFFFFFFF|//
+
+            //:Replace this function with a simple cast in C99.
+            //:[ char ] type used for ascii are just [ int ](s).
+            const GEP_asc_CTO_int =function( chr_asc ){
+
+                if( chr_asc.length != 1 ){
+                    throw("[GEP:not_a_single_character]");
+                };;
+
+                let int_asc=( chr_asc.charCodeAt( 0 ) );
+                return( int_asc );
+            };;
+
+            //|FFFFFFFFFFFFF[ FUNCTION_DIVIDER ]FFFFFFFFFFFFF|//
+
+            const GEP_int_CTO_asc =function( int_asc ){
+
+                let chr_asc=( String.fromCharCode( int_asc ) );
+                return( chr_asc );
+
+            };;
+
+        //|FFFFFFFFFFFFFFF[ FUNCTION_DIVIDER ]FFFFFFFFFFFFFFF|//
+
+
+            //:MT:Member_Types:(BELOW):----------------------://
+            //:MTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMT://
+
+            //:Used to denote type information in
+            //:structs since javascript is loosly typed.
+            //:The odd numbers are just bogus values to
+            //:simulated the undefined behavior of using
+            //:un-initialized values.
+
+            const POI_Signed_Short  = function(){
+                return( 1118888 /** Uninited_Pointer **/ );
+            };;
+            const POI_Unsigned_Char = function(){ 
+            "use strict"
+                return( 1212121 /** Uninited_Pointer **/ );
+            };;
+            const VAL_Unsigned_Long = function(){ 
+            "use strict"
+                return( 1843412 /** Uninited_Value   **/ );
+            };;
+            const VAL_Unsigned_Int = function(){
+                return( 9001    /** Uninited_Value   **/ ); 
+            };;
+            const VAL_Int = function(){ 
+            "use strict"
+                return( 9482242 /** Uninited_Value   **/ );
+            };;
+            const VAL_Jum_Buf = function(){
+                return( 6435442 /** Uninited_Value   **/ );
+            };;
+
+            //:MTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMT://
+
+            const MEM_UnsignedCharPointer = function(){
+                return( 111000222 /** Uninited_Pointer **/ );
+            };;
+            const MEM_UnsignedLongPointer = function(){
+                return( 333000444 /** Uninited_Pointer **/ );
+            };;
+            const MEM_ConstUnsignedCharPointer = function(){
+                return( 555000666 /** Uninited_Pointer **/ );
+            };;
+            //:MTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMTMT://
+
+        //|FFFFFFFFFFFFFFF[ FUNCTION_DIVIDER ]FFFFFFFFFFFFFFF|//
+
+
+            //:Stack allocated arrays:
+            //://////////////////////////////////////////////://
+
+                //:Declare a stack allocated array variable  ://
+                //:at file scope or within a function.       ://
+                //:Can also use when declaring a             ://
+                //:value-member of struct.                   ://
+                //:                                          ://
+                //:CAREFUL!! "arrays" (arr) are pointers,    ://
+                //:so the naming convention is a bit         ://
+                //:confusing here with "VAL_*" denoting a    ://
+                //:value type and "arr_" denoting a pointer  ://
+                //:type.                                     ://
+                const GEP_VAL_arr_sho=function( 
+                    num_elm 
+                ){ "use strict"
+                    let arr_sho=( new Uint16Array( num_elm ) );
+                    return( arr_sho );
+                };;
+
+            //://////////////////////////////////////////////://
+
+    //:CPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCP://
+    //:CP:C99_Polyfills:(ABOVE):-----------------------------://
+
+//:----------------------------------------------------------://
+//:C99._: C99 Polyfills                               (ABOVE)://
+//:==========================================================://

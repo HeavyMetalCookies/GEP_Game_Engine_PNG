@@ -1,13 +1,5 @@
 
-//:T_0: Types with zero dependencies:
-//:T_1: Types that depend on T_0
-//:T_2: Types that depend on T_2
-//:T_3: Types that depend on T_3
-//:T_4: ETC.
 
-//:     Done this way so we don't have to worry about
-//:     dependency management and can also quickly see
-//:     how abstract a given type is.
 
 //:Variable_Type_Tags:
 //:CLASS_ID is bit shifted to MSB so that as long as there

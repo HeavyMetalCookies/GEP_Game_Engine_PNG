@@ -1,0 +1,170 @@
+
+/** CAV: C_Any_Version                                       **/
+/**      Should be simple enough to work in all versions     **/
+/**      of C.                                               **/
+
+/** [+]: REFACTOR_TO: (+)  --------------------------------- **/
+/** [!]: REFACTOR_TO: (!)  --------------------------------- **/
+/** [-]: REFACTOR_TO: (!)  --------------------------------- **/
+
+/** (+): Ok Message                ------------------------- **/
+/** (!): Error Message             ------------------------- **/
+/** (-): Refactor these to be  [!] ------------------------- **/
+
+#define JTC_MAC_BUF_MAX ( 1024 * 1024 )
+#define JTC_MAC_NIL     ((void*)0)
+
+char buf_inn[ JTC_MAC_BUF_MAX ]; /** TEX_INN  **/
+char buf_out[ JTC_MAC_BUF_MAX ]; /** TEX_OUT  **/
+
+int nob_inn =( 0-888 ); /** Number_Of_Bytes: buf_inn **/
+int nob_out =( 0-888 ); /** Number_Of_Bytes: buf_out **/
+
+#include <stdio.h> /** for: fopen(...) **/
+#include <stdio.h>  
+
+
+void JTC_Say( const char* jtc_say ){
+    printf( "[JTC_Say]:%s\n", jtc_say );
+}
+void JTC_Say_001( const char* jtc_say ){
+    printf( "[JTC_Say_001]:%s\n", jtc_say );
+}
+
+
+
+
+
+signed char JTC_Put_buf_inn( /** void **/ ){
+
+/** -------------------------------------------------------- **/
+
+    /** VARIABLE_DECLARATIONS **/
+
+    signed      char       ok; /** 0 if everything is ok.    **/
+    FILE*             tex_poi; /** Pointer To Text File      **/
+    long              tex_nob; /** Number_Of_Bytes           **/
+                int   seek_ok; /** Seek success code : 0     **/
+    long        int   offset0; /** Offset by 0 when seek.    **/
+                int   nob_got; /** Number of read bytes.     **/
+                int   sin_oct; /** Size in octetets(bytes)   **/
+ 
+/** -------------------------------------------------------- **/
+
+    /** VARIABLE_INIT **/
+
+         ok=( 1  ); /** No problems at the moment.           **/
+    seek_ok=( 0  ); /** Seek returns true on success         **/
+    offset0=( 0L ); /** offset by nothing                    **/
+    sin_oct=( 1  ); /** Size of each element is 1 byte.      **/
+
+/** ERROR_IS_ON_LINE_BELOW_EXTRA_CURLY_BRACKET **/
+};;if( ok ){ /** ........................................... **/
+
+    /** OPEN_TEXT_FILE **/
+
+    tex_poi = fopen( "./EXPENDABLE_TEST_FILE._" , "r" );
+    if( tex_poi == JTC_MAC_NIL ){ 
+        (ok=0);(JTC_Say_001("[UNABLE_TO_OPEN_FILE]"));
+    };;
+ 
+};;if( ok ){ /** ........................................... **/
+
+    /** SEEK_TO_THE_END_OF_THE_FILE **/
+    
+    if( seek_ok != fseek( tex_poi, offset0, SEEK_END ) ){
+        (ok=0);(JTC_Say_001("[FAILED_TO_SEEK_TO_END]"));
+    };;
+  
+};;if( ok ){ /** ........................................... **/
+
+    /** GET_SIZE_OF_FILE **/
+
+    tex_nob = ftell( tex_poi );
+    if( tex_nob < 0 ){ 
+
+        (ok=0);(JTC_Say_001("[UNABLE_TO_GET_FILE_SIZE]"));
+    
+    };;
+ 
+};;if( ok ){ /** ........................................... **/
+
+    /** MEMORY_CHECK **/
+
+    /** Check to see if we have enough memory to copy file   **/
+    /** (tex_nob+1) because we need to make room for the     **/
+    /** null terminator at the end of the string.            **/
+    if( (tex_nob+1) > JTC_MAC_BUF_MAX ){
+        
+        (ok=0);(JTC_Say_001("[NOT_ENOUGH_MEMORY]"));
+
+    };;
+    
+};;if( ok ){ /** ........................................... **/
+
+    /** SEEK_BACK_TO_START_OF_FILE **/
+    /** Cannot read file contents unless we first rewind **/
+
+    if( seek_ok != fseek( tex_poi, offset0, SEEK_SET ) ){
+        (ok=0);(JTC_Say_001("[FAILED_TO_REWIND_FILE_POINTER]"));
+    };;
+
+};;if( ok ){ /** ........................................... **/
+
+    /** READ_FILE_INTO_MEMORY **/
+
+    nob_inn=( tex_nob );  
+    nob_got = fread( buf_inn, sin_oct , nob_inn , tex_poi );
+
+    printf("[nob_inn]:%d\n", nob_inn );
+    printf("[buf_inn]:%s\n", buf_inn );
+    printf("[nob_got]:%d\n", nob_got );
+
+    if( nob_got != nob_inn ){
+        (ok=0);(JTC_Say_001("[FREAD_DIFFERENT_AMOUNT]"));
+    };;
+
+};;
+/** -------------------------------------------------------- **/
+    return( 0x01-ok );
+/** -------------------------------------------------------- **/
+}
+
+
+
+
+
+/** Save processed[ buf_out ]to text file. **/
+void JTC_Put_buf_out( /** void **/ ){
+
+    /** TODO **/
+
+}
+
+void JTC_Par( void ){
+
+    /** TODO **/
+
+}
+
+int main( void ){
+	printf("[BEG:main]\n");
+
+    JTC_Put_buf_inn(); /** INN: JS code **/
+
+    JTC_Par(); /** Parsing logic here **/
+
+    JTC_Put_buf_out(); /** OUT: C code **/
+    
+	printf("[END:main]\n");
+    return( 0 );
+}  
+
+
+/** Be nice to other libraries and clean up after yourself **/
+#undef JTC_MAC_NIL
+#undef JTC_MAC_BUF_MAX
+
+
+
+/** [JTC_Put_buf_inn] : LOAD_TEXT_FILE_INTO_buf_inn -------- **/  

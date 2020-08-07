@@ -1,0 +1,22 @@
+/** -------------------------------------------------------- **/
+
+    /** VARIABLE_DECLARATIONS **/
+
+    signed      char       ok; /** 0 if everything is ok.    **/
+    FILE*             tex_poi; /** Pointer To Text File      **/
+    long              tex_nob; /** Number_Of_Bytes           **/
+                int   seek_ok; /** Seek success code : 0     **/
+    long        int   offset0; /** Offset by 0 when seek.    **/
+                int   nob_got; /** Number of read bytes.     **/
+                int   sin_oct; /** Size in octetets(bytes)   **/
+ 
+/** -------------------------------------------------------- **/
+
+    /** VARIABLE_INIT **/
+
+         ok=( 1  ); /** No problems at the moment.           **/
+    seek_ok=( 0  ); /** Seek returns true on success         **/
+    offset0=( 0L ); /** offset by nothing                    **/
+    sin_oct=( 1  ); /** Size of each element is 1 byte.      **/
+
+};;if( ok ){ /** ........................................... **/

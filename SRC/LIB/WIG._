@@ -1,0 +1,10 @@
+    //:______________________________________________________://
+    //:GEP: Game_Engine_PNG:                                 ://
+    //:     Just enough code to convert between PNG format   ://
+    //:     and [ OpenGL | Vulkan | HTML5Canvas ] friendly   ://
+    //:     array of RGBA bytes. Written in JavaScript in    ://
+    //:     a simple C-style. Functions are declared         ://
+    //:     a constant expressions so that they are in       ://
+    //:     proper C99 ordering where no forward             ://
+    //:     declarations are needed.                         ://
+    //:______________________________________________________://

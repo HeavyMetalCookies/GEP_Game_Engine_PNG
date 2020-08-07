@@ -1,0 +1,472 @@
+//:==========================================================://
+//:DUM._: Hex_Dump_Conversion_Functions               (BELOW)://
+//:----------------------------------------------------------://
+/** INDEX: ************************************************* **/
+/**-********************************************************-***
+
+    [1]: GEP_hex_dum_CTO_png_nob : Get Expected Number Of Bytes
+    [2]: GEP_Str_CTO_Hex_001     : #HDS# --> #HBA#
+    [3]: GEP_Str_CTO_Hex_002     : Static version for testing.
+    [4]: GEP_hex_dum_CTO_png_bin : GEP_Str_CTO_Hex_001 Wraper
+    [5]: GEP_Hex_CTO_Str         : GEP_Str_CTO_Hex_001 Inverse
+    [6]: GEP_Hex_CTO_Str_UNSAFE  : Dangerous, Breaks: #MOC#
+    
+***-********************************************************-**/
+/** CALL_SITES: ******************************************** **/
+/**-********************************************************-***
+
+    TODO
+
+***-********************************************************-**/
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+//: ----------------- ( FUNCTION_DIVIDER ) ----------------- ://
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+
+    //:Scan over a hex dump string and figure out how 
+    //:many bytes should result after being parsed.
+    //:GEP_Str_CTO_Nob==GEP_hex_dum_CTO_png_nob
+    const GEP_hex_dum_CTO_png_nob = function( hex_dum ){
+    "use strict"
+
+        //:VD:Variable_Declaration:(BELOW):------------------://
+        //:VDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVD://
+
+        let png_nob; //:PNG_HEX_Dump_Number_Of_Bytes
+        let isa_hec; //:Is_A_HEX_Character("0"-"9" & "aA"-"fF")
+        let isa_emp; //:Is_An_Empty_Character(WhiteSpace)
+        let isa_bad; //:IS_A_BAD(DisallowedCharacter)
+        let cur_chr; //:Current_Character
+
+        let dig_sum; //:Digit_Sum
+        let emp_sum; //:Empty_Sum
+        let bad_sum; //:Bad___Sum
+        let all_sum; //:All___Sum
+
+        //:VDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVD://
+        //:VA:Variable_Assignment:(BELOW):-------------------://
+        //:VAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVA://
+
+        dig_sum=( 0 );
+        emp_sum=( 0 );
+        bad_sum=( 0 );
+        all_sum=( 0 );
+
+        //:VAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVA://
+
+        //:str_len does NOT include null terminator
+        let str_len=( GEP_Str_Len( hex_dum ) );
+        for( let str_dex = 0  
+        ;        str_dex < str_len  
+        ;        str_dex++ 
+        ){
+
+            cur_chr=( hex_dum[ str_dex ] );
+            ((all_sum)++);
+
+            //:- - - - - - - - - - - -- - - - - - - - - - - -://
+
+            if( GEP_MAC_JAS > 0 ){ //:///////////////////////://
+                if(cur_chr >= 0 || cur_chr <= 0 ){
+                    //:Not reliable check due to loosy
+                    //:goosy javascript comparisons.
+                };;
+                if( typeof( cur_chr ) != "string" ){
+                    throw("[STRINGS_ONLY!]");
+                };;
+            };; //://////////////////////////////////////////://
+
+            //:- - - - - - - - - - - -- - - - - - - - - - - -://
+
+            if( "0" == cur_chr ){
+
+                //:Hackish way to put a watch on
+                //:this function call for condition of
+                //:" 0 == cur_chr "
+                isa_hec=( GEP_asc_ISA_hec( cur_chr )  ); //:SAME
+
+            }else{
+
+                isa_hec=( GEP_asc_ISA_hec( cur_chr )  ); //:SAME
+
+            };;
+
+            //:Zero included because the returned result
+            //:is actually the ascii decimal value of the
+            //:inputted string.
+            if( isa_hec >= 0 ){ 
+                ((dig_sum)++);
+            };;
+
+            //:- - - - - - - - - - - -- - - - - - - - - - - -://
+
+            isa_emp=( GEP_asc_ISA_emp( cur_chr )  );
+            if( isa_emp ){
+                ((emp_sum)++);
+            };;
+
+            //:- - - - - - - - - - - -- - - - - - - - - - - -://
+
+            //:EC:Error_Checking:----------------------------://
+            //:ECECECECECECECECECECECECECECECECECECECECECECEC://
+            isa_bad=( GEP_asc_ISA_bad( cur_chr )  );
+            if( isa_bad >  0 ){
+                ((bad_sum)++);
+                if( "x" == cur_chr || "X" == cur_chr ){
+                    throw("[DO_NOT_PREFIX_HEX_DUMPS(0x##)]");
+                };;
+                throw("[Bad_Character_Found]");
+            }else
+            if( isa_bad <= 0 ){
+
+                if(1
+                    &&(isa_hec <  0) //:LT( <  )¯¯\__NOT_MISTAKE
+                    &&(isa_emp <= 0) //:LE( <= )__/¯¯NOT_MISTAKE
+                ){
+
+                    if( "0" == cur_chr ){
+
+                        throw("[ZERO_SLIPPED_THROUGH_CRACKS]");
+        
+                    };;
+
+                    throw("[SLIPPED_THROUGH_THE_CRACKS]");
+                };;
+
+            }else{
+                throw("[EDCL:2020_08_05:0656PM]");
+            };;
+            //:ECECECECECECECECECECECECECECECECECECECECECECEC://
+
+        };;
+
+        if( all_sum != (dig_sum + emp_sum) ){
+
+            throw("[CHECKSUM_FAIL:2020_08_05]");
+        
+        };;
+        if( dig_sum % 2 != 0 ){
+            
+            throw("[HALF_BYTES_NOT_ALLOWED:2020_08_05]");
+
+        };;
+
+        //:calculate number of bytes:
+        //:2 letters makes one byte:
+        png_nob=( dig_sum / 2 );
+
+        return( png_nob );
+    };;
+
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+//: ----------------- ( FUNCTION_DIVIDER ) ----------------- ://
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+
+    const GEP_Str_CTO_Hex_001 =function(
+        png_poi //: POINTER:PNG_HEX_DUMP
+    ,   png_len //: png_poi.length
+    ,   png_pos //: Seek_Position_In:png_poi
+
+    ,   car_poi //: String_Of_Hex_Codes
+    ,   car_len //: car_poi.length
+    
+    ){ "use strict"
+
+        //:Convention:
+        //:png_pos & car_pos rest on the first empty slot.
+
+        let car_pos=(                0 ); //:Character_Position
+        let car_bu2=GEP_VAL_ARR_CHR( 2 ); //:Character_Buffer
+        let bu2_pos=(                0 ); //:car_bu2's Position
+        let chr    =(                ""); //:Current_Character
+
+        let isa_hec=( 0 - 1 ); //:False_If_Negative
+
+        //:Move through string until all hex codes loaded:
+        car_pos=( 0 - 1 );//:#ELE_IOT#
+        while( 1 ){
+
+            car_pos++;
+            if( car_pos >= car_len ){ break; };
+
+            chr=( car_poi[ car_pos ] );
+            isa_hec=( GEP_asc_ISA_hec( chr )  );
+            if( isa_hec >= 0 /**non_neg == true**/ ){
+            //:Current character is [0-9|A-F|a-f]
+
+                if( png_pos < png_len ){
+                
+                    car_bu2[ bu2_pos ]=( chr );
+                    bu2_pos++;
+
+                }else{
+
+                    //:We ran out of room in [ png_poi ]
+                    //:one of (3) possible mistakes:
+                    //:1: png_poi allocated too small
+                    //:2: car_poi has excess data or mistake.
+                    //:3: Currnet [ png_poi ] and [ car_poi ]
+                    //:   are not meant for each other.
+                    throw("[GEP_ERR:TOO_MANY_CHARACTERS]");
+
+                };;
+
+            }else{
+
+                //:Not a valid hex code letter, ignore.
+                if( GEP_MAC_DEB > 0 ){
+                    if( "8" == chr ){
+                        throw("[GEP_ERR:8_Is_Valid_Hex_Char]");
+                    };;
+                };;
+            
+            };;
+
+            //:Is it time to convert ascii representation
+            //:of byte to an [ int / char ] hex value
+            //:in range [ 0x00 - to - 0xFF ] ?
+            if( bu2_pos >= 2 ){
+
+                //:Convert two letter string to byte value:
+                let heb = GEP_hec_CTO_heb( car_bu2 /* hec */ );
+
+                //:Load byte into png_poi
+                png_poi[ png_pos ]=( heb );
+                png_pos++;
+
+                bu2_pos=( 0 ); //:rests_on_first_empty_slot
+            };;
+
+        };;
+        return( png_pos );
+    };;
+
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+//: ----------------- ( FUNCTION_DIVIDER ) ----------------- ://
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+
+    const GEP_Str_CTO_Hex_002 =function( car_poi ){
+
+        //:Example car_poi:( "89 50 4e 47    0d 0a 1a 0a" )
+        GEP_CAR_POI=( car_poi     );
+        GEP_CAR_LEN=( GEP_CAR_LEN );
+
+        let png_pos=(
+            GEP_Str_CTO_Hex_001(
+                GEP_PNG_POI //: png_poi 01  ://
+            ,   GEP_PNG_LEN //: png_len 02  ://
+            ,   GEP_PNG_POS //: png_pos 03  ://
+            /** ----------- ::: ------- --  **/  
+            ,   GEP_CAR_POI //: car_poi 04  ://
+            ,   GEP_CAR_LEN //: car_len 05  ://
+            )
+        );;
+
+        GEP_PNG_POS=( png_pos );
+    };;
+
+    //:FFFFFFFFFFFFFFFFF[ FUNCTION_DIVIDER ]FFFFFFFFFFFFFFFFF://
+
+    const GEP_hex_dum_CTO_png_bin =function(
+            hex_dum   //:ARG_INN
+        ,   png_bin   //:ARG_OUT
+    ){
+
+        //: Originally we provided[ png_nob ]as input,
+        //: but found it confusing to read. Now you need to
+        //: be more careful that[ png_bin ] is large enough.
+        let png_nob = GEP_hex_dum_CTO_png_nob( hex_dum );
+        let hex_nob=( GEP_Str_Len( hex_dum ) );
+
+        if( GEP_MAC_JAS > 0 ){
+            if( png_bin.length != png_nob ){
+                throw("[bad_buffer_size:png_bin]");
+            };;
+            if( hex_dum.length != hex_nob ){
+                throw("[bad_buffer_size:hex_nob]");
+            };;
+        };;
+
+        //:I don't know why I decided to do
+        //:outputs first (ARG_OUT) for 
+        //:GEP_Str_CTO_Hex_001, but stuck with it now.
+        GEP_Str_CTO_Hex_001(
+            png_bin, png_nob, 0 //:ARG_OUT
+        ,   hex_dum, hex_nob    //:ARG_INN
+        );;
+
+    };;
+
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+//: ----------------- ( FUNCTION_DIVIDER ) ----------------- ://
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+
+    const GEP_Hex_CTO_Str =function(
+        png_poi //: POINTER:PNG_HEX_DUMP
+    ,   png_len //: png_poi.length
+
+        //:The caller should provide memory to be filled
+        //:so that malloc and free happen in same scope.
+    ,   car_poi //: Character array to fill.
+    ,   car_len //: Declared length of character array.
+    ){ "use strict"
+
+        if( GEP_MAC_DEB > 0 ){ //:///////////////////////////://
+
+            if( typeof( car_poi ) === "string" ){
+
+                //:You need to pass an array of strings
+                //:instead of a string because we cannot
+                //:pass around strings by reference in  
+                //:javascript. Also array access silently
+                //:fails when index accessing strings.
+                throw("[GEP_ERR:CANT_PASS_STRING_BY_REF]");
+        
+            };;
+
+        };; //:///////////////////////////////[ GEP_MAC_DEB ]://
+
+        let car_pos    =( 0 - 2);
+        let png_pos    =( 0 - 1);
+        let car_bu2=GEP_VAL_ARR_CHR( 2 );
+
+        //:Malloc character array pointer:
+        //:Each byte is represented by 2 ascii characters,
+        //:hence the multiplication by 2 here.
+        let exp_len=( png_len * 2 );
+        if( car_len != exp_len ){
+            throw("[GEP_ERR:car_len:NOT:2X:png_len]");
+        };;
+
+        //:Loop over all bytes in png_poi. (.PNG data pointer)
+        //:(You can use this to hex dump other stuff besides  )
+        //:(png files, but the intended use is PNG and I find )
+        //:(it is easier to code when I am not being abstract.)
+        car_pos=( 0 - 2 );
+        png_pos=( 0 - 1 );
+        while( 1 ){
+            png_pos=(png_pos+1);
+            car_pos=(car_pos+2);
+
+            let png_oob=( png_pos >= png_len  );
+            let car_oob=( car_pos >= car_len  );
+            if( png_oob || car_oob ){
+
+                //:If both values do not go out of bounds
+                //:at the same time we have some type of
+                //:mis-aligned seeking.
+                if( !( png_oob && car_oob ) ){
+                    throw("[GEP_ERR:BOTH_SHOULD_BE_OOB]");
+                };;
+
+                break;
+            };;
+
+            //:Call inverse of[ GEP_hec_CTO_heb ]
+            GEP_heb_CTO_hec( 
+                png_poi[ png_pos ] //:Byte_Value_To_Convert
+            ,   GEP_AOV( car_bu2 ) //:Output_Param_Pointer
+            );;                    //:AKA[ poi_hec ]
+
+            //:Unload_Character_Sequence:
+            car_poi[ car_pos + 0 ]=car_bu2[ 0 ];
+            car_poi[ car_pos + 1 ]=car_bu2[ 1 ];
+
+        };;
+
+        //:Return malloced memory containing hex dump string.
+        //:( string as in character array )
+        return( car_poi );
+    };;
+ 
+    //:FFFFFFFFFFFFFFFFF[ FUNCTION_DIVIDER ]FFFFFFFFFFFFFFFFF://
+
+    const GEP_Hex_CTO_Str_UNSAFE =function(
+        png_poi
+    ,   png_len
+    ){
+        let car_len =( png_len * 2 );
+        let car_poi = GEP_POI_ARR_CHR( car_len );
+
+        GEP_Hex_CTO_Str(
+            png_poi
+        ,   png_len
+        
+        ,   car_poi
+        ,   car_len
+        );;
+
+        return( car_poi );
+    };;
+
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+//: ----------------- ( FUNCTION_DIVIDER ) ----------------- ://
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+/** EXTENDED_INDEX ***************************************** **/
+/**-********************************************************-***
+
+    ------------------------------------------------------------
+
+    GEP_Str_CTO_Hex_001:
+
+    Convert a string representing a 
+    hex dump into an array of bytes.
+
+    The original String hex dump to hex byte array function.
+    Rather than come up with unique [ postfix/endfix ]
+    for overloads, appending 3 digit ### serial number
+    to overloads.
+
+    ------------------------------------------------------------
+
+    GEP_Str_CTO_Hex_002:
+
+    Static version of GEP_Str_CTO_Hex_001 used to
+    load file-scoped variables for testing.
+
+    Written mainly this way in order to reduce the column
+    space taken up by source code since the hex dump strings
+    can get pretty big and I wanted to fit a reasonable number
+    of hexadecimal ascii characters on a single column.
+
+    ------------------------------------------------------------
+
+    GEP_hex_dum_CTO_png_bin:
+
+    Could be considered: GEP_Str_CTO_Hex_003.
+    Convert[ hex_dum ]string to[ png_bin ]byte_array
+
+    ------------------------------------------------------------
+
+    GEP_Hex_CTO_Str: 
+
+    Inverse of GEP_Str_CTO_Hex, but does it all in one
+    go. Can use this function to create hex-dumps of
+    PNG files and store the PNG in your javascript source
+    like you would a base64 string.
+    
+    ------------------------------------------------------------
+
+    GEP_Hex_CTO_Str_UNSAFE:
+
+    Unsafe because the caller if required to free   
+    the memory that this function mallocs.          
+    You'll also be expected to know the length of   
+    the returned pointer is 2X the input.           
+
+    ------------------------------------------------------------
+
+***-********************************************************-**/
+/** FILE_COMMENT_DUMP ************************************** **/
+/**-********************************************************-***
+
+    To reduce clutter, comments in source may be ripped out
+    from the code and replaced by tags that redirect to here.
+
+    #HDS# : Hex_Dump_String
+    #HBA# : Hex_Byte_Array
+    #MOC# : Memory_Ownership_Contract
+
+***-********************************************************-**/
+//:----------------------------------------------------------://
+//:DUM._: Hex_Dump_Conversion_Functions               (ABOVE)://
+//:==========================================================://

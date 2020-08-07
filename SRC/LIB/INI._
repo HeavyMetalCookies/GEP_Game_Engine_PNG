@@ -1,0 +1,52 @@
+//:==========================================================://
+//:INI._: Initialization_Routine                      (BELOW)://
+//:----------------------------------------------------------://
+/** INDEX: ************************************************* **/
+/**-********************************************************-***
+
+    [1]: GEP_Ini : Initializes Library
+ 
+***-********************************************************-**/
+/** CALL_SITES: ******************************************** **/
+/**-********************************************************-***
+
+    TODO
+
+***-********************************************************-**/
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+//: ----------------- ( FUNCTION_DIVIDER ) ----------------- ://
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+
+    //:C99 style library initializer function:
+    const GEP_Ini=function( /** void **/ ){ "use strict"
+
+        //:If in debug mode and tests have not yet
+        //:Been ran, run the unit test code.
+        if(  GEP_MAC_DEB > 0  ){
+        if(!(GEP_TES_RAN > 0) ){
+
+            GEP_Tes( );
+
+        };;};;
+
+
+    };;
+
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+//: ----------------- ( FUNCTION_DIVIDER ) ----------------- ://
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+/** EXTENDED_INDEX ***************************************** **/
+/**-********************************************************-***
+
+    TODO
+
+***-********************************************************-**/
+/** FILE_COMMENT_DUMP ************************************** **/
+/**-********************************************************-***
+
+    TODO
+
+***-********************************************************-**/
+//:----------------------------------------------------------://
+//:INI._: Initialization_Routine                      (ABOVE)://
+//:==========================================================://

@@ -1,0 +1,53 @@
+//:==========================================================://
+//:FIL._: File Scope Variables: ALL.                  (BELOW)://
+//:----------------------------------------------------------://
+
+        //: Global state variables for loading bytes         ://
+        //: into [ GEP_PNG_### ] Test data variable.         ://
+        //: This is a bit akward and overly procedural way   ://
+        //: to do it, but it helps save column space in      ://
+        //: the [ GEP_Put_Tes_Dat ] function.                ://
+
+
+
+        let GEP_PNG_POI = null; //:Pointer_To_PNG_Byte_Array
+        let GEP_PNG_LEN =( 0 ); //:NumElementIn:GEP_PNG_POI
+        let GEP_PNG_POS =( 0 ); //:Rest on un-filled byte.
+        let GEP_CAR_POI = null; //:HexDumpStringBeingLoaded
+        let GEP_CAR_LEN =( 0 ); //:NumElementIn:GEP_CAR_POI
+
+
+
+        //:BA:Byte_Arrays:(BELOW):---------------------------://
+        //:BABABABABABABABABABABABABABABABABABABABABABABABABA://
+        //: Byte_Arrays_Representing_Bytes_Of_PNG_File.      ://
+        //: The bits within these arrays should match the    ://
+        //: file contents of the [ ##.PNG ] files in         ://
+        //: [ GET / TES_DAT /. ] exactly. Because file-IO    ://
+        //: is a pain in the ass with JavaScript and I want  ://
+        //: to be able to run this code locally without      ://
+        //: a server, we create the byte arrays by           ://
+        //: doing a hex-dump of the png files on a gitbash   ://
+        //: command line using:                              ://
+        //:                                                  ://
+        //: [ xxd -c 8 -g 1 "01.PNG" ]                       ://
+        //:                                                  ://
+        //: We then paste the results into the source code   ://
+        //: (this file) as string literals and then use      ://
+        //: code to transform it back into a byte array.     ://
+        //:BABABABABABABABABABABABABABABABABABABABABABABABABA://
+
+        //: [ 8 * 20: 160 ][ 160 - 4 == 156 ]
+        //: [ 8 * 15: 120 ][ 120 - 1 == 119 ]
+        const   GEP_PNG_001_LEN_MAC=( 156 ); //:PNG.01
+        const   GEP_PNG_002_LEN_MAC=( 119 ); //:PNG.02
+
+        let GEP_PNG_001 = GEP_VAL_ARR( GEP_PNG_001_LEN_MAC ); 
+        let GEP_PNG_002 = GEP_VAL_ARR( GEP_PNG_002_LEN_MAC );  
+
+        //:BABABABABABABABABABABABABABABABABABABABABABABABABA://
+
+
+//:----------------------------------------------------------://
+//:FIL._: File Scope Variables: ALL.                  (ABOVE)://
+//:==========================================================://

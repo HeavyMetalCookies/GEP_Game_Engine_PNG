@@ -1,0 +1,34 @@
+//:==========================================================://
+//:CAM._ : Constants_And_Macros                       (BELOW)://
+//:----------------------------------------------------------://
+
+//:Constants_And_Macros:
+
+    const GEP_MAC_DEB=( 1 ); //:IF: >= 1, debug mode is on.
+    const GEP_MAC_LOG=( 1 ); //:IF: >= 1, logging    is on.
+
+    const GEP_MAC_JAS=( 1 ); //:This_Is_JavaScript_Code
+    const GEP_MAC_C99=( 0 ); //:This_Is____NOT_C99_Code
+
+    let   GEP_TES_RAN=( 0 ); //:Unit_Tests_Have_Been_Ran
+                             //:At_Leas_Once?
+
+    //:FUNCTION_INDEX:
+    //:     [#]: C99_Polyfills
+    //:     [#]: File_Scope_Variables
+    
+    //://////////////////////////////////////////////////////://
+    //:[ CDIE : Constants_Defines_And_Informal_Enumerations ]://
+
+        //: VIT: Variable_Integer_Tags (S_Types)
+            const VIT_GPC_SOB     =( 1 );
+            const VIT_GPC_HUF     =( 2 );
+            const VIT_GPC_ARG_PUF =( 3 );
+
+
+    //:[ CDIE : Constants_Defines_And_Informal_Enumerations ]://
+    //://////////////////////////////////////////////////////://
+
+//:----------------------------------------------------------://
+//:CAM._ : Constants_And_Macros                       (ABOVE)://
+//:==========================================================://

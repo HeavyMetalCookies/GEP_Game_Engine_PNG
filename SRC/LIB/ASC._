@@ -1,0 +1,343 @@
+//:==========================================================://
+//:ASC._: Ascii Related Functions                     (BELOW)://
+//:----------------------------------------------------------://
+/** INDEX: ************************************************* **/
+/**-********************************************************-***
+
+    [1]: GEP_asc_ISA_hec: Is character valid hex character?
+
+    [2]: GEP_hec_ISA_asc: Inverse Of GEP_asc_ISA_hec
+
+    [3]: GEP_hec_CTO_heb: EXAMPLE: "FF" --> 255
+
+    [4]: GEP_heb_CTO_hec: EXAMPLE: 255  --> "FF"
+
+    [5]: GEP_asc_ISA_emp: Is ascii a whitespace character?
+
+    [6]: GEP_asc_ISA_bad: Is acii invalid as hexidecimal char?
+
+***-********************************************************-**/
+/** CALL_SITES: ******************************************** **/
+/**-********************************************************-***
+
+    GEP_asc_ISA_hec:
+        [1]: GEP_hex_dum_CTO_png_nob
+        [2]: GEP_hec_CTO_heb
+
+    GEP_hec_ISA_asc:
+        [1]: GEP_heb_CTO_hec
+
+    GEP_hec_CTO_heb:
+        [1]: GEP_Str_CTO_Hex_001
+
+    GEP_heb_CTO_hec:
+        [1]: GEP_Hex_CTO_Str
+
+***-********************************************************-**/
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+//: ----------------- ( FUNCTION_DIVIDER ) ----------------- ://
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+    
+    const GEP_asc_ISA_hec =function( 
+        chr_asc  //: C99[ char* chr_asc ]
+    ){ "use strict"
+
+        if( GEP_MAC_DEB > 0 ){  //://////////////////////////://
+        if( GEP_MAC_JAS > 0 ){  //://////////////////////////://
+
+            let typ=( typeof( chr_asc ) );
+            
+            if( typ=="string"){
+                //:GOOD
+            }else
+            if( typ=="number"){
+                throw("[GEP_ERR:EXP_STR:GOT_INT]");
+            }else{
+                throw("[GEP_ERR:EXP_STR]");
+            };;
+    
+        };;};; //:///////////////////////////////////////////://
+
+        var int_asc = GEP_asc_CTO_int( chr_asc );
+        var isa_hec =( 0 - 1 );
+
+        if( int_asc >= 48 && int_asc <= 57 ){ //:[ 0 - 9 ]
+            isa_hec=( int_asc - 48 );
+        }else
+        if( int_asc >= 65 && int_asc <= 70 ){ //:[ A - F ]
+            isa_hec=( int_asc - 65 )+10;
+        }else
+        if( int_asc >= 97 && int_asc <=102 ){ //:[ a - f ]
+            isa_hec=( int_asc - 97 )+10;
+        };;
+
+        return( isa_hec /** int_asc **/ );
+    };;
+
+    //:FFFFFFFFFFFFFFFFF[ FUNCTION_DIVIDER ]FFFFFFFFFFFFFFFFF://
+   
+    const GEP_hec_ISA_asc = function(
+        int_hec //:Integer_Hexadecimal_Code, 0-to-15
+    ){
+
+        if(!(int_hec >= 0 && int_hec < 16) ){
+            throw("[GEP_ERR:OOB:hec_ISA_asc]");
+        };;
+
+        //:#OFFSET_INPUT_INTO_ASCII_RANGE#://
+        let int_asc=( 0 );
+        let chr_asc ="";
+
+        if( int_hec >=  0 && int_hec <= 9 ){
+            int_asc=( (int_hec -  0) + 48 );
+            chr_asc=( GEP_int_CTO_asc( int_asc ) );
+        }else
+        if( int_hec >= 10 && int_hec < 16 ){
+            int_asc=( (int_hec - 10) + 65 );
+            chr_asc=( GEP_int_CTO_asc( int_asc ) );
+        }else{
+            chr_asc=(""); //:Empty_String_Means_False
+        };;
+         
+        return( chr_asc /** isa_asc **/ );
+    };;
+
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+//: ----------------- ( FUNCTION_DIVIDER ) ----------------- ://
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+ 
+    const GEP_hec_CTO_heb =function( 
+              hec //: C99[ char hec[ 2 ] ]
+    ){ "use strict"
+
+        if( GEP_MAC_JAS > 0 ){
+            if( hec.length != 2 ){ throw("[EXP:2_CHARS]");};
+
+            //:#HEC_ROUGH_TYPE_CHECK#://
+            if( typeof(hec) != "string"
+            &&  (!Array.isArray( hec ))
+            ){
+                throw("[hec_bad_type]");
+            };;
+        };;
+
+        let big=( GEP_asc_ISA_hec( hec[ 0 ] ) );
+        let lit=( GEP_asc_ISA_hec( hec[ 1 ] ) );
+        let heb=(  ( big * 16 )+( lit *  1 )  );
+
+        if( /** #if **/ GEP_MAC_DEB > 0 ){ //:///////////////://
+
+            if(!( heb >= 0x00 && heb <= 0xFF ) ){
+                throw("[GEP_ERR:Not_Valid_Byte_Value]");
+            };;
+
+        };; //:[ #endif ]////////////////////////////////////://
+            
+        return( heb );
+    };;
+
+    //:FFFFFFFFFFFFFFFFF[ FUNCTION_DIVIDER ]FFFFFFFFFFFFFFFFF://
+
+    const GEP_heb_CTO_hec =function(
+          val_heb //:HexByte:PassedBy:VALUE
+    ,     poi_hec //:HexChar:PassedBy:POINTER (AKA:car_bu2)
+    ){ "use strict"
+
+        if(!( val_heb >= 0x00 && val_heb <= 0xFF ) ){
+            throw("[INPUT_VALUE_OUTSIDE_OF_BYTE_RANGE]");
+        };;
+
+        let lit=(  val_heb      % 16 ); //: 1's place.
+        let big=( (val_heb-lit) / 16 ); //:16's place.
+
+        //:Inverse_Of[ GEP_asc_CTO_int ]
+        poi_hec[ 0 ]=GEP_hec_ISA_asc( big );
+        poi_hec[ 1 ]=GEP_hec_ISA_asc( lit );
+
+    };;
+        
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+//: ----------------- ( FUNCTION_DIVIDER ) ----------------- ://
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+
+    //:Is[ asc / ascii ]an[ emp / empty ]character?
+    const GEP_asc_ISA_emp = function( cur_chr ){
+    "use strict"
+
+        let isa_emp =( 0 );
+
+        if( " " == cur_chr ){
+            isa_emp =( 1 );
+        }else
+        if( "\t"== cur_chr ){
+            isa_emp =( 1 );
+        }else
+        if( "\n"== cur_chr ){
+            isa_emp =( 1 );
+        };;
+
+        return( isa_emp );
+    };;
+
+    //:FFFFFFFFFFFFFFFFF[ FUNCTION_DIVIDER ]FFFFFFFFFFFFFFFFF://
+
+    //:Explicitly Disallowed in hex dump strings:
+    //:Does NOT mean that if returns 0 the character 
+    //:is allowed, but a good sign it is allowed.
+    const GEP_asc_ISA_bad = function( cur_chr ){
+    "use strict"
+    
+        //:Not the most efficient way to do this,
+        //:but straight forward and easy to 
+        //:comprehend.
+
+        let isa_bad=( 0 );
+
+        //:G07: "G is 7 [th]  letter of alphabet.
+        //:Z26: "Z is 26[th] letter of alphabet.
+        if( "G" == cur_chr ){ isa_bad=(  7 ); }else
+        if( "H" == cur_chr ){ isa_bad=(  8 ); }else
+        if( "I" == cur_chr ){ isa_bad=(  9 ); }else
+        if( "J" == cur_chr ){ isa_bad=( 10 ); }else
+        if( "K" == cur_chr ){ isa_bad=( 11 ); }else
+        if( "L" == cur_chr ){ isa_bad=( 12 ); }else
+        if( "M" == cur_chr ){ isa_bad=( 13 ); }else
+        if( "N" == cur_chr ){ isa_bad=( 14 ); }else
+        if( "O" == cur_chr ){ isa_bad=( 15 ); }else
+        if( "P" == cur_chr ){ isa_bad=( 16 ); }else
+        if( "Q" == cur_chr ){ isa_bad=( 17 ); }else
+        if( "R" == cur_chr ){ isa_bad=( 18 ); }else
+        if( "S" == cur_chr ){ isa_bad=( 19 ); }else
+        if( "T" == cur_chr ){ isa_bad=( 20 ); }else
+        if( "U" == cur_chr ){ isa_bad=( 21 ); }else
+        if( "V" == cur_chr ){ isa_bad=( 22 ); }else
+        if( "W" == cur_chr ){ isa_bad=( 23 ); }else
+        if( "X" == cur_chr ){ isa_bad=( 24 ); }else
+        if( "Y" == cur_chr ){ isa_bad=( 25 ); }else
+        if( "Z" == cur_chr ){ isa_bad=( 26 ); }else{};
+
+        //:G07: "G is 7 [th]  letter of alphabet.
+        //:Z26: "Z is 26[th] letter of alphabet.
+        if( "g" == cur_chr ){ isa_bad=(  7 ); }else
+        if( "h" == cur_chr ){ isa_bad=(  8 ); }else
+        if( "i" == cur_chr ){ isa_bad=(  9 ); }else
+        if( "j" == cur_chr ){ isa_bad=( 10 ); }else
+        if( "k" == cur_chr ){ isa_bad=( 11 ); }else
+        if( "l" == cur_chr ){ isa_bad=( 12 ); }else
+        if( "m" == cur_chr ){ isa_bad=( 13 ); }else
+        if( "n" == cur_chr ){ isa_bad=( 14 ); }else
+        if( "o" == cur_chr ){ isa_bad=( 15 ); }else
+        if( "p" == cur_chr ){ isa_bad=( 16 ); }else
+        if( "q" == cur_chr ){ isa_bad=( 17 ); }else
+        if( "r" == cur_chr ){ isa_bad=( 18 ); }else
+        if( "s" == cur_chr ){ isa_bad=( 19 ); }else
+        if( "t" == cur_chr ){ isa_bad=( 20 ); }else
+        if( "u" == cur_chr ){ isa_bad=( 21 ); }else
+        if( "v" == cur_chr ){ isa_bad=( 22 ); }else
+        if( "w" == cur_chr ){ isa_bad=( 23 ); }else
+        if( "x" == cur_chr ){ isa_bad=( 24 ); }else
+        if( "y" == cur_chr ){ isa_bad=( 25 ); }else
+        if( "z" == cur_chr ){ isa_bad=( 26 ); }else{};
+
+        //:Misc_Symbols:
+        if( "~" == cur_chr ){ isa_bad=(101 ); }else
+        if( "`" == cur_chr ){ isa_bad=(101 ); }else
+        if( "@" == cur_chr ){ isa_bad=(101 ); }else
+        if( "#" == cur_chr ){ isa_bad=(101 ); }else
+        if( "$" == cur_chr ){ isa_bad=(101 ); }else
+        if( "%" == cur_chr ){ isa_bad=(101 ); }else
+        if( "^" == cur_chr ){ isa_bad=(101 ); }else
+        if( "&" == cur_chr ){ isa_bad=(101 ); }else
+        if( "*" == cur_chr ){ isa_bad=(101 ); }else
+        if( "-" == cur_chr ){ isa_bad=(101 ); }else
+        if( "=" == cur_chr ){ isa_bad=(101 ); }else
+        if( "_" == cur_chr ){ isa_bad=(101 ); }else
+        if( "+" == cur_chr ){ isa_bad=(101 ); }else
+        if( "," == cur_chr ){ isa_bad=(101 ); }else
+        if( "." == cur_chr ){ isa_bad=(101 ); }else{};
+
+        //:Brackets:
+        if( "[" == cur_chr ){ isa_bad=(101 ); }else
+        if( "]" == cur_chr ){ isa_bad=(101 ); }else
+        if( "{" == cur_chr ){ isa_bad=(101 ); }else
+        if( "}" == cur_chr ){ isa_bad=(101 ); }else
+        if( "(" == cur_chr ){ isa_bad=(101 ); }else
+        if( ")" == cur_chr ){ isa_bad=(101 ); }else
+        if( "<" == cur_chr ){ isa_bad=(101 ); }else
+        if( ">" == cur_chr ){ isa_bad=(101 ); }else{};
+
+        return( isa_bad );
+    };;
+
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+//: ----------------- ( FUNCTION_DIVIDER ) ----------------- ://
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+
+
+/** EXTENDED_INDEX ***************************************** **/
+/**-********************************************************-***
+
+    GEP_asc_ISA_hec:
+
+    Is_ASCii_letter_a_HExadecimal_Character
+    Inverse_Of[ GEP_hec_ISA_asc ]
+    Returns NON-negative if true.
+    And returns the decimal value of [ chr_asc ] so we
+    can re-use this function for conversion.
+
+    ------------------------------------------------------------
+
+    GEP_hec_ISA_asc:
+
+    Inverse_Of[ GEP_asc_ISA_hec ]:
+    Written in a way that it both check for truth and
+    does conversion all in one function.
+
+    ------------------------------------------------------------
+
+    GEP_hec_CTO_heb:
+
+    HExCharacter_ConvertTO_HExByte
+    Inserse_Of[ GEP_heb_CTO_hec ]
+
+    [hec] might be better stated as [hes] since [hec] is
+    two ascii characters put together to create a serialized
+    form of a byte. But keep [hec], we know what it means.
+
+    ------------------------------------------------------------
+
+    GEP_heb_CTO_hec:
+
+    HExByte_ConvertTO_HExCharacter:
+    Inverse_Of[ GEP_hec_CTO_heb ]
+
+    Converts an integer value in range [ 0 - 255 ]
+    to the 2-letter ascii byte representation.
+    Use this to serialize a binary file into a 
+    text-based hex dump.
+ 
+
+***-********************************************************-**/
+/** FILE_COMMENT_DUMP ************************************** **/
+/**-********************************************************-***
+
+    To reduce clutter, comments in source may be ripped out
+    from the code and replaced by tags that redirect to here.
+
+
+    #OFFSET_INPUT_INTO_ASCII_RANGE#
+    Before converting to string (asc/ascii)
+    We need to offset the integer into 
+    the ascii range of charters "0" -to- "9"
+    Or the range "A" -to- "F" depending.
+
+    #HEC_ROUGH_TYPE_CHECK#
+    Not sure is "hec" is an array or string in
+    this code. And haven't made up my mind in
+    this moment which it should be. But should
+    be at least one of those.
+
+***-********************************************************-**/
+//:----------------------------------------------------------://
+//:ASC._: Ascii Related Functions                     (ABOVE)://
+//:==========================================================://

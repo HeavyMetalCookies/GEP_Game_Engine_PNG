@@ -1,0 +1,10 @@
+    const GEP_png_bin_CTO_png_obj=function(
+        png_bin //:ARG_INN
+    ,   png_nob //:ARG_INN
+                
+    ,   png_obj //:ARG_OUT
+    ){ "use strict"
+
+        throw("[TODO:GEP_png_bin_CTO_png_obj]");
+
+    };;

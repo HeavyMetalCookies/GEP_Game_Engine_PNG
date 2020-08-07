@@ -1,0 +1,202 @@
+//:==========================================================://
+//:TES._: TEST_FUNCTIONS                              (BELOW)://
+//:----------------------------------------------------------://
+/** SEE_RELATED_ALSO:*************************************** **/
+/**-********************************************************-***
+
+    [1]: TDL._ : Test_Data_Loaders (Functions)
+
+***-********************************************************-**/
+/** INDEX: ************************************************* **/
+/**-********************************************************-***
+
+    [1]: GEP_Tes_Hex_Dum: Test hex dumping function
+
+***-********************************************************-**/
+/** CALL_SITES: ******************************************** **/
+/**-********************************************************-***
+
+    TODO
+
+***-********************************************************-**/
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+//: ----------------- ( FUNCTION_DIVIDER ) ----------------- ://
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+
+    const GEP_Tes_Hex_Dum =function( /** void **/ ){
+
+        //:-----------:1234567890123456:---://
+        let hex_dum=( "0123456789ABCDEF" );
+        let hex_new=( "----------------" );
+
+        let car_poi=GEP_AOS( hex_dum );
+        let car_len=( 16 );
+
+        let png_len=( car_len / 2 );
+        let png_poi=GEP_POI_ARR_BYT( png_len );
+        let png_pos=( 0 ); //:Fill from start of array.
+
+        //:Convert hex dump string to byte array:
+        GEP_Str_CTO_Hex_001(
+            png_poi //: POINTER:PNG_HEX_DUMP
+        ,   png_len //: png_poi.length
+        ,   png_pos //: Seek_Position_In:png_poi
+
+        ,   car_poi //: String_Of_Hex_Codes
+        ,   car_len //: car_poi.length
+        );;
+        
+        //:Convert byte array back into hex dump string:
+        //:[HACK]:Characters are not passed by reference
+        //:       in javascript, so you need to take the
+        //:       return value here!
+        car_poi=GEP_AOS( hex_new );
+        car_len=( 16 );
+        car_poi=GEP_Hex_CTO_Str(
+                png_poi //: POINTER:PNG_HEX_DUMP
+            ,   png_len //: png_poi.length
+
+                //:The caller should provide memory to be filled
+                //:so that malloc and free happen in same scope.
+            ,   car_poi //: Character array to fill.
+            ,   car_len //: Declared length of character array.
+            );;
+        //:HACK: Also wouldn't have to do this assignment
+        //:      if this were C code.
+        hex_new=( car_poi );
+
+        //:If conversion back and forth was successfull,
+        //:contents of [ hex_dum ] should match [ hex_new ]
+
+        let fai=( 0 ); //:Fail_Times
+        for( let i = 0 ; i < 16 ; i++ ){
+
+            if( hex_dum[ i ] != hex_new[ i ] ){
+                fai++;
+            };;
+        };;
+
+        if( 0 != fai ){
+            throw("[GEP_ERR:Hex_Dump_Test_Failed]");
+        }else{
+            GEP_Log("[Hex_Dump_Test_Passed]");
+        };;
+
+    };;
+
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+//: ----------------- ( FUNCTION_DIVIDER ) ----------------- ://
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+
+    const GEP_Tes_png_bin_CTO_png_obj=function( /** void **/ ){
+    "use strict"
+
+        let hex_dum=("" //:01.PNG's hex dump.
+        +   "89 50 4e 47    0d 0a 1a 0a"  //: 01 ://
+        +   "00 00 00 0d    49 48 44 52"  //: 02 ://  
+        +   "00 00 00 01    00 00 00 01"  //: 03 ://  
+        +   "08 02 00 00    00 90 77 53"  //: 04 ://
+        +   "de 00 00 00    01 73 52 47"  //: 05 ://
+        +   "42 00 ae ce    1c e9 00 00"  //: 06 ://
+        +   "00 04 67 41    4d 41 00 00"  //: 07 ://
+        +   "b1 8f 0b fc    61 05 00 00"  //: 08 ://
+        +   "00 09 70 48    59 73 00 00"  //: 09 ://
+        +   "0e c3 00 00    0e c3 01 c7"  //: 10 ://
+        +   "6f a8 64 00    00 00 19 74"  //: 11 ://
+        +   "45 58 74 53    6f 66 74 77"  //: 12 ://
+        +   "61 72 65 00    70 61 69 6e"  //: 13 ://
+        +   "74 2e 6e 65    74 20 34 2e"  //: 14 ://
+        +   "30 2e 31 36    44 69 af f5"  //: 15 ://
+        +   "00 00 00 0c    49 44 41 54"  //: 16 ://
+        +   "18 57 63 f8    ff ff 3f 00"  //: 17 ://
+        +   "05 fe 02 fe    a7 35 81 84"  //: 18 ://
+        +   "00 00 00 00    49 45 4e 44"  //: 19 ://
+        +   "ae 42 60 82               "  //: 20 ://
+        );; //: ( 19 * 8 ) + ( 4 ) == 156 bytes
+        let exp_nob=( 156 ); //:Expected_Number_Of_Bytes
+
+
+        //:Do one pass over the hex dump to figure out
+        //:the number of bytes that will results from
+        //:parsing.
+        var png_nob = GEP_hex_dum_CTO_png_nob( hex_dum );
+        if( png_nob != exp_nob ){
+            throw("[Not_The_Number_Of_Bytes_I_Expected]");
+        };;
+
+        //:Allocated number of bytes:
+        let png_bin=( new Uint8Array( png_nob ) );
+
+        //:Internally_Uses:GEP_Str_CTO_Hex
+        GEP_hex_dum_CTO_png_bin(
+            hex_dum              //:ARG_INN
+        ,   png_bin  ,  png_nob  //:ARG_OUT
+        );;
+
+        //:Quick Spot Check on first and last byte, since
+        //:we can easily see what they are from[ hex_dum ].
+        if( png_bin[ 0       ] != 0x89 //:KEEP_IT_SIMPLE_STUPID
+        ||  png_bin[ 0       ] !=  137 //:KEEP_IT_SIMPLE_STUPID
+        ){
+            throw("[SPOT_CHECK_FAIL:[0]:0x89]");
+        };;
+        if( png_bin[ 156 - 1 ] != 0x82 //:KEEP_IT_SIMPLE_STUPID 
+        ||  png_bin[ 156 - 1 ] !=  130 //:KEEP_IT_SIMPLE_STUPID
+        ){
+            throw("[SPOT_CHECK_FAIL:[LAST]:0x82]");
+        };;
+
+        //:Some of what we already did above may be replicated
+        //:in this function call, don't worry about that,
+        //:test code should be redundant.
+
+        //:Create new intermediate png_obj used to help
+        //:use parse the PNG data.
+        let png_obj=( GEP_VAL_png_obj() );
+        GEP_INI_png_obj( png_obj );
+
+
+
+
+        GEP_png_bin_CTO_png_obj( 
+            png_bin //:ARG_INN
+        ,   png_nob //:ARG_INN
+        
+        ,   png_obj //:ARG_OUT
+        );;
+
+    };;
+
+    //:Run all test code:
+    const GEP_Tes=function( /** void **/ ){ "use strict" 
+
+        GEP_Put_Tes_Dat();
+        GEP_Tes_Hex_Dum();
+
+        //: Must be AFTER:GEP_Tes_Hex_Dum()          - - - - ://
+        //: Because our png binary ( png_bin ) is    - - - - ://
+        //: encoded as a long text string known as   - - - - ://
+        //: a [ text/hex dump ].                     - - - - ://
+        GEP_Tes_png_bin_CTO_png_obj();
+
+        ((GEP_TES_RAN)++);
+    };;
+
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+//: ----------------- ( FUNCTION_DIVIDER ) ----------------- ://
+//:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF://
+/** EXTENDED_INDEX ***************************************** **/
+/**-********************************************************-***
+
+    TODO
+
+***-********************************************************-**/
+/** FILE_COMMENT_DUMP ************************************** **/
+/**-********************************************************-***
+
+    TODO
+
+***-********************************************************-**/
+//:----------------------------------------------------------://
+//:TES._: TEST_FUNCTIONS                              (ABOVE)://
+//:==========================================================://

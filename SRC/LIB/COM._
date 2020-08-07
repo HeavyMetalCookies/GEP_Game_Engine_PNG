@@ -1,0 +1,132 @@
+//:==========================================================://
+//:COM._: COMMENTS_SECTION                            (BELOW)://
+//:----------------------------------------------------------://
+/**-********************************************************-***
+
+TODO: Every single token (variable, function, string, etc)
+      should have a short 1-line explanation of what it is.
+
+KEY: (ONE_LINE_DEFINITIONS)
+                
+            GEP: Namespace:Game_Engine_PNG
+            MAC: Denotes_A_MACRO, use #define in C99
+            POI: Pointer
+            JAS: JavaScript
+        poi_car: SEE[ car_poi ]
+        car_poi: Pointer_To_Character_Array (char*)
+            hec: HExadecimal_Character (Ascii 0-9,A-F,a-f )
+            heb: HEx_Byte (Int/Char in range 0-255 / 0-0xFF)
+        ELE_IOT: EasyLoopEntry_IncrementsOnTop
+            NPI: Natural_Positive_Integers (N==PI)
+            IDE: Interactive_Development_Environment
+  LEN_DIST_PAIR: Length distance pair
+  LITERAL_BYTES: Literal bytes, copy as is.
+            HGH: Histogram_Grouped_By_Height (Height==Lens)
+           DBCD: dynamic block code description
+GPC_Pro_Sto_Blo: longhanded name for GPC_Sto(...)
+        arr_l_d: ARRay_Length_plus_Distances (SEE: PUFF.C)
+          ndist: Puff.c's variable for num_dis
+           nlen: Puff.c's variable for num_len
+          ncode: Puff.c's variable for num_cod
+          [WTF]: Whats_This_For (AKA:I_Dont_Know_What_Iam_Doing)
+       LOL_CODE: Length_Or_Literal_Code
+     LOL__CODES: LOL_CODE but plural and extra "_"
+      LOL_CODES: LOL_CODE but plural.
+       s.outcnt: Puff.c's version of: SOB.out_cou
+          MMRWW: Maybe_My_Re_Write_Was_Wrong
+    GTE_DAS_EQT: An (>=) disguised as an (==).
+    poi_out_buf: TOO_VERBOSE_PLEASE_USE: out_buf
+    val_out_len: TOO_VERBOSE_PLEASE_USE: out_len
+    val_out_cou: TOO_VERBOSE_PLEASE_USE: out_cou     
+    poi_inn_buf: TOO_VERBOSE_PLEASE_USE: inn_buf
+    val_inn_len: TOO_VERBOSE_PLEASE_USE: inn_len
+    val_inn_cou: TOO_VERBOSE_PLEASE_USE: inn_cou     
+    val_bit_buf: TOO_VERBOSE_PLEASE_USE: bit_buf
+    val_bit_cou: TOO_VERBOSE_PLEASE_USE: bit_cou
+    val_j_b_env: TOO_VERBOSE_PLEASE_USE: j_b_env
+        ARG_INN: An "input parameter"
+        ARG_OUT: An "output parameter" (Return By Reference)
+
+
+
+
+
+
+HTC: (Hash_Tag_Comments)
+
+    #PUFF_C_TRANSCRIBE#:
+        Section of code where I am transcribing the puff.c
+        algorithm from: 
+        github.com/madler/zlib/blob/master/contrib/puff/puff.c
+
+    ##PCFN#: 
+        Puff_C_Function_Name: The name of function in PUFF.C
+
+DEF: (MULTI_LINE_DEFINITIONS):
+
+    NPI: 
+        Natural_Positive_Integers
+        Replacing "N" in code and comments with "NPI" because
+        a small token like "N" is difficult to use with:
+
+            1: CTRL+F
+            2: Highlight Matching Tokens On Click in IDE.
+
+    poi_huf_len:
+        Pointer to huffman struct storing length codes.
+        Length codes can be length or LITERAL from what
+        I've read. So it might be good to refactor this
+        to be: poi_huf_lal. Where lal=="Length_And_Literal"
+        Or... lol=="Lenght_Or_Literal" code.
+
+    JMIM_COMMENT:
+        My ( John Mark Isaac Madison / JMIM ) comments.
+        If these comments are commentary on comments
+        within the original PUF.C comments, these comments
+        might be WRONG as they represent my understanding
+        or guesses of what is going on.
+
+        But better to have a faulty assumption that can
+        be re-worked into something more correct, than
+        no mental conception at all.
+
+    HGH:
+        Histogram Grouped By Height.
+        My way to conceptualize part of the algorithm
+        description.
+        HGH[ 1 ]= 5 , there are 5 short people.
+                      A, B, C, D, E
+        HGH[ 2 ]= 3 , there are 3 medium height people.
+                      AA, BB, CC 
+        HGH[ 3 ]= 2 , there are 2 tall height people.
+                      AAA, BBB
+
+    GPC_DEC_AND_INI_STA_CON_SHO:
+        GPC_DECLARE_AND_INIT_STATIC_CONST_SHORT
+        But in groups of 3 because harder to typo.
+
+    GPC_DEC_SIG_INT:
+        GPC_DECLARE_SIGNED_INTEGER
+
+    GPC_DEC_UNS_INT:
+        GPC_DECLARE_UNSIGNED_INTEGER
+
+    GTE_DAS_EQT:
+        Greater_Than_or_Equal_to____DisguisedAsA____EQual_To
+        I am putting this comment in places I see "==" where
+        I think they mean:
+            if( x >= y ){ ... }
+            BUT:
+            We are so godly sure of ourselves that the first
+            true invokation will be:
+            if( x == y ){ ... }
+
+    KEEP_IT_SIMPLE_STUPID:
+        What you are doing might be slow processing wise,
+        but it is clear and understandable.
+
+***-********************************************************-**/
+//:----------------------------------------------------------://
+//:COM._: COMMENTS_SECTION                            (ABOVE)://
+//:==========================================================://
+

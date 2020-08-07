@@ -1,0 +1,46 @@
+//:==========================================================://
+//:END._: END_OF_LIBRARY                              (BELOW)://
+//:----------------------------------------------------------://
+//|EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE|//
+//| -------------------- ( END_OF_LIB ) -------------------- |//
+//|EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE|//
+    
+    //:------------------------------------------------------://
+    //:So users of javascript version of library don't need  ://
+    //:to manually call [ GEP_Ini ] before using library.    ://
+    //:                                                      ://
+    //:And also because I want this project as a single file ://
+    //:distribution/payload even if I add test code.         ://
+    //:------------------------------------------------------://
+
+        if( GEP_MAC_JAS > 0 ){
+        //:Current platform is javascript:
+
+            GEP_Ini();
+
+        };;
+        if( GEP_MAC_C99 > 0 ){
+        //:Current platform is C99
+
+            throw("[GEP_ERR:THIS_IS_NOT_C99_CODE]");
+
+        };;
+ 
+    //:------------------------------------------------------://
+
+    //:Undefine all macros declared in library in order
+    //:to be well-behaved code and play well with others.
+    GEP_UND(  GEP_PNG_001_LEN_MAC );
+    GEP_UND(  GEP_PNG_002_LEN_MAC );
+    GEP_UND(  GEP_MAC_DEB         ); //:Debug_Mode_Macro
+    GEP_UND(  GEP_MAC_LOG         ); //:Logging_Messages_Macro
+    GEP_UND(  GEP_MAC_JAS         ); //:Platform_Is_JavaScript
+    GEP_UND(  GEP_MAC_C99         ); //:Platform_Is_C99_Code
+
+//|EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE|//
+//| -------------------- ( END_OF_LIB ) -------------------- |//
+//|EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE|//
+//:----------------------------------------------------------://
+//:END._: END_OF_LIBRARY                              (ABOVE)://
+//:==========================================================://
+
