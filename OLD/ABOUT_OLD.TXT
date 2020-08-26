@@ -1,0 +1,12 @@
+
+    V_1: My first attempt. I had refactored the code into
+         A lot of different files. I find that hard to manage.
+         Decided that only large chunks of functionality
+         (think small programs) belong in their own files.
+
+         Anything else is too granular.
+
+         Exceptions for splitting library into
+         [ DATA ] AND [ FUNC ] files, but don't get
+         more coarse than that. Just makes things hard
+         to navigate.

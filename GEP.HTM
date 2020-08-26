@@ -6,18 +6,51 @@
 //://////////////////////////////////////////////////://</title>
 
     <script>
+    //:______________________________________________________://
+    //:GEP: Game_Engine_PNG:                                 ://
+    //:     Just enough code to convert between PNG format   ://
+    //:     and [ OpenGL | Vulkan | HTML5Canvas ] friendly   ://
+    //:     array of RGBA bytes. Written in JavaScript in    ://
+    //:     a simple C-style. Functions are declared         ://
+    //:     a constant expressions so that they are in       ://
+    //:     proper C99 ordering where no forward             ://
+    //:     declarations are needed.                         ://
+    //:______________________________________________________://
+    </script>
+    <script>
 
         document.title=("[GEP]");
         console.log("[HELLO_WORLD]");
 
     </script>
 
-
     <script 
-        src    ="GEP.JS"
+        src    ="GEP.DATA.JS"
+        charset="UTF-8"
+    ></script>
+    <script 
+        src    ="GEP.FUNC.JS"
+        charset="UTF-8"
+    ></script>
+    <script 
+        src    ="GEP.TEST.JS"
         charset="UTF-8"
     ></script>
 
+    <script> /** ******************************************* ***
+
+    KEY:
+    
+        png_poi : Use[ png_bin ]instead of this.
+
+        png_bin : A pointer to [ char / byte ]. 
+             AKA: A [ char array / byte array ]
+             Represents binary contents of PNG [file/stream].
+
+   
+
+
+    *** ****************************************** **/ </script>
 
 
 </head> <!-- /////////////////////////////////////////////// -->
