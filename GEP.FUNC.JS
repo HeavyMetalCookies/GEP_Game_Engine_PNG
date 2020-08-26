@@ -479,9 +479,9 @@
     //:[2]:Str_CTO_Hex_001
     function
     GEP_DUM_Str_CTO_Hex_001(
-        png_poi //: POINTER:PNG_HEX_DUMP
-    ,   png_len //: png_poi.length
-    ,   png_pos //: Seek_Position_In:png_poi
+        png_bin //: POINTER:PNG_HEX_DUMP
+    ,   png_len //: png_bin.length
+    ,   png_pos //: Seek_Position_In:png_bin
 
     ,   car_poi //: String_Of_Hex_Codes
     ,   car_len //: car_poi.length
@@ -520,11 +520,11 @@
 
                 }else{
 
-                    //:We ran out of room in [ png_poi ]
+                    //:We ran out of room in [ png_bin ]
                     //:one of (3) possible mistakes:
-                    //:1: png_poi allocated too small
+                    //:1: png_bin allocated too small
                     //:2: car_poi has excess data or mistake.
-                    //:3: Currnet [ png_poi ] and [ car_poi ]
+                    //:3: Currnet [ png_bin ] and [ car_poi ]
                     //:   are not meant for each other.
                     throw("[GEP_ERR:TOO_MANY_CHARACTERS]");
 
@@ -551,8 +551,8 @@
                     car_bu2 /* hec */ 
                 );;
 
-                //:Load byte into png_poi
-                png_poi[ png_pos ]=( heb );
+                //:Load byte into png_bin
+                png_bin[ png_pos ]=( heb );
                 png_pos++;
 
                 bu2_pos=( 0 ); //:rests_on_first_empty_slot
@@ -575,7 +575,7 @@
 
         let png_pos=(
             GEP_DUM_Str_CTO_Hex_001(
-                GEP_PNG_POI //: png_poi 01  ://
+                GEP_PNG_BIN //: png_bin 01  ://
             ,   GEP_PNG_LEN //: png_len 02  ://
             ,   GEP_PNG_POS //: png_pos 03  ://
             /** ----------- ::: ------- --  **/  
@@ -591,14 +591,34 @@
     function
     GEP_DUM_hex_dum_CTO_png_bin(
             hex_dum   //:ARG_INN
+        ,   png_nob   //:ARG_INN (number of bytes in[ png_bin ])
+
         ,   png_bin   //:ARG_OUT
     )
     {
+        if( !( png_bin ) ){
+            //:The USER of the function is responsible
+            //:for the malloced memory.
+            throw("[NO_MEMORY_ALLOCATION_PASSED_IN]");
+        };;
+
+        //: NOW[ 2020_08_26 ]                                ://
+        //: Change this back to taking[ png_nob ].           ://
+        //: The signature makes more sense that way when     ://
+        //: you recall the USER of this function is          ://
+        //: responsible for mallocing the memory.            ://
+
+        //: PRE[ 2020_08_26 ]
         //: Originally we provided[ png_nob ]as input,
         //: but found it confusing to read. Now you need to
         //: be more careful that[ png_bin ] is large enough.
-        let png_nob = GEP_DUM_hex_dum_CTO_png_nob( hex_dum );
-        let hex_nob=( GEP_CFN_Str_Len( hex_dum ) );
+
+        let png_nob_exp= GEP_DUM_hex_dum_CTO_png_nob( hex_dum );
+        let hex_nob    =( GEP_CFN_Str_Len( hex_dum ) );
+
+        if( png_nob_exp != png_nob ){
+            throw("[ERR:UNEXPECTED_ALLOCATION_SIZE]");
+        };;
 
         if( GEP_MAC_JAS > 0 ){
             if( png_bin.length != png_nob ){
@@ -621,8 +641,8 @@
     //: - - - - - - - - - - - - ---- - - - - - - - - - - - - ://
     //:[5]:hex_CTO_str
     const GEP_DUM_hex_CTO_str =function(
-        png_poi //: POINTER:PNG_HEX_DUMP
-    ,   png_len //: png_poi.length
+        png_bin //: POINTER:PNG_HEX_DUMP
+    ,   png_len //: png_bin.length
 
         //:The caller should provide memory to be filled
         //:so that malloc and free happen in same scope.
@@ -657,7 +677,7 @@
             throw("[GEP_ERR:car_len:NOT:2X:png_len]");
         };;
 
-        //:Loop over all bytes in png_poi. (.PNG data pointer)
+        //:Loop over all bytes in png_bin. (.PNG data pointer)
         //:(You can use this to hex dump other stuff besides  )
         //:(png files, but the intended use is PNG and I find )
         //:(it is easier to code when I am not being abstract.)
@@ -683,7 +703,7 @@
 
             //:Call inverse of[ GEP_hec_CTO_heb ]
             GEP_ASC_heb_CTO_hec( 
-                    png_poi[ png_pos ] //:Byte_Value_To_Convert
+                    png_bin[ png_pos ] //:Byte_Value_To_Convert
             ,   GEP_C99_AOV( car_bu2 ) //:Output_Param_Pointer
             );;                        //:AKA[ poi_hec ]
 
@@ -701,7 +721,7 @@
     //:[6]:hex_CTO_str_UNSAFE:
     function
     GEP_DUM_hex_CTO_str_UNSAFE(
-        png_poi
+        png_bin
     ,   png_len
     )   
     {
@@ -709,7 +729,7 @@
         let car_poi = GEP_POI_ARR_CHR( car_len );
 
         GEP_DUM_hex_CTO_str(
-            png_poi
+            png_bin
         ,   png_len
         
         ,   car_poi
@@ -740,7 +760,7 @@
     let I=GEP_C99_AOF( GEP_DUM_Str_CTO_Hex_002 );
 
 
-    GEP_PNG_POI=( GEP_C99_AOV( GEP_PNG_001 )       );
+    GEP_PNG_BIN=( GEP_C99_AOV( GEP_PNG_001 )       );
     GEP_PNG_LEN=(              GEP_PNG_001_LEN_MAC );
     GEP_PNG_POS=(            (      0      )       );
     GEP_CAR_LEN=(            (     26      )       );
@@ -775,7 +795,7 @@
 
     //://////////////////////////////////////////////////////://
 
-    GEP_PNG_POI=( GEP_C99_AOV( GEP_PNG_002 )       );
+    GEP_PNG_BIN=( GEP_C99_AOV( GEP_PNG_002 )       );
     GEP_PNG_LEN=(              GEP_PNG_002_LEN_MAC );
     GEP_PNG_POS=(            (      0      )       );
     GEP_CAR_LEN=(            (     26      )       );
@@ -820,14 +840,14 @@
         let car_len=( 16 );
 
         let png_len=( car_len / 2 );
-        let png_poi=GEP_C99_Mal_Arr_Chr( png_len );
+        let png_bin=GEP_C99_Mal_Arr_Chr( png_len );
         let png_pos=( 0 ); //:Fill from start of array.
 
         //:Convert hex dump string to byte array:
         GEP_DUM_Str_CTO_Hex_001(
-            png_poi //: POINTER:PNG_HEX_DUMP
-        ,   png_len //: png_poi.length
-        ,   png_pos //: Seek_Position_In:png_poi
+            png_bin //: POINTER:PNG_HEX_DUMP
+        ,   png_len //: png_bin.length
+        ,   png_pos //: Seek_Position_In:png_bin
 
         ,   car_poi //: String_Of_Hex_Codes
         ,   car_len //: car_poi.length
@@ -840,8 +860,8 @@
         car_poi=GEP_C99_AOS( hex_new );
         car_len=( 16 );
         car_poi=GEP_DUM_hex_CTO_str(
-                png_poi //: POINTER:PNG_HEX_DUMP
-            ,   png_len //: png_poi.length
+                png_bin //: POINTER:PNG_HEX_DUMP
+            ,   png_len //: png_bin.length
 
                 //:The caller should provide memory to be filled
                 //:so that malloc and free happen in same scope.
@@ -869,7 +889,7 @@
             GEP_Log("[Hex_Dump_Test_Passed]");
         };;
 
-        GEP_C99_Fre_Arr_Chr( png_poi ); //:FREE_MEMORY
+        GEP_C99_Fre_Arr_Chr( png_bin ); //:FREE_MEMORY
 
     };; //:--------------------------------:[GEP_TES_Hex_Dum]://
 
@@ -919,7 +939,9 @@
         //:Internally_Uses:GEP_Str_CTO_Hex
         GEP_DUM_hex_dum_CTO_png_bin(
             hex_dum              //:ARG_INN
-        ,   png_bin  ,  png_nob  //:ARG_OUT
+        ,   png_nob              //:ARG_INN
+
+        ,   png_bin              //:ARG_OUT
         );;
 
         //:Quick Spot Check on first and last byte, since
@@ -976,6 +998,138 @@
 
 //:ALG_: Algorithm (Main Algorithm Functions):===============://
 
+
+    function //:Has octed? 002==byte array operand overload.
+    gep_ALG_has_oct_002( 
+        png_bin
+    ,   png_nob
+
+    ,   png_dex //:Index/Offset to start comparison from.
+
+    ,   sig_car //:Signature_Character_Array
+    ,   sig_nob //:Signature_Number_Of_Bytes
+    )
+    { "use strict"
+
+        /** res_var: Result Variable Of Function ( has_oct )**/
+        let has_oct=( 0 ); //:Has_Octet(byte)Signature/Sequence?
+
+        if( GEP_MAC_DEB > 0 ){
+            if( !(png_nob > 0 ) ){ throw("[BAD:png_nob]");};
+            if( !(sig_nob > 0 ) ){ throw("[BAD:sig_nob]");};
+        };;
+
+        if( png_dex + sig_nob - 1 >= (png_nob - 1) ){
+            has_oct = ( 0 ); //:Not enough bytes in[ png_nob ].
+        }else{
+
+            let bad_hit=( 0 ); //:Number_Of_Misses
+            let goo_hit=( 0 ); //:Number_Of_Matches
+            
+            let  i  = (   0-1   );
+            let d_p = ( png_dex );
+            let d_s = (    0    );
+            for( i = 0 ; i < sig_nob ; i++ ){
+
+                if( GEP_MAC_DEB > 0 ){
+                if( d_p + i >= png_nob ){ throw("[OOB:001]"); };
+                if( d_s + i >= sig_nob ){ throw("[OOB:002]"); };
+                };;
+
+                if( png_bin[ d_p + i ]
+                !== sig_car[ d_s + i ]
+                ){
+                    ( bad_hit )++;
+                }else{
+                    ( goo_hit )++;
+                };;
+
+            };;
+
+            //:IS_IT_A_MATCH_OR_NOT:-------------------------://
+            if( bad_hit > 0  ){
+                has_oct =( 0 - bad_hit ); //:Negative_Misses
+            }else
+            if( goo_hit > 0  ){
+                has_oct =( 0 + goo_hit ); //:Positive_Hits__
+            }else{
+                throw("[Unexpected_State]");
+            };; //:---------------------:IS_IT_A_MATCH_OR_NOT://
+        };;
+
+        //: has_oct: Used as boolean where positive is TRUE:
+        //:--------------------------------------------------://
+        //: has_oct == 0: sig_car overflows png_nob
+        //: has_oct  < 0: number of non-matching bytes
+        //: has_oct  > 0: number of     MATCHING bytes
+        return( has_oct );; //:------------------------------://
+    };;
+
+    
+
+    function //:Has octet? 001== string operand overload.
+    gep_ALG_has_oct_001(
+        png_bin
+    ,   png_nob
+    ,   png_dex //:Index/Offset
+    ,   sig_str //:Signature_String / Hex Dump (hex_dum)
+    )
+    { "use strict"
+
+        //: Get expected size in bytes of[ sig_str ]         ://
+        //: when converted into a [ sig_car ].               ://
+        /** hex_dum === sig_str **/
+        let sig_nob = GEP_DUM_hex_dum_CTO_png_nob(
+                              sig_str
+        );;
+
+        //:Allocate Memory On Heap:
+        let sig_car = GEP_C99_Mal_Arr_Chr( sig_nob );
+
+        GEP_DUM_hex_dum_CTO_png_bin(
+            sig_str  //:ARG_INN: String encoded byte array.
+        ,   sig_nob  //:ARG_INN: number_of_bytes_in[ sig_car ]
+        ,   sig_car  //:ARG_OUT: output array.
+        );;
+
+        /** has_sig === has_oct **/
+        let has_oct=(gep_ALG_has_oct_002(
+            png_bin
+        ,   png_nob
+        ,   png_dex
+
+        ,   sig_car
+        ,   sig_nob
+        ));;
+
+        //:Free Allocated Memory:
+        GEP_C99_Fre_Arr_Chr( sig_car );
+
+        return( has_oct /** has_sig **/ );
+    };;
+
+    function /** Check for PNG header of binary data **/
+    gep_ALG_png_sob_CHK_png_hed(
+            png_sob
+    )
+    { "use strict"
+
+        if( png_sob.vit != GEP_VIT_png_sob ){
+            throw("[WRONG_TYPE]");
+        };;
+
+        /** has_oct === has_sig **/
+        let has_sig =( 0 ); //:signature_found? 
+        has_sig = gep_ALG_has_oct_001(
+        /**/    png_sob.png_bin
+        ,       png_sob.png_nob
+        ,       0   /** png_dex **/       //:Offset
+        ,       "89 50 4E 47 0D 0A 1A 0A" //:Signature(sig_str)
+        );;
+
+        return( has_sig /** has_hed **/ );
+    };;
+
     const GEP_ALG_png_bin_CTO_png_sob=function(
         png_bin //:ARG_INN
     ,   png_nob //:ARG_INN
@@ -983,12 +1137,80 @@
     ,   png_sob //:ARG_OUT
     ){ "use strict"
 
-        throw("[TODO:GEP_png_bin_CTO_png_sob]");
+        let o_k=( 1 ); //:Okay unless error happens.
 
-        //:Store[ png_bin ]&[ png_nob ]in[ png_sob ]:
+        console.log("[TODO:GEP_png_bin_CTO_png_sob]");
 
+        if( o_k > 0 ){
+            //:Store[ png_bin ]&[ png_nob ]in[ png_sob ]:
+            png_sob.png_bin=( png_bin );
+            png_sob.png_nob=( png_nob );
+
+            //:Make sure png header exists:
+            let png_hed=(0); //:Has png headers?
+            png_hed = gep_ALG_png_sob_CHK_png_hed( png_sob );
+            if( !(png_hed>0) ){
+                png_sob.has_err=( 1 );
+                png_sob.msg_err=("[NO_PNG_HEADER]");
+                o_k=( 0 );
+            }else{
+                o_k=( 1 );
+            };;
+        };;
+
+        //: Do a first pass where we check for the chunks    ://
+        //: we are going to support. If we see a pallet      ://
+        //: chunk, we are going to have to abort, since I    ://
+        //: don't want to figure out palletized color right  ://
+        //: at this moment.                                  ://
+        if( o_k > 0 ){ //:--------------:CHUNK_ROLL_CALL_SCAN://
+        
+            //: Before figuring out how we are going to      ://
+            //: break up the binary data, let's just get a   ://
+            //: tally of how many of the different chunk     ://
+            //: types there are in a first pass.             ://
+
+            num_IHDR=( 0 );
+            num_IDAT=( 0 );
+            num_IEND=( 0 );
+            num_PLTE=( 0 );
+            
+            num_DROP=( 0 ); //:Dropped   non-critical chunks.
+            num_CRIT=( 0 ); //:Un-recognized critical chunks.
+
+            //:IHDR should immediately follow "PNG" header
+            //:and help us figure out where to jump to next.
+
+            let png_dex=( 8 - 1 );
+            let chu_key=(   0   ); //:Chunk_Key
+            let chu_val_str=("" ); //:Chunk_Value(Code_String)
+            while( 1 ) {
+
+                ( png_dex )++;
+
+                chu_key = gep_ALG_IsKnownChunkHere(
+                    png_sob
+                ,   png_dex
+                );;
+
+                if( chu_key < 0 ){
+
+                }else
+                if( chu_key > 0 ){
+
+                }else{
+                //:0 is 
+
+                };;
+
+                chu_val_str =(GEP_LUT_chu_kno( chu_key ));
+
+            };;
+
+        };; //:-------------------------:CHUNK_ROLL_CALL_SCAN://
 
         //:Extract_Chunks by reading png headers:
+        throw("[TODO:The_Rest]");
 
     };;
 
@@ -1082,7 +1304,7 @@
         (GEP_GSF_was_ini)++; //:was_initialized?
     };;
 
-    //:AUTO_INIT:--------------------------------------------://
+    //:AUTO_INIT: ------------------------------------------ ://
 
         if( GEP_MAC_JAS > 0 ){
         //:Current platform is javascript:
@@ -1097,4 +1319,4 @@
         
         };;
         
-    //:---------------------------------------------:AUTO_INIT://
+    //: ------------------------------------------ :AUTO_INIT://

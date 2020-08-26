@@ -1,10 +1,47 @@
     
 //:RULE 1: All globals start with "GEP_" namespace.
 //:RULE 2: "GEP_" always followed sub category (MAC_,VIT_,...).
-//:RULE 3: Comments longer than 1 line belong in documentation.
+//:RULE 3: Offboard long comments using tags maybe?
 
-//:REFACTOR_LIST:
-//:     VIT_GEP_png_sob --> GEP_VIT_png_sob
+
+//:MAC_: Macros:=============================================://
+            
+    const   GEP_MAC_DEB=( 1 ); //:IF: >= 1, debug mode is on.
+    const   GEP_MAC_LOG=( 1 ); //:IF: >= 1, logging    is on.
+    const   GEP_MAC_JAS=( 1 ); //:This_Is_JavaScript_Code
+    const   GEP_MAC_C99=( 0 ); //:This_Is____NOT_C99_Code
+
+        //:NUM_BYTES_IN:DE_SERIALIZED_PNG_HEX_DUMPS:
+        //:--------------------------------------------------://
+
+        const   GEP_PNG_001_LEN_MAC=( 156 ); //:PNG.01
+        const   GEP_PNG_002_LEN_MAC=( 119 ); //:PNG.02
+
+        //:--------------------------------------------------://
+
+//:GSF_: Global_State_Flags:=================================://
+
+    let   GEP_GSF_tes_ran=( 0 );  //:Tests_Ran_At_Least_Once?
+    let   GEP_GSF_was_ini=( 0 );  //:Was_library_initialized?
+
+//:VIT_: Variable_Integer_Tags:==============================://
+
+    const GEP_VIT_GEP     = ( 1 ); //:GEP library object.
+    const GEP_VIT_png_sob = ( 2 );
+
+//:LUT_: Lookup Tables:======================================://
+
+    const GEP_LUT_chu_kno=[ //:Chunks:KNOWN
+        "nope" //: 0 === Invalid_Lookup_Table_Index
+
+        "IHDR" //: 1
+        "IDAT" //: 2
+        "IEND" //: 3
+        "PLTE" //: 4
+    
+    ];;
+
+
 
 //:FAD_: Functions_As_Data:==================================://
 
@@ -110,38 +147,13 @@
     function GEP_C99_Poi_Arr_Chr(){
         throw("[Do_You_Really_Want_A_Pointer_To_A_Pointer?]");
     };;
-     
-//:MAC_: Macros:=============================================://
-            
-    const   GEP_MAC_DEB=( 1 ); //:IF: >= 1, debug mode is on.
-    const   GEP_MAC_LOG=( 1 ); //:IF: >= 1, logging    is on.
-    const   GEP_MAC_JAS=( 1 ); //:This_Is_JavaScript_Code
-    const   GEP_MAC_C99=( 0 ); //:This_Is____NOT_C99_Code
-
-        //:NUM_BYTES_IN:DE_SERIALIZED_PNG_HEX_DUMPS:
-        //:--------------------------------------------------://
-
-        const   GEP_PNG_001_LEN_MAC=( 156 ); //:PNG.01
-        const   GEP_PNG_002_LEN_MAC=( 119 ); //:PNG.02
-
-        //:--------------------------------------------------://
-
-//:GSF_: Global_State_Flags:=================================://
-
-    let   GEP_GSF_tes_ran=( 0 );  //:Tests_Ran_At_Least_Once?
-    let   GEP_GSF_was_ini=( 0 );  //:Was_library_initialized?
-
-//:VIT_: Variable_Integer_Tags:==============================://
-
-    const GEP_VIT_GEP     = ( 1 ); //:GEP library object.
-    const GEP_VIT_png_sob = ( 2 );
 
 //:PNG_: PNG_Test_data_namespace:============================://
 
     //:USED_BY[ GEP_Put_Tes_Dat ]
     //:------------------------------------------------------://
-    let GEP_PNG_POI = null; //:Pointer_To_PNG_Byte_Array
-    let GEP_PNG_LEN =( 0 ); //:NumElementIn:GEP_PNG_POI
+    let GEP_PNG_BIN = null; //:Pointer_To_PNG_Byte_Array
+    let GEP_PNG_LEN =( 0 ); //:NumElementIn:GEP_PNG_BIN
     let GEP_PNG_POS =( 0 ); //:Rest on un-filled byte.
 
         //:DE_SERIALIZED_PNG_HEX_DUMPS:
@@ -187,9 +199,18 @@
         ,   wid : 0 //:Width__In_Pixels
         ,   hig : 0 //:Height_In_Pixels
 
-        //: PNG Binary Data Byte Buffer To Be Parsed:
-        ,   buf_poi : null //:Buffer:Pointer (Array_Of_Bytes)
-        ,   buf_nob :  0   //:Buffer:Number_Of_Bytes
+            //: PNG Binary Data Byte Buffer To Be Parsed:    ://
+            //: AKA[ png_bin === buf_poi ]( PREFER: png_bin )://
+            //: AKA[ png_nob === buf_nob ]( PREFER: png_nob )://
+
+        ,   png_bin : null //:Buffer:Pointer (Array_Of_Bytes)
+        ,   png_nob :  0   //:Buffer:Number_Of_Bytes
+
+            //: Try to not use "throw" as that is not        ://
+            //: C99 compatible without longjmp weirdness.    ://
+
+        ,   has_err :  0
+        ,   msg_err : ""
 
         };;
         let     NEW_png_sob=( GEP_FAD_New( STRUCT_png_sob ) );
@@ -208,8 +229,8 @@
         png_sob.vit=( GEP_VIT_png_sob );
         png_sob.wid=( 0 );
         png_sob.hig=( 0 );
-        png_sob.buf_poi=( null );
-        png_sob.buf_nob=(  0   );
+        png_sob.png_bin=( null );
+        png_sob.png_nob=(  0   );
 
     };;
 
