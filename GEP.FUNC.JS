@@ -11,32 +11,70 @@
 //:                                                          ://
 //:LOG_:Logging_Functions:===================================://
 
-    function
-    GEP_Log(
-        msg_log 
-    )
+    function //:Generic Logging Message
+    
+    gep_Log( msg_log  )
+
     { "use strict"
+        if( GEP_MAC_LOG > 0 ){
+        console.log("[gep_Log]:(" + msg_log + ")" );
+        };;
+    };;
+    function //:Logging message for "[*_TES_*]" functions.
 
-        console.log("[GEP_Log]:(" + msg_log + ")" );
+    gep_Log_TES( msg_log )
 
+    { "use strict"
+        if( GEP_MAC_LOG_o_TES > 0 ){
+        console.log("[gep_Log_TES]:(" + msg_log + ")" );
+        };;
+    };;
+    function //:Logging message for "[*_TES_D00_*]" functions.
+
+    gep_Log_TES_D00( msg_log )
+
+    { "use strict"
+        if( GEP_MAC_LOG_o_TES_D00 > 0 ){
+        console.log("[gep_Log_TES_D00]:(" + msg_log + ")" );
+        };;
+    };;
+    function //:Logging message for "[*_C99_*]" functions.
+
+    gep_Log_C99( msg_log )
+
+    { "use strict"
+        if( GEP_MAC_LOG_o_C99 > 0 ){
+        console.log("[gep_Log_C99]:(" + msg_log + ")" );
+        };;
     };;
 
+    function //:Logging message for "[*_ALG_*]" functions.
+
+    gep_Log_ALG( msg_log )
+
+    { "use strict"
+        if( GEP_MAC_LOG_o_ALG > 0 ){
+        console.log("[gep_Log_ALG]:(" + msg_log + ")" );
+        };;
+    };;
+
+//:===================================:LOG_:Logging_Functions://
 //:CFN_:C99_Utility_Functions:===============================://
 
     //:NOT part of "C99_" namespace anymore.
     //:Get length of string NOT including null terminator.
-    const GEP_CFN_Str_Len=function( hex_dum ){ "use strict"
+    const gep_CFN_Str_Len=function( hex_dum ){ "use strict"
     
         if( typeof( hex_dum ) != "string" ){
-            throw("[GEP_CFN_Str_Len:Bad_Input]");
+            throw("[gep_CFN_Str_Len:Bad_Input]");
         };;
     
         let str_len=( hex_dum.length );
         return( str_len );
     };;
 
-
-//:ASC_:Ascii_Related_Functions:(BELOW):=====================://
+//:===============================:CFN_:C99_Utility_Functions://
+//:ASC_:Ascii_Related_Functions:=============================://
             
     //: [1] : asc_ISA_hec: Is character valid hex character? ://
     //: [2] : hec_ISA_asc: Inverse Of GEP_asc_ISA_hec        ://
@@ -44,12 +82,12 @@
     //: [4] : heb_CTO_hec: EXAMPLE: 255  --> "FF"            ://
     //: [5] : asc_ISA_emp: Is ascii a whitespace character?  ://
     //: [6] : asc_ISA_bad: Is acii invalid as hex char?      ://
-    //: [7] : GEP_ASC_TRICKY_TO_TRANSPILE_asc_CTO_int        ://
-    //: [8] : GEP_ASC_TRICKY_TO_TRANSPILE_int_CTO_asc        ://
+    //: [7] : gep_ASC_TRICKY_TO_TRANSPILE_asc_CTO_int        ://
+    //: [8] : gep_ASC_TRICKY_TO_TRANSPILE_int_CTO_asc        ://
     
     //:------------------------------------------------------://
     function
-    GEP_ASC_asc_ISA_hec(
+    gep_ASC_asc_ISA_hec(
         chr_asc  //: C99[ char* chr_asc ]
     )
     { "use strict"
@@ -70,7 +108,7 @@
     
         };;};; //:///////////////////////////////////////////://
 
-        var int_asc = GEP_ASC_TRICKY_TO_TRANSPILE_asc_CTO_int( 
+        var int_asc = gep_ASC_TRICKY_TO_TRANSPILE_asc_CTO_int( 
             chr_asc 
         );;
 
@@ -90,7 +128,7 @@
     };;
     //: - - - - - - - - - - - - ---- - - - - - - - - - - - - ://
     function
-    GEP_ASC_hec_ISA_asc(
+    gep_ASC_hec_ISA_asc(
         int_hec //:Integer_Hexadecimal_Code, 0-to-15
     )
     { "use strict"
@@ -106,14 +144,14 @@
         if( int_hec >=  0 && int_hec <= 9 ){
 
             int_asc=( (int_hec -  0) + 48 );
-            chr_asc=( GEP_ASC_TRICKY_TO_TRANSPILE_int_CTO_asc( 
+            chr_asc=( gep_ASC_TRICKY_TO_TRANSPILE_int_CTO_asc( 
             int_asc ) );;
 
         }else
         if( int_hec >= 10 && int_hec < 16 ){
 
             int_asc=( (int_hec - 10) + 65 );
-            chr_asc=( GEP_ASC_TRICKY_TO_TRANSPILE_int_CTO_asc( 
+            chr_asc=( gep_ASC_TRICKY_TO_TRANSPILE_int_CTO_asc( 
             int_asc ) );;
 
         }else{
@@ -124,7 +162,7 @@
     };;
     //:------------------------------------------------------://
     function
-    GEP_ASC_hec_CTO_heb(
+    gep_ASC_hec_CTO_heb(
         hec //: C99[ char hec[ 2 ] ]
     )
     { "use strict"
@@ -140,8 +178,8 @@
             };;
         };;
 
-        let big=( GEP_ASC_asc_ISA_hec( hec[ 0 ] ) );
-        let lit=( GEP_ASC_asc_ISA_hec( hec[ 1 ] ) );
+        let big=( gep_ASC_asc_ISA_hec( hec[ 0 ] ) );
+        let lit=( gep_ASC_asc_ISA_hec( hec[ 1 ] ) );
         let heb=(  ( big * 16 )+( lit *  1 )  );
 
         if( /** #if **/ GEP_MAC_DEB > 0 ){ //:///////////////://
@@ -156,7 +194,7 @@
     };;
     //: - - - - - - - - - - - - ---- - - - - - - - - - - - - ://
     function
-    GEP_ASC_heb_CTO_hec(
+    gep_ASC_heb_CTO_hec(
           val_heb //:HexByte:PassedBy:VALUE
     ,     poi_hec //:HexChar:PassedBy:POINTER (AKA:car_bu2)
     )
@@ -169,14 +207,14 @@
         let lit=(  val_heb      % 16 ); //: 1's place.
         let big=( (val_heb-lit) / 16 ); //:16's place.
 
-        //:Inverse_Of[ GEP_ASC_TRICKY_TO_TRANSPILE_asc_CTO_int ]
-        poi_hec[ 0 ]=GEP_ASC_hec_ISA_asc( big );
-        poi_hec[ 1 ]=GEP_ASC_hec_ISA_asc( lit );
+        //:Inverse_Of[ gep_ASC_TRICKY_TO_TRANSPILE_asc_CTO_int ]
+        poi_hec[ 0 ]=gep_ASC_hec_ISA_asc( big );
+        poi_hec[ 1 ]=gep_ASC_hec_ISA_asc( lit );
 
     };;
     //:------------------------------------------------------://
     function
-    GEP_ASC_asc_ISA_emp( 
+    gep_ASC_asc_ISA_emp( 
         cur_chr 
     )
     {"use strict"
@@ -200,7 +238,7 @@
     };;
     //: - - - - - - - - - - - - ---- - - - - - - - - - - - - ://
     function
-    GEP_ASC_asc_ISA_bad( 
+    gep_ASC_asc_ISA_bad( 
         cur_chr 
     )
     {"use strict"
@@ -291,13 +329,10 @@
     };;
     //:------------------------------------------------------://
 
-
-
-
     //:Replace this function with a simple cast in C99.
     //:[ char ] type used for ascii are just [ int ](s).
     function
-    GEP_ASC_TRICKY_TO_TRANSPILE_asc_CTO_int( 
+    gep_ASC_TRICKY_TO_TRANSPILE_asc_CTO_int( 
         chr_asc
     )
     { "use strict"
@@ -313,7 +348,7 @@
     //|FFFFFFFFFFFFF[ FUNCTION_DIVIDER ]FFFFFFFFFFFFF|//
     
     function
-    GEP_ASC_TRICKY_TO_TRANSPILE_int_CTO_asc( 
+    gep_ASC_TRICKY_TO_TRANSPILE_int_CTO_asc( 
         int_asc 
     )
     { "use strict"
@@ -323,7 +358,7 @@
     
     };;
 
-
+//:=============================:ASC_:Ascii_Related_Functions://
 //:DUM_:Hex_Dump_Conversion_Functions:=======================://
 
     //:------------------------------------------------------://
@@ -337,7 +372,7 @@
 
     //:[1]:hex_dum_CTO_png_nob
     function
-    GEP_DUM_hex_dum_CTO_png_nob(
+    gep_DUM_hex_dum_CTO_png_nob(
         hex_dum
     )
     {"use strict"
@@ -345,7 +380,7 @@
         //:ABOUT_FUNCTION:
         //:Scan over a hex dump string and figure out how 
         //:many bytes should result after being parsed.
-        //:GEP_Str_CTO_Nob==GEP_DUM_hex_dum_CTO_png_nob
+        //:GEP_Str_CTO_Nob==gep_DUM_hex_dum_CTO_png_nob
 
         //:VD:Variable_Declaration:(BELOW):------------------://
         //:VDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVDVD://
@@ -373,7 +408,7 @@
         //:VAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVAVA://
 
         //:str_len does NOT include null terminator
-        let str_len=( GEP_CFN_Str_Len( hex_dum ) );
+        let str_len=( gep_CFN_Str_Len( hex_dum ) );
         for( let str_dex = 0  
         ;        str_dex < str_len  
         ;        str_dex++ 
@@ -401,11 +436,11 @@
                 //:Hackish way to put a watch on
                 //:this function call for condition of
                 //:" 0 == cur_chr "
-                isa_hec=(GEP_ASC_asc_ISA_hec( cur_chr ));//:SAME
+                isa_hec=(gep_ASC_asc_ISA_hec( cur_chr ));//:SAME
 
             }else{
 
-                isa_hec=(GEP_ASC_asc_ISA_hec( cur_chr ));//:SAME
+                isa_hec=(gep_ASC_asc_ISA_hec( cur_chr ));//:SAME
 
             };;
 
@@ -418,7 +453,7 @@
 
             //:- - - - - - - - - - - -- - - - - - - - - - - -://
 
-            isa_emp=( GEP_ASC_asc_ISA_emp( cur_chr )  );
+            isa_emp=( gep_ASC_asc_ISA_emp( cur_chr )  );
             if( isa_emp ){
                 ((emp_sum)++);
             };;
@@ -427,7 +462,7 @@
 
             //:EC:Error_Checking:----------------------------://
             //:ECECECECECECECECECECECECECECECECECECECECECECEC://
-            isa_bad=( GEP_ASC_asc_ISA_bad( cur_chr )  );
+            isa_bad=( gep_ASC_asc_ISA_bad( cur_chr )  );
             if( isa_bad >  0 ){
                 ((bad_sum)++);
                 if( "x" == cur_chr || "X" == cur_chr ){
@@ -474,11 +509,11 @@
         png_nob=( dig_sum / 2 );
 
         return( png_nob );
-    };;                      //:[GEP_DUM_hex_dum_CTO_png_nob]://
+    };;                      //:[gep_DUM_hex_dum_CTO_png_nob]://
     //: - - - - - - - - - - - - ---- - - - - - - - - - - - - ://
     //:[2]:Str_CTO_Hex_001
     function
-    GEP_DUM_Str_CTO_Hex_001(
+    gep_DUM_Str_CTO_Hex_001(
         png_bin //: POINTER:PNG_HEX_DUMP
     ,   png_len //: png_bin.length
     ,   png_pos //: Seek_Position_In:png_bin
@@ -509,7 +544,7 @@
             if( car_pos >= car_len ){ break; };
 
             chr=( car_poi[ car_pos ] );
-            isa_hec=( GEP_ASC_asc_ISA_hec( chr )  );
+            isa_hec=( gep_ASC_asc_ISA_hec( chr )  );
             if( isa_hec >= 0 /**non_neg == true**/ ){
             //:Current character is [0-9|A-F|a-f]
 
@@ -547,7 +582,7 @@
             if( bu2_pos >= 2 ){
 
                 //:Convert two letter string to byte value:
-                let heb = GEP_ASC_hec_CTO_heb( 
+                let heb = gep_ASC_hec_CTO_heb( 
                     car_bu2 /* hec */ 
                 );;
 
@@ -560,11 +595,11 @@
 
         };;
         return( png_pos );
-    };;                          //:[GEP_DUM_Str_CTO_Hex_001]://
+    };;                          //:[gep_DUM_Str_CTO_Hex_001]://
     //: - - - - - - - - - - - - ---- - - - - - - - - - - - - ://
     //:[3]:Str_CTO_Hex_002
     function 
-    GEP_DUM_Str_CTO_Hex_002(
+    gep_DUM_Str_CTO_Hex_002(
         car_poi
     )
     {
@@ -574,7 +609,7 @@
         GEP_CAR_LEN=( GEP_CAR_LEN );
 
         let png_pos=(
-            GEP_DUM_Str_CTO_Hex_001(
+            gep_DUM_Str_CTO_Hex_001(
                 GEP_PNG_BIN //: png_bin 01  ://
             ,   GEP_PNG_LEN //: png_len 02  ://
             ,   GEP_PNG_POS //: png_pos 03  ://
@@ -589,7 +624,7 @@
     //: - - - - - - - - - - - - ---- - - - - - - - - - - - - ://
     //:[4]:hex_dum_CTO_png_bin
     function
-    GEP_DUM_hex_dum_CTO_png_bin(
+    gep_DUM_hex_dum_CTO_png_bin(
             hex_dum   //:ARG_INN
         ,   png_nob   //:ARG_INN (number of bytes in[ png_bin ])
 
@@ -613,8 +648,8 @@
         //: but found it confusing to read. Now you need to
         //: be more careful that[ png_bin ] is large enough.
 
-        let png_nob_exp= GEP_DUM_hex_dum_CTO_png_nob( hex_dum );
-        let hex_nob    =( GEP_CFN_Str_Len( hex_dum ) );
+        let png_nob_exp= gep_DUM_hex_dum_CTO_png_nob( hex_dum );
+        let hex_nob    =( gep_CFN_Str_Len( hex_dum ) );
 
         if( png_nob_exp != png_nob ){
             throw("[ERR:UNEXPECTED_ALLOCATION_SIZE]");
@@ -631,8 +666,8 @@
 
         //:I don't know why I decided to do
         //:outputs first (ARG_OUT) for 
-        //:GEP_DUM_Str_CTO_Hex_001, but stuck with it now.
-        GEP_DUM_Str_CTO_Hex_001(
+        //:gep_DUM_Str_CTO_Hex_001, but stuck with it now.
+        gep_DUM_Str_CTO_Hex_001(
             png_bin, png_nob, 0 //:ARG_OUT
         ,   hex_dum, hex_nob    //:ARG_INN
         );;
@@ -640,7 +675,7 @@
     };;
     //: - - - - - - - - - - - - ---- - - - - - - - - - - - - ://
     //:[5]:hex_CTO_str
-    const GEP_DUM_hex_CTO_str =function(
+    const gep_DUM_hex_CTO_str =function(
         png_bin //: POINTER:PNG_HEX_DUMP
     ,   png_len //: png_bin.length
 
@@ -702,7 +737,7 @@
             };;
 
             //:Call inverse of[ GEP_hec_CTO_heb ]
-            GEP_ASC_heb_CTO_hec( 
+            gep_ASC_heb_CTO_hec( 
                     png_bin[ png_pos ] //:Byte_Value_To_Convert
             ,   GEP_C99_AOV( car_bu2 ) //:Output_Param_Pointer
             );;                        //:AKA[ poi_hec ]
@@ -720,7 +755,7 @@
     //: - - - - - - - - - - - - ---- - - - - - - - - - - - - ://
     //:[6]:hex_CTO_str_UNSAFE:
     function
-    GEP_DUM_hex_CTO_str_UNSAFE(
+    gep_DUM_hex_CTO_str_UNSAFE(
         png_bin
     ,   png_len
     )   
@@ -728,7 +763,7 @@
         let car_len =( png_len * 2 );
         let car_poi = GEP_POI_ARR_CHR( car_len );
 
-        GEP_DUM_hex_CTO_str(
+        gep_DUM_hex_CTO_str(
             png_bin
         ,   png_len
         
@@ -740,265 +775,132 @@
     };;
     //:------------------------------------------------------://
 
-//:TES_: Test_Related_Functions:=============================://
+//:=======================:DUM_:Hex_Dump_Conversion_Functions://
+//:BAH_:Byte_Array_Helpers:==================================://
 
     function
-    GEP_TES_Put_Tes_Dat(
-        /** void **/
+    gep_BAH_u8a_Get_u32(
+    /**/    u8a //:[ u8a | png_bin | Uint8ArrayToReadFrom      ]
+    ,       nob //:[ u8a_nob | NumberOfBytesInUint8Array       ]
+    ,       dex //:[ dex | png_dex | subOctet's first(MSB)byte ]
     )
     { "use strict"
-    //://////////////////////////////////////////////////////://
-    //:                                                      ://
-    //: Load PNG hex dumps into byte arrays for testing.     ://
-    //:                                                      ://
-    //: Code looks really weird because:                     ://
-    //: 1: Written in C friendly style.                      ://
-    //: 2: Stateful "I" function helps preserve column space.://
-    //:                                                      ://
-    //://////////////////////////////////////////////////////://
+        let sub_oct=( 0x00 /** u32 | sub_oct | SubOctet **/ );  
 
-    let I=GEP_C99_AOF( GEP_DUM_Str_CTO_Hex_002 );
+        //:Extracted_From_Statement_Below_To_Help_Debugging:
+        let b_0=( u8a[ dex + 0 ] ); //:MSB
+        let b_1=( u8a[ dex + 1 ] );
+        let b_2=( u8a[ dex + 2 ] );
+        let b_3=( u8a[ dex + 3 ] ); //:LSB
 
+        //:Bug_Fix:Dont_Forget_To_Multiply_Shifts_By_8
+        const B=( 8 ); //:Byte_Is_8_Bits:
 
-    GEP_PNG_BIN=( GEP_C99_AOV( GEP_PNG_001 )       );
-    GEP_PNG_LEN=(              GEP_PNG_001_LEN_MAC );
-    GEP_PNG_POS=(            (      0      )       );
-    GEP_CAR_LEN=(            (     26      )       );
-    
-    //:GEP/TES_DAT/01.PNG: One all white pixel. 255 alpha.
-    I( "89 50 4e 47    0d 0a 1a 0a" ); //|.PNG|....| 08 | 01 |//
-    I( "00 00 00 0d    49 48 44 52" ); //|....|IHDR| 16 | 02 |//
-    I( "00 00 00 01    00 00 00 01" ); //|....|....| 24 | 03 |//
-    I( "08 02 00 00    00 90 77 53" ); //|....|..wS| 32 | 04 |//
-    I( "de 00 00 00    01 73 52 47" ); //|....|.sRG| 40 | 05 |//
-    I( "42 00 ae ce    1c e9 00 00" ); //|B...|....| 48 | 06 |//
-    I( "00 04 67 41    4d 41 00 00" ); //|..gA|MA..| 56 | 07 |//
-    I( "b1 8f 0b fc    61 05 00 00" ); //|....|a...| 64 | 08 |//
-    I( "00 09 70 48    59 73 00 00" ); //|..pH|Ys..| 72 | 09 |//
-    I( "0e c3 00 00    0e c3 01 c7" ); //|....|....| 80 | 10 |//
-    I( "6f a8 64 00    00 00 19 74" ); //|o.d.|...t| 88 | 11 |//
-    I( "45 58 74 53    6f 66 74 77" ); //|EXtS|oftw| 96 | 12 |//
-    I( "61 72 65 00    70 61 69 6e" ); //|are.|pain|104 | 13 |//
-    I( "74 2e 6e 65    74 20 34 2e" ); //|t.ne|t 4.|112 | 14 |//
-    I( "30 2e 31 36    44 69 af f5" ); //|0.16|Di..|120 | 15 |//
-    I( "00 00 00 0c    49 44 41 54" ); //|....|IDAT|128 | 16 |//
-    I( "18 57 63 f8    ff ff 3f 00" ); //|.Wc.|..?.|136 | 17 |//
-    I( "05 fe 02 fe    a7 35 81 84" ); //|....|.5..|144 | 18 |//
-    I( "00 00 00 00    49 45 4e 44" ); //|....|IEND|152 | 19 |//
-    I( "ae 42 60 82               " ); //|.B`.|    |160 | 20 |//
-    //::123456789_123456789_123456:::GEP_CAR_LEN==( 26 ):::::://
-    if( GEP_PNG_POS != GEP_PNG_001_LEN_MAC ){
-        throw("[GEP_ERR:FAILED_TO_FILL_100_PERCENT:PNG_001]");
-    }else{
-        if( GEP_MAC_LOG > 0 ){ GEP_Log("[PNG_001:LOADED]"); };
+        //:BIT_PACKING_IS_IN[ NETWORK_BYTE_ORDER ]://
+        sub_oct=( sub_oct | ((b_0 << (3*B) )>>>0) );
+        sub_oct=( sub_oct | ((b_1 << (2*B) )>>>0) );
+        sub_oct=( sub_oct | ((b_2 << (1*B) )>>>0) );
+        sub_oct=( sub_oct | ((b_3 << (0*B) )>>>0) );
+
+        return( sub_oct    /** u32 | sub_oct | SubOctet **/ );
     };;
 
-    //://////////////////////////////////////////////////////://
-
-    GEP_PNG_BIN=( GEP_C99_AOV( GEP_PNG_002 )       );
-    GEP_PNG_LEN=(              GEP_PNG_002_LEN_MAC );
-    GEP_PNG_POS=(            (      0      )       );
-    GEP_CAR_LEN=(            (     26      )       );
-
-    //:GEP/TES_DAT/02.PNG: One all white pixel. 255 alpha.
-    I( "89 50 4e 47    0d 0a 1a 0a" ); //|.PNG|....| 08 | 01 |//
-    I( "00 00 00 0d    49 48 44 52" ); //|....|IHDR| 16 | 02 |//
-    I( "00 00 00 01    00 00 00 01" ); //|....|....| 24 | 03 |//
-    I( "08 02 00 00    00 90 77 53" ); //|....|..wS| 32 | 04 |//
-    I( "de 00 00 00    01 73 52 47" ); //|....|.sRG| 40 | 05 |//
-    I( "42 00 ae ce    1c e9 00 00" ); //|B...|....| 48 | 06 |//
-    I( "00 04 67 41    4d 41 00 00" ); //|..gA|MA..| 56 | 07 |//
-    I( "b1 8f 0b fc    61 05 00 00" ); //|....|a...| 64 | 08 |//
-    I( "00 09 70 48    59 73 00 00" ); //|..pH|Ys..| 72 | 09 |//
-    I( "0e c3 00 00    0e c3 01 c7" ); //|....|....| 80 | 10 |//
-    I( "6f a8 64 00    00 00 0c 49" ); //|o.d.|...I| 88 | 11 |//
-    I( "44 41 54 18    57 63 f8 ff" ); //|DAT.|Wc..| 96 | 12 |//
-    I( "ff 3f 00 05    fe 02 fe a7" ); //|.?..|....|104 | 13 |//
-    I( "35 81 84 00    00 00 00 49" ); //|5...|...I|112 | 14 |//
-    I( "45 4e 44 ae    42 60 82   " ); //|END.|B`. |120 | 15 |//
-    //::123456789_123456789_123456:::GEP_CAR_LEN==( 26 ):::::://
-    if( GEP_PNG_POS != GEP_PNG_002_LEN_MAC ){
-        throw("[GEP_ERR:FAILED_TO_FILL_100_PERCENT:PNG_002]");
-    }else{
-        if( GEP_MAC_LOG > 0 ){ GEP_Log("[PNG_002:LOADED]"); };
-    };;
-
-    };; //://////////////////////////:[ GEP_TES_Put_Tes_Dat ]://
-
-    //: - - - - - - - - - - - - ---- - - - - - - - - - - - - ://
     function
-    GEP_TES_Hex_Dum( 
-        /** void **/ 
-    )
+    gep_BAH_u32_CTO_str( u32 )
     { "use strict"
+        throw("[USE:gep_ALG_u32_CTO_cus]");
+    };;
 
-        //:-----------:1234567890123456:---://
-        let hex_dum=( "0123456789ABCDEF" );
-        let hex_new=( "----------------" );
+    function
+    gep_BAH_str_CTO_u32( str )
+    { "use strict"
+        throw("[USE:gep_ALG_cus_CTO_u32]");
+    };;
 
-        let car_poi=GEP_C99_AOS( hex_dum );
-        let car_len=( 16 );
+//:ALG_:ALGorithm_main_algorithm_functions:==================://
 
-        let png_len=( car_len / 2 );
-        let png_bin=GEP_C99_Mal_Arr_Chr( png_len );
-        let png_pos=( 0 ); //:Fill from start of array.
 
-        //:Convert hex dump string to byte array:
-        GEP_DUM_Str_CTO_Hex_001(
-            png_bin //: POINTER:PNG_HEX_DUMP
-        ,   png_len //: png_bin.length
-        ,   png_pos //: Seek_Position_In:png_bin
-
-        ,   car_poi //: String_Of_Hex_Codes
-        ,   car_len //: car_poi.length
-        );;
-        
-        //:Convert byte array back into hex dump string:
-        //:[HACK]:Characters are not passed by reference
-        //:       in javascript, so you need to take the
-        //:       return value here!
-        car_poi=GEP_C99_AOS( hex_new );
-        car_len=( 16 );
-        car_poi=GEP_DUM_hex_CTO_str(
-                png_bin //: POINTER:PNG_HEX_DUMP
-            ,   png_len //: png_bin.length
-
-                //:The caller should provide memory to be filled
-                //:so that malloc and free happen in same scope.
-            ,   car_poi //: Character array to fill.
-            ,   car_len //: Declared length of character array.
-            );;
-        //:HACK: Also wouldn't have to do this assignment
-        //:      if this were C code.
-        hex_new=( car_poi );
-
-        //:If conversion back and forth was successfull,
-        //:contents of [ hex_dum ] should match [ hex_new ]
-
-        let fai=( 0 ); //:Fail_Times
-        for( let i = 0 ; i < 16 ; i++ ){
-
-            if( hex_dum[ i ] != hex_new[ i ] ){
-                fai++;
+    //:------------------------------------------------------://
+    //:TODO:put into "BAH" namespace" as these are helpers.  ://
+    //:[1]:gep_ALG_cus_CTO_u32                               ://
+    //:[2]:gep_ALG_u32_CTO_cus                               ://
+    //:------------------------------------------------------://
+    function 
+    gep_ALG_cus_CTO_u32(
+        cus //:CUSS: A four letter word string. EX:"IHDR"
+    )
+    {
+        //:Error_Check_Input:cus must be 4 letters long.
+        if( GEP_MAC_DEB > 0 ){
+            if( cus.length != 4 ){
+                throw("[Cusswords_Are_4_Letters_Long]");
             };;
         };;
 
-        if( 0 != fai ){
-            throw("[GEP_ERR:Hex_Dump_Test_Failed]");
-        }else{
-            GEP_Log("[Hex_Dump_Test_Passed]");
+        const 
+        asc_CTO_int=( gep_ASC_TRICKY_TO_TRANSPILE_asc_CTO_int );
+        const
+        int_CTO_asc=( gep_ASC_TRICKY_TO_TRANSPILE_int_CTO_asc );
+
+        let shi=(  0   ); //:Bit shifting amount
+        let u32=( 0x00 );
+        let asc=( ""   ); //:Hex_CHARACTER[ asc / hec ]
+        let int=( 0x00 ); //:Hex_BYTE[      int / heb ]
+        for( let i = 0; i < 4 ; i++ ){
+
+            shi =( 8 /**BYTE**/ * (3-i) );
+            int = asc_CTO_int( asc = cus[ i ] );
+            u32 =( u32 | (int << shi )>>>0 );
+                
         };;
 
-        GEP_C99_Fre_Arr_Chr( png_bin ); //:FREE_MEMORY
+        return( u32 );
 
-    };; //:--------------------------------:[GEP_TES_Hex_Dum]://
-
-    //: - - - - - - - - - - - - ---- - - - - - - - - - - - - ://
+    };;//: - - - - - - - - - - - - - - - - - - - - - - - - - ://
     function
-    GEP_TES_png_bin_CTO_png_sob( 
-        /** void **/
+    gep_ALG_u32_CTO_cus(
+        u32 //:UINT32: A 4 byte value that can encode 4 letters.
     )
-    { "use strict"
-
-        let hex_dum=("" //:01.PNG's hex dump.
-        +   "89 50 4e 47    0d 0a 1a 0a"  //: 01 ://
-        +   "00 00 00 0d    49 48 44 52"  //: 02 ://  
-        +   "00 00 00 01    00 00 00 01"  //: 03 ://  
-        +   "08 02 00 00    00 90 77 53"  //: 04 ://
-        +   "de 00 00 00    01 73 52 47"  //: 05 ://
-        +   "42 00 ae ce    1c e9 00 00"  //: 06 ://
-        +   "00 04 67 41    4d 41 00 00"  //: 07 ://
-        +   "b1 8f 0b fc    61 05 00 00"  //: 08 ://
-        +   "00 09 70 48    59 73 00 00"  //: 09 ://
-        +   "0e c3 00 00    0e c3 01 c7"  //: 10 ://
-        +   "6f a8 64 00    00 00 19 74"  //: 11 ://
-        +   "45 58 74 53    6f 66 74 77"  //: 12 ://
-        +   "61 72 65 00    70 61 69 6e"  //: 13 ://
-        +   "74 2e 6e 65    74 20 34 2e"  //: 14 ://
-        +   "30 2e 31 36    44 69 af f5"  //: 15 ://
-        +   "00 00 00 0c    49 44 41 54"  //: 16 ://
-        +   "18 57 63 f8    ff ff 3f 00"  //: 17 ://
-        +   "05 fe 02 fe    a7 35 81 84"  //: 18 ://
-        +   "00 00 00 00    49 45 4e 44"  //: 19 ://
-        +   "ae 42 60 82               "  //: 20 ://
-        );; //: ( 19 * 8 ) + ( 4 ) == 156 bytes
-        let exp_nob=( 156 ); //:Expected_Number_Of_Bytes
-
-
-        //:Do one pass over the hex dump to figure out
-        //:the number of bytes that will results from
-        //:parsing.
-        var png_nob = GEP_DUM_hex_dum_CTO_png_nob( hex_dum );
-        if( png_nob != exp_nob ){
-            throw("[Not_The_Number_Of_Bytes_I_Expected]");
+    {
+        //:Make sure correct range for UINT32:
+        if( GEP_MAC_DEB > 0 ){
+            if( (u32 & 0xFFFFFFFF ) != u32 ){
+                throw("[u32_is_only_four_bytes_unsigned]"); 
+            }else
+            if( (u32 & 0xFFFFFFFF ) == u32 ){
+                //:Good. Okay.
+            }else
+            if( u32 < 0 ){
+                throw("[TheMaskShouldHaveGotThis]");
+            }else{
+                throw("[SuperWTFMAN]");
+            };;
         };;
 
-        //:Allocated number of bytes:
-        let png_bin=( new Uint8Array( png_nob ) );
+        const 
+        asc_CTO_int=( gep_ASC_TRICKY_TO_TRANSPILE_asc_CTO_int );
+        const
+        int_CTO_asc=( gep_ASC_TRICKY_TO_TRANSPILE_int_CTO_asc );
 
-        //:Internally_Uses:GEP_Str_CTO_Hex
-        GEP_DUM_hex_dum_CTO_png_bin(
-            hex_dum              //:ARG_INN
-        ,   png_nob              //:ARG_INN
+        let shi=(  0   ); //:Bit shifting amount
+        let cus=( ""   );
+        let asc=( ""   ); //:Hex_CHARACTER[ asc / hec ]
+        let int=( 0x00 ); //:Hex_BYTE[      int / heb ]
+        for( let i = 0; i < 4 ; i++ ){
 
-        ,   png_bin              //:ARG_OUT
-        );;
-
-        //:Quick Spot Check on first and last byte, since
-        //:we can easily see what they are from[ hex_dum ].
-        if( png_bin[ 0       ] != 0x89 //:KEEP_IT_SIMPLE_STUPID
-        ||  png_bin[ 0       ] !=  137 //:KEEP_IT_SIMPLE_STUPID
-        ){
-            throw("[SPOT_CHECK_FAIL:[0]:0x89]");
-        };;
-        if( png_bin[ 156 - 1 ] != 0x82 //:KEEP_IT_SIMPLE_STUPID 
-        ||  png_bin[ 156 - 1 ] !=  130 //:KEEP_IT_SIMPLE_STUPID
-        ){
-            throw("[SPOT_CHECK_FAIL:[LAST]:0x82]");
+            shi =( 8 /**BYTE**/ * (3-i) );
+            int =( ( (u32>>( shi ))>>>0 ) & 0xFF );
+            asc = int_CTO_asc( int );
+            cus = cus + asc; //:Append next character.
+              
         };;
 
-        //:Some of what we already did above may be replicated
-        //:in this function call, don't worry about that,
-        //:test code should be redundant.
-
-        //:Create new intermediate png_sob used to help
-        //:use parse the PNG data.
-        let png_sob=( GEP_VAL_png_sob() );
-        GEP_INI_png_sob( png_sob );
-
-        GEP_ALG_png_bin_CTO_png_sob( 
-            png_bin //:ARG_INN
-        ,   png_nob //:ARG_INN
-        
-        ,   png_sob //:ARG_OUT
-        );;
-
+        return( cus );
     };;
-    //: - - - - - - - - - - - - ---- - - - - - - - - - - - - ://
-    function
-    GEP_TES_All( 
-        /** void **/
-    )
-    { "use strict"
-
-        //:FUNCTION_SUMMARY: run_all_test_code:
-
-        GEP_TES_Put_Tes_Dat();
-        GEP_TES_Hex_Dum();
-
-        //: Must be AFTER:GEP_Tes_Hex_Dum()          - - - - ://
-        //: Because our png binary ( png_bin ) is    - - - - ://
-        //: encoded as a long text string known as   - - - - ://
-        //: a [ text/hex dump ].                     - - - - ://
-        GEP_TES_png_bin_CTO_png_sob();
-
-        ((GEP_GSF_tes_ran)++);
-    };;
-
-
-//:ALG_: Algorithm (Main Algorithm Functions):===============://
-
-
+    //:------------------------------------------------------://
+    //:[1]:gep_ALG_has_oct_002                               ://
+    //:[2]:gep_ALG_has_oct_001                               ://
+    //:------------------------------------------------------://
     function //:Has octed? 002==byte array operand overload.
     gep_ALG_has_oct_002( 
         png_bin
@@ -1063,9 +965,8 @@
         //: has_oct  < 0: number of non-matching bytes
         //: has_oct  > 0: number of     MATCHING bytes
         return( has_oct );; //:------------------------------://
-    };;
 
-    
+    };;//: - - - - - - - - - - - - - - :[gep_ALG_has_oct_002]://
 
     function //:Has octet? 001== string operand overload.
     gep_ALG_has_oct_001(
@@ -1079,14 +980,14 @@
         //: Get expected size in bytes of[ sig_str ]         ://
         //: when converted into a [ sig_car ].               ://
         /** hex_dum === sig_str **/
-        let sig_nob = GEP_DUM_hex_dum_CTO_png_nob(
+        let sig_nob = gep_DUM_hex_dum_CTO_png_nob(
                               sig_str
         );;
 
         //:Allocate Memory On Heap:
         let sig_car = GEP_C99_Mal_Arr_Chr( sig_nob );
 
-        GEP_DUM_hex_dum_CTO_png_bin(
+        gep_DUM_hex_dum_CTO_png_bin(
             sig_str  //:ARG_INN: String encoded byte array.
         ,   sig_nob  //:ARG_INN: number_of_bytes_in[ sig_car ]
         ,   sig_car  //:ARG_OUT: output array.
@@ -1106,7 +1007,7 @@
         GEP_C99_Fre_Arr_Chr( sig_car );
 
         return( has_oct /** has_sig **/ );
-    };;
+    };;//:-----------------------------:[gep_ALG_has_oct_001]://
 
     function /** Check for PNG header of binary data **/
     gep_ALG_png_sob_CHK_png_hed(
@@ -1130,12 +1031,88 @@
         return( has_sig /** has_hed **/ );
     };;
 
-    const GEP_ALG_png_bin_CTO_png_sob=function(
+    function
+    gep_ALG_png_dex_CTO_chu_key(
+    /**/png_sob //:[ png_bin & png_nob ] 
+    ,   png_dex //:IndexToStartLookingFrom
+    )
+    { "use strict"
+
+        let chu_key=( 0 );
+
+        let hed_u32=(0x00); //:Header as uint32
+        let hed_cus=("");   //:Header as "cuss" (4 letter word)
+
+        //:Sample the 4 bytes starting at png_dex
+        //:to get a chunk name encoded in uint32 value.
+        hed_u32 =(
+            gep_BAH_u8a_Get_u32(
+            /**/    png_sob.png_bin //:[ u8a | png_bin   ]
+            ,       png_sob.png_nob //:[ nob | NumBytes  ]
+            ,               png_dex //:[ dex | png_dex   ]
+            )
+        );;
+
+        //:Convert to human readable:
+        hed_cus = gep_ALG_u32_CTO_cus( 
+                          hed_u32 /**HeaderName**/ );;
+
+        if( 0
+        ||"IHDR" == hed_cus
+        ||"IDAT" == hed_cus
+        ||"IEND" == hed_cus
+        ||"PLTE" == hed_cus
+        ){
+            const IHDR=( GEP_LUT_MAC_dex_IHDR );
+            const IDAT=( GEP_LUT_MAC_dex_IDAT );
+            const IEND=( GEP_LUT_MAC_dex_IEND );
+            const PLTE=( GEP_LUT_MAC_dex_PLTE );
+
+            switch( hed_cus ){
+            case "IHDR" :{ chu_key = IHDR; };break;
+            case "IDAT" :{ chu_key = IDAT; };break;
+            case "IEND" :{ chu_key = IEND; };break;
+            case "PLTE" :{ chu_key = PLTE; };break;
+            default:{
+                throw("[RECOGNIZED_BUT_NOT_HANDLED]");
+            };;};;
+
+            if(0){ /** NOOP_BREAKPOINT **/ };
+
+        }else{ //:Determine_If_Critical_Or_Ancillary_Chunk
+
+            //: Example: If chunk is "sRGB"                  ://
+            //: hex_dum=="73 52 47 42"                       ://
+            //: hex_u32==0x73524742                          ://
+            //:     oct==0x73 (hex:0x73 == dec:115)          ://
+            //:     0x61 <= 0x73 <= 0x7A , Unknown:Ancillary ://
+
+            const B=( 8 ); //:8 bits byte.
+
+            let oct=(( hed_u32 >>> (3*B) ) & 0xFF );
+
+            if( oct >= 0x61 && oct <= 0x7A ){ //:LowerCase
+                chu_key=( 0 - 1 ); //:Unknown:Ancillary
+            }else
+            if( oct >= 0x41 && oct <= 0x51 ){ //:UpperCase
+                chu_key=(   0   ); //:Unknown:Critical
+            }else{
+                throw("[WHAT_FUCKING_CASE_IS_THIS]");
+            };;
+
+        };;
+
+        return( chu_key );
+    };;
+
+    function
+    gep_ALG_png_bin_CTO_png_sob(
         png_bin //:ARG_INN
     ,   png_nob //:ARG_INN
                 
     ,   png_sob //:ARG_OUT
-    ){ "use strict"
+    )
+    { "use strict"
 
         let o_k=( 1 ); //:Okay unless error happens.
 
@@ -1170,42 +1147,155 @@
             //: tally of how many of the different chunk     ://
             //: types there are in a first pass.             ://
 
-            num_IHDR=( 0 );
-            num_IDAT=( 0 );
-            num_IEND=( 0 );
-            num_PLTE=( 0 );
+            let num_IHDR=( 0 ); 
+            let num_IDAT=( 0 );
+            let num_IEND=( 0 );
+            let num_PLTE=( 0 );
             
-            num_DROP=( 0 ); //:Dropped   non-critical chunks.
-            num_CRIT=( 0 ); //:Un-recognized critical chunks.
+            let num_DROP=( 0 ); //:Dropped   non-critical chunks 
+            let num_CRIT=( 0 ); //:Un-recognized critical chunks 
 
             //:IHDR should immediately follow "PNG" header
             //:and help us figure out where to jump to next.
 
-            let png_dex=( 8 - 1 );
+            let png_dex=(   0 );
+            let png_jum=(  12 ); //:Jump_To[ IHDR ]Header
+
             let chu_key=(   0   ); //:Chunk_Key
             let chu_val_str=("" ); //:Chunk_Value(Code_String)
+            let chu_val_u32=("" ); //:Chunk_Value_As_Uint_32
             while( 1 ) {
 
-                ( png_dex )++;
+                //:INCREMENT:--------------------------------://
+                //: Jump to where we think the next          ://
+                //: CHUNK_TYPE ascii cus(word) name header is://
+                //: www.w3.org/TR/PNG/#5PNG-file-signature   ://
+                                                        //:  ://
+                    png_dex += png_jum;                 //:  ://
+                                                        //:  ://
+                //:                                     //:  ://
+                //:BAILOUT_CONDITION:------------------------://
+                                                        //:  ://
+                    if( "IEND"==chu_val_str ){ break; };//:  ://
+                                                        //:  ://
+                //:------------------------------------------://
 
-                chu_key = gep_ALG_IsKnownChunkHere(
-                    png_sob
-                ,   png_dex
+                //:IsKnownChunkHere?
+                //:Return positive key index if chunk known:
+                chu_key = (
+                    gep_ALG_png_dex_CTO_chu_key(
+                    /**/png_sob //:[ png_bin & png_nob ] 
+                    ,   png_dex //:IndexToStartLookingFrom
+                    )
                 );;
 
-                if( chu_key < 0 ){
+                if( chu_key < 0 ){ //:Unknown_Non_Critical   ://
+                //:NOTE: "Unknown" can mean: "I recognize "  ://
+                //:"the chunk, but as a coder I am too lazy" ://
+                //:"to support this feature of PNG. #YAGNI#" ://
+
+                    //:Call uint32 subOctet function:
+                    chu_val_u32=( gep_BAH_u8a_Get_u32(
+                    /**/png_sob.png_bin //:ByteArray
+                    ,   png_sob.png_nob //:ByteArray.length
+                    ,           png_dex //:MSB index of octet
+                    ));;
+
+                    //:  convert_octet_into_a_string:     - -://
+                    //:[ gep_DUM_hex_CTO_str ]is_overkill - -://
+                    chu_val_str = gep_ALG_u32_CTO_cus( 
+                    /**/          chu_val_u32         );;
+
+                    let msg_log=(""
+                    +   "[IGNORING:Non_Critical_Chunk]:("
+                    +   chu_val_str                  +")"
+                    );;
+
+                    gep_Log_ALG( msg_log );
+                }else
+                if( chu_key > 0 ){ //:Known_Supported_Chunk
+
+                    chu_val_str=(GEP_LUT_chu_kno_STR[ 
+                        chu_key ]);;
+
+                    switch( chu_val_str ){
+                    case "IHDR" :{ num_IHDR++; };break;
+                    case "IDAT" :{ num_IDAT++; };break;
+                    case "IEND" :{ num_IEND++; };break;
+                    case "PLTE" :{ num_PLTE++; };break;
+                    default     :{
+                        
+                        throw("[Found_But_Not_Handled]");
+
+                    };; };;
+
+                    if(0){ /** NOOP_BREAKPOINT **/ };
 
                 }else
-                if( chu_key > 0 ){
+                if( chu_key ==0 ){ //:Unknown_Critical_Chunk
 
-                }else{
-                //:0 is 
+                    //:Call uint32 subOctet function:
+                    chu_val_u32=( gep_BAH_u8a_Get_u32(
+                    /**/png_sob.png_bin //:ByteArray
+                    ,   png_sob.png_nob //:ByteArray.length
+                    ,           png_dex //:MSB index of octet
+                    ));;
 
+                    //:  convert_octet_into_a_string:     - -://
+                    //:[ gep_DUM_hex_CTO_str ]is_overkill - -://
+                    chu_val_str = gep_ALG_u32_CTO_cus( 
+                    /**/          chu_val_u32         );;
+
+                    let msg_err=(""
+                    + "[UNKNOWN_CRITICAL_CHUNK]:("
+                    + chu_val_str             +")"
+                    );;
+    
+                    throw( msg_err );
                 };;
 
-                chu_val_str =(GEP_LUT_chu_kno( chu_key ));
+                //:Find length of data section of current chunk:
+                let dat_len_dex=( png_dex - 4 );
+                let dat_len=(gep_BAH_u8a_Get_u32(
+                    /**/png_sob.png_bin //:ByteArray
+                    ,   png_sob.png_nob //:ByteArray.length
+                    ,       dat_len_dex //:MSB index of octet
+                ));;
 
-            };;
+                //:------------------------------------------://
+                //:png_jum:CALC_JUMP_DISTANCE_TO_NEXT_HEADER:://
+                //:------------------------------------------://
+                //: In this example, data is 0 in length:    ://
+                //: |LEN_U32|   |HEADER |  | DATA | |  CRC  |://
+                //: |.|.|.|.|   |0|1|2|3|  |......| |4|5|6|7|://
+                //: |8|9|A|B|    |                           ://
+                //:        |  png_dex==(0)                   ://
+                //:        |                                 ://
+                //:     png_jum==(12)                        ://
+                png_jum=(0
+                +        4 //:Jump_Over:CURRENT[header]:EX:IHDR
+                           //:Now on first byte of data_segment 
+
+                +  dat_len //:Jump_Over:data_segment
+                           //:dat_len==0 means no data_segment.
+                           //:Now on first byte of[ CRC ].
+
+                +        4 //:Jump_Over:CRC
+                           //:Now on next chunk's LEN_U32
+
+                +        4 //:Jump_Over:LEN_U32
+                           //:Now on: NEXT[header]:EX:IDAT
+
+                );;//:-----:CALC_JUMP_DISTANCE_TO_NEXT_HEADER://
+
+                if(0){ /** NOOP_BREAKPOINT:ATLANTIS **/ };
+
+            };; //:NEXT[ png_dex ]:--------------------------://
+
+            png_sob.num_IHDR=( num_IHDR );
+            png_sob.num_IDAT=( num_IDAT );
+            png_sob.num_IEND=( num_IEND );
+            png_sob.num_PLTE=( num_PLTE );
 
         };; //:-------------------------:CHUNK_ROLL_CALL_SCAN://
 
@@ -1213,8 +1303,8 @@
         throw("[TODO:The_Rest]");
 
     };;
-
-//:PUB_: Public_API_Functions:===============================://
+//:==================:ALG_:ALGorithm_main_algorithm_functions://
+//:PUB_:Public_API_Functions:================================://
 
     /** PNG Binary to RGBA byte array.           *********** ***
     *** @returns [ pix_arr , pix_wid , pix_hig ] *********** **/
@@ -1282,7 +1372,319 @@
 
     //:------------------------------------------------------://
 
+//:================================:PUB_:Public_API_Functions://
+//:TES_: Test_Related_Functions:=============================://
 
+    function
+    gep_TES_Put_Tes_Dat(
+        /** void **/
+    )
+    { "use strict"
+    //://////////////////////////////////////////////////////://
+    //:                                                      ://
+    //: Load PNG hex dumps into byte arrays for testing.     ://
+    //:                                                      ://
+    //: Code looks really weird because:                     ://
+    //: 1: Written in C friendly style.                      ://
+    //: 2: Stateful "I" function helps preserve column space.://
+    //:                                                      ://
+    //://////////////////////////////////////////////////////://
+
+    let I=GEP_C99_AOF( gep_DUM_Str_CTO_Hex_002 );
+
+
+    GEP_PNG_BIN=( GEP_C99_AOV( GEP_PNG_001 )       );
+    GEP_PNG_LEN=(              GEP_PNG_001_LEN_MAC );
+    GEP_PNG_POS=(            (      0      )       );
+    GEP_CAR_LEN=(            (     26      )       );
+    
+    //:GEP/TES_DAT/01.PNG: One all white pixel. 255 alpha.
+    I( "89 50 4e 47    0d 0a 1a 0a" ); //|.PNG|....| 08 | 01 |//
+    I( "00 00 00 0d    49 48 44 52" ); //|....|IHDR| 16 | 02 |//
+    I( "00 00 00 01    00 00 00 01" ); //|....|....| 24 | 03 |//
+    I( "08 02 00 00    00 90 77 53" ); //|....|..wS| 32 | 04 |//
+    I( "de 00 00 00    01 73 52 47" ); //|....|.sRG| 40 | 05 |//
+    I( "42 00 ae ce    1c e9 00 00" ); //|B...|....| 48 | 06 |//
+    I( "00 04 67 41    4d 41 00 00" ); //|..gA|MA..| 56 | 07 |//
+    I( "b1 8f 0b fc    61 05 00 00" ); //|....|a...| 64 | 08 |//
+    I( "00 09 70 48    59 73 00 00" ); //|..pH|Ys..| 72 | 09 |//
+    I( "0e c3 00 00    0e c3 01 c7" ); //|....|....| 80 | 10 |//
+    I( "6f a8 64 00    00 00 19 74" ); //|o.d.|...t| 88 | 11 |//
+    I( "45 58 74 53    6f 66 74 77" ); //|EXtS|oftw| 96 | 12 |//
+    I( "61 72 65 00    70 61 69 6e" ); //|are.|pain|104 | 13 |//
+    I( "74 2e 6e 65    74 20 34 2e" ); //|t.ne|t 4.|112 | 14 |//
+    I( "30 2e 31 36    44 69 af f5" ); //|0.16|Di..|120 | 15 |//
+    I( "00 00 00 0c    49 44 41 54" ); //|....|IDAT|128 | 16 |//
+    I( "18 57 63 f8    ff ff 3f 00" ); //|.Wc.|..?.|136 | 17 |//
+    I( "05 fe 02 fe    a7 35 81 84" ); //|....|.5..|144 | 18 |//
+    I( "00 00 00 00    49 45 4e 44" ); //|....|IEND|152 | 19 |//
+    I( "ae 42 60 82               " ); //|.B`.|    |160 | 20 |//
+    //::123456789_123456789_123456:::GEP_CAR_LEN==( 26 ):::::://
+    if( GEP_PNG_POS != GEP_PNG_001_LEN_MAC ){
+        throw("[GEP_ERR:FAILED_TO_FILL_100_PERCENT:PNG_001]");
+    }else{
+        if( GEP_MAC_LOG > 0 ){ gep_Log("[PNG_001:LOADED]"); };
+    };;
+
+    //://////////////////////////////////////////////////////://
+
+    GEP_PNG_BIN=( GEP_C99_AOV( GEP_PNG_002 )       );
+    GEP_PNG_LEN=(              GEP_PNG_002_LEN_MAC );
+    GEP_PNG_POS=(            (      0      )       );
+    GEP_CAR_LEN=(            (     26      )       );
+
+    //:GEP/TES_DAT/02.PNG: One all white pixel. 255 alpha.
+    I( "89 50 4e 47    0d 0a 1a 0a" ); //|.PNG|....| 08 | 01 |//
+    I( "00 00 00 0d    49 48 44 52" ); //|....|IHDR| 16 | 02 |//
+    I( "00 00 00 01    00 00 00 01" ); //|....|....| 24 | 03 |//
+    I( "08 02 00 00    00 90 77 53" ); //|....|..wS| 32 | 04 |//
+    I( "de 00 00 00    01 73 52 47" ); //|....|.sRG| 40 | 05 |//
+    I( "42 00 ae ce    1c e9 00 00" ); //|B...|....| 48 | 06 |//
+    I( "00 04 67 41    4d 41 00 00" ); //|..gA|MA..| 56 | 07 |//
+    I( "b1 8f 0b fc    61 05 00 00" ); //|....|a...| 64 | 08 |//
+    I( "00 09 70 48    59 73 00 00" ); //|..pH|Ys..| 72 | 09 |//
+    I( "0e c3 00 00    0e c3 01 c7" ); //|....|....| 80 | 10 |//
+    I( "6f a8 64 00    00 00 0c 49" ); //|o.d.|...I| 88 | 11 |//
+    I( "44 41 54 18    57 63 f8 ff" ); //|DAT.|Wc..| 96 | 12 |//
+    I( "ff 3f 00 05    fe 02 fe a7" ); //|.?..|....|104 | 13 |//
+    I( "35 81 84 00    00 00 00 49" ); //|5...|...I|112 | 14 |//
+    I( "45 4e 44 ae    42 60 82   " ); //|END.|B`. |120 | 15 |//
+    //::123456789_123456789_123456:::GEP_CAR_LEN==( 26 ):::::://
+    if( GEP_PNG_POS != GEP_PNG_002_LEN_MAC ){
+        throw("[GEP_ERR:FAILED_TO_FILL_100_PERCENT:PNG_002]");
+    }else{
+        if( GEP_MAC_LOG > 0 ){ gep_Log("[PNG_002:LOADED]"); };
+    };;
+
+    };; //://////////////////////////:[ gep_TES_Put_Tes_Dat ]://
+
+    //: - - - - - - - - - - - - ---- - - - - - - - - - - - - ://
+    function
+    gep_TES_Hex_Dum( 
+        /** void **/ 
+    )
+    { "use strict"
+
+        //:-----------:1234567890123456:---://
+        let hex_dum=( "0123456789ABCDEF" );
+        let hex_new=( "----------------" );
+
+        let car_poi=GEP_C99_AOS( hex_dum );
+        let car_len=( 16 );
+
+        let png_len=( car_len / 2 );
+        let png_bin=GEP_C99_Mal_Arr_Chr( png_len );
+        let png_pos=( 0 ); //:Fill from start of array.
+
+        //:Convert hex dump string to byte array:
+        gep_DUM_Str_CTO_Hex_001(
+            png_bin //: POINTER:PNG_HEX_DUMP
+        ,   png_len //: png_bin.length
+        ,   png_pos //: Seek_Position_In:png_bin
+
+        ,   car_poi //: String_Of_Hex_Codes
+        ,   car_len //: car_poi.length
+        );;
+        
+        //:Convert byte array back into hex dump string:
+        //:[HACK]:Characters are not passed by reference
+        //:       in javascript, so you need to take the
+        //:       return value here!
+        car_poi=GEP_C99_AOS( hex_new );
+        car_len=( 16 );
+        car_poi=gep_DUM_hex_CTO_str(
+                png_bin //: POINTER:PNG_HEX_DUMP
+            ,   png_len //: png_bin.length
+
+                //:The caller should provide memory to be filled
+                //:so that malloc and free happen in same scope.
+            ,   car_poi //: Character array to fill.
+            ,   car_len //: Declared length of character array.
+            );;
+        //:HACK: Also wouldn't have to do this assignment
+        //:      if this were C code.
+        hex_new=( car_poi );
+
+        //:If conversion back and forth was successfull,
+        //:contents of [ hex_dum ] should match [ hex_new ]
+
+        let fai=( 0 ); //:Fail_Times
+        for( let i = 0 ; i < 16 ; i++ ){
+
+            if( hex_dum[ i ] != hex_new[ i ] ){
+                fai++;
+            };;
+        };;
+
+        if( 0 != fai ){
+            throw("[GEP_ERR:Hex_Dump_Test_Failed]");
+        }else{
+            gep_Log("[Hex_Dump_Test_Passed]");
+        };;
+
+        GEP_C99_Fre_Arr_Chr( png_bin ); //:FREE_MEMORY
+
+    };; //:--------------------------------:[gep_TES_Hex_Dum]://
+
+    //: - - - - - - - - - - - - ---- - - - - - - - - - - - - ://
+    function
+    gep_TES_png_bin_CTO_png_sob( 
+        /** void **/
+    )
+    { "use strict"
+
+        //:https://www.w3.org/TR/PNG/#5PNG-file-signature
+        //: DEC: "137 80 78 71    13 10 26 10"  : ---------- ://
+        //: HEX:  "89 50 4e 47    0d 0a 1a 0a"  : ---------- ://
+
+        let hex_dum=("" //:01.PNG's hex dump. -------------- ://
+        //:     controll_codes_as_part_of_png_signature      ://
+        //:                      |                           ://
+        //:                  +---+---+                       ://
+        //:  ?? Pp Nn Gg    /         \     :    : --------- ://
+        +   "89 50 4e 47    0d 0a 1a 0a"  //: 01 ://
+        //:                               //: -- ://
+        //: len: IHDR's data section length, 13 bytes. (0d)
+        //: |<-- len -->|                 //: -- ://
+        //:  -- -- -- --    Ii Hh Dd Rr   //: -- ://
+        +   "00 00 00 0d    49 48 44 52"  //: 02 ://
+        //:                               //: -- ://
+        +   "00 00 00 01    00 00 00 01"  //: 03 ://  
+        +   "08 02 00 00    00 90 77 53"  //: 04 ://
+        +   "de 00 00 00    01 73 52 47"  //: 05 ://
+        +   "42 00 ae ce    1c e9 00 00"  //: 06 ://
+        +   "00 04 67 41    4d 41 00 00"  //: 07 ://
+        +   "b1 8f 0b fc    61 05 00 00"  //: 08 ://
+        +   "00 09 70 48    59 73 00 00"  //: 09 ://
+        +   "0e c3 00 00    0e c3 01 c7"  //: 10 ://
+        +   "6f a8 64 00    00 00 19 74"  //: 11 ://
+        +   "45 58 74 53    6f 66 74 77"  //: 12 ://
+        +   "61 72 65 00    70 61 69 6e"  //: 13 ://
+        +   "74 2e 6e 65    74 20 34 2e"  //: 14 ://
+        +   "30 2e 31 36    44 69 af f5"  //: 15 ://
+        +   "00 00 00 0c    49 44 41 54"  //: 16 ://
+        +   "18 57 63 f8    ff ff 3f 00"  //: 17 ://
+        +   "05 fe 02 fe    a7 35 81 84"  //: 18 ://
+        +   "00 00 00 00    49 45 4e 44"  //: 19 ://
+        +   "ae 42 60 82               "  //: 20 ://
+        );; //: ( 19 * 8 ) + ( 4 ) == 156 bytes
+        let exp_nob=( 156 ); //:Expected_Number_Of_Bytes
+
+
+        //:Do one pass over the hex dump to figure out
+        //:the number of bytes that will results from
+        //:parsing.
+        var png_nob = gep_DUM_hex_dum_CTO_png_nob( hex_dum );
+        if( png_nob != exp_nob ){
+            throw("[Not_The_Number_Of_Bytes_I_Expected]");
+        };;
+
+        //:Allocated number of bytes:
+        let png_bin=( new Uint8Array( png_nob ) );
+
+        //:Internally_Uses:GEP_Str_CTO_Hex
+        gep_DUM_hex_dum_CTO_png_bin(
+            hex_dum              //:ARG_INN
+        ,   png_nob              //:ARG_INN
+
+        ,   png_bin              //:ARG_OUT
+        );;
+
+        //:Quick Spot Check on first and last byte, since
+        //:we can easily see what they are from[ hex_dum ].
+        if( png_bin[ 0       ] != 0x89 //:KEEP_IT_SIMPLE_STUPID
+        ||  png_bin[ 0       ] !=  137 //:KEEP_IT_SIMPLE_STUPID
+        ){
+            throw("[SPOT_CHECK_FAIL:[0]:0x89]");
+        };;
+        if( png_bin[ 156 - 1 ] != 0x82 //:KEEP_IT_SIMPLE_STUPID 
+        ||  png_bin[ 156 - 1 ] !=  130 //:KEEP_IT_SIMPLE_STUPID
+        ){
+            throw("[SPOT_CHECK_FAIL:[LAST]:0x82]");
+        };;
+
+        //:Some of what we already did above may be replicated
+        //:in this function call, don't worry about that,
+        //:test code should be redundant.
+
+        //:Create new intermediate png_sob used to help
+        //:use parse the PNG data.
+        let png_sob=( GEP_VAL_png_sob() );
+        GEP_INI_png_sob( png_sob );
+
+        gep_ALG_png_bin_CTO_png_sob( 
+            png_bin //:ARG_INN
+        ,   png_nob //:ARG_INN
+        
+        ,   png_sob //:ARG_OUT
+        );;
+
+    };;
+    //: - - - - - - - - - - - - ---- - - - - - - - - - - - - ://
+    function
+    gep_TES_D00_LUT_chu_kno_Chk(
+        /** void **/
+    )
+    { "use strict"
+    //: GEP_LUT_chu_kno_STR : String       version of table.
+    //: GEP_LUT_chu_kno_OCT : Octet (byte) version of table.
+
+        //#hex_to_str#//#hexToStr#HexToStr#//#hexdumptostring#//
+
+        const M_I=( GEP_LUT_chu_kno_MAC );
+        let    i =( 0 );
+        let   cus=( "");
+        let   u32=(0x0);
+
+        //:Convert[ STR => OCT ]CHECK[ GEP_LUT_chu_kno_OCT ]
+        for( i = 1; i <= M_I; i++ ){
+                cus  =(  GEP_LUT_chu_kno_STR[ i ] );
+                u32  =(  gep_ALG_cus_CTO_u32(cus) );
+            if( u32 !=   GEP_LUT_chu_kno_OCT[ i ] ){
+                throw("[chu_kno_Chk:FAIL:A]");
+            }else{
+                gep_Log_TES_D00("[STR=>OCT:u32]:" + u32);
+            };;
+        };;
+        //:Convert[ OCT => STR ]CHECK[ GEP_LUT_chu_kno_STR ]
+        for( i = 1; i <= M_I; i++ ){
+                u32  =(  GEP_LUT_chu_kno_OCT[ i ] );
+                cus  =(  gep_ALG_u32_CTO_cus(u32) );
+            if( cus !=   GEP_LUT_chu_kno_STR[ i ] ){
+                throw("[chu_kno_Chk:FAIL:B]");
+            }else{
+                gep_Log_TES_D00("[OCT=>STR:cus]:" + cus );
+            };;
+        };;
+
+        gep_Log("[gep_TES_D00_LUT_chu_kno_Chk:PASS]");
+        return( undefined ); //:Test_Passed://
+    };;
+    //: - - - - - - - - - - - - ---- - - - - - - - - - - - - ://
+    function
+    gep_TES_All( 
+        /** void **/
+    )
+    { "use strict"
+
+        //:FUNCTION_SUMMARY: run_all_test_code:
+
+        //:TES_D00: Tests with zero dependencies on other tests.
+        gep_TES_D00_LUT_chu_kno_Chk();
+
+        gep_TES_Put_Tes_Dat();
+        gep_TES_Hex_Dum();
+
+        //: Must be AFTER:gep_TES_Hex_Dum()          - - - - ://
+        //: Because our png binary ( png_bin ) is    - - - - ://
+        //: encoded as a long text string known as   - - - - ://
+        //: a [ text/hex dump ].                     - - - - ://
+        gep_TES_png_bin_CTO_png_sob();
+
+        ((GEP_GSF_tes_ran)++);
+    };;
+
+//:=============================:TES_: Test_Related_Functions://
 //:INI_: Library Initialization:=============================://
 //:     INI functions of specific types is stored in GEP.DATA
 
@@ -1298,7 +1700,7 @@
         if(     GEP_MAC_DEB     > 0   ){
         if(   !(GEP_GSF_tes_ran > 0)  ){
                (GEP_GSF_tes_ran)++;
-                GEP_TES_All( );
+                gep_TES_All( );
         };;};;
 
         (GEP_GSF_was_ini)++; //:was_initialized?

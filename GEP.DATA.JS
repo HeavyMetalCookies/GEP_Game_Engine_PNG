@@ -3,13 +3,64 @@
 //:RULE 2: "GEP_" always followed sub category (MAC_,VIT_,...).
 //:RULE 3: Offboard long comments using tags maybe?
 
+//:REFERENCE[ GEP.FUNC.JS ]
+//:     gep_Log
+//:
+//:     gep_CFN_Str_Len
+//:
+//:     gep_ASC_asc_ISA_hec
+//:     gep_ASC_hec_ISA_asc
+//:     gep_ASC_hec_CTO_heb
+//:     gep_ASC_heb_CTO_hec
+//:     gep_ASC_asc_ISA_emp
+//:     gep_ASC_asc_ISA_bad
+//:     gep_ASC_TRICKY_TO_TRANSPILE_asc_CTO_int
+//:     gep_ASC_TRICKY_TO_TRANSPILE_int_CTO_asc
+//:
+//:     gep_DUM_hex_dum_CTO_png_nob
+//:     gep_DUM_Str_CTO_Hex_001
+//:     gep_DUM_Str_CTO_Hex_002
+//:     gep_DUM_hex_dum_CTO_png_bin
+//:     gep_DUM_hex_CTO_str
+//:     gep_DUM_hex_CTO_str_UNSAFE
+//:
+
+
+//:     gep_ALG_cus_CTO_u32 :EXAMPLE: "IHDR"     --> 0x49484452
+//:     gep_ALG_u32_CTO_cus :EXAMPLE: 0x49484452 -->     "IHDR"
+//:     gep_ALG_has_oct_002
+//:     gep_ALG_has_oct_001
+//:     gep_ALG_png_sob_CHK_png_hed
+//:     gep_ALG_png_bin_CTO_png_sob
+ 
+//:     GEP_PUB_Decode
+//:     GEP_PUB_Encode
+//:     GEP_Decode
+//:     GEP_Encode
+//:
+//:     gep_TES_Put_Tes_Dat
+//:     gep_TES_Hex_Dum
+//:     gep_TES_png_bin_CTO_png_sob
+//:     gep_TES_D00_LUT_chu_kno_Chk
+//:     gep_TES_All
+//:
+
+
 
 //:MAC_: Macros:=============================================://
             
     const   GEP_MAC_DEB=( 1 ); //:IF: >= 1, debug mode is on.
-    const   GEP_MAC_LOG=( 1 ); //:IF: >= 1, logging    is on.
     const   GEP_MAC_JAS=( 1 ); //:This_Is_JavaScript_Code
     const   GEP_MAC_C99=( 0 ); //:This_Is____NOT_C99_Code
+
+    //:MAC_LOG:Logging_Macros:- - - - - - - - - - - - - - - -://
+
+    const   GEP_MAC_LOG           =( 1 ); //: Generic   messages
+    const   GEP_MAC_LOG_o_ALG     =( 1 ); //: ALG_*     messages
+    const   GEP_MAC_LOG_o_C99     =( 1 ); //: C99_*     messages
+    const   GEP_MAC_LOG_o_TES     =( 1 ); //: TES_*     messages
+    const   GEP_MAC_LOG_o_TES_D00 =( 1 ); //: TES_D00_* messages
+
 
         //:NUM_BYTES_IN:DE_SERIALIZED_PNG_HEX_DUMPS:
         //:--------------------------------------------------://
@@ -31,15 +82,37 @@
 
 //:LUT_: Lookup Tables:======================================://
 
-    const GEP_LUT_chu_kno=[ //:Chunks:KNOWN
+    //:SEE[ gep_TES_D00_LUT_chu_kno_Chk() ]:-----------------://
+
+    /** MACRO: max index for[ GEP_LUT_chu_kno_(STR|OCT) ] **/
+    const GEP_LUT_chu_kno_MAC=( 4 /**Max_Index**/ );
+
+    /** MACRO: Indexes of different header types. **/
+    const GEP_LUT_MAC_dex_IHDR=( 1 );
+    const GEP_LUT_MAC_dex_IDAT=( 2 );
+    const GEP_LUT_MAC_dex_IEND=( 3 );
+    const GEP_LUT_MAC_dex_PLTE=( 4 );
+
+    //:GEP_LUT:chu_kno:STR: String Version Of Table
+    const GEP_LUT_chu_kno_STR=[ //:Chunks:KNOWN
         "nope" //: 0 === Invalid_Lookup_Table_Index
 
-        "IHDR" //: 1
-        "IDAT" //: 2
-        "IEND" //: 3
-        "PLTE" //: 4
+    ,   "IHDR" //: 1
+    ,   "IDAT" //: 2
+    ,   "IEND" //: 3
+    ,   "PLTE" //: 4
     
-    ];;
+    ];; //: - - - - - - - - - - - -- - - - - - - - - - - - - ://
+    //:GEP_LUT:chu_kno:OCT: Octet Version Of Table
+    const GEP_LUT_chu_kno_OCT=[ //:Chunks:KNOWN
+        0x00000000 //: 0 === Invalid_Lookup_Table_Index
+
+    ,   0x49484452 //: [ "IHDR" / "49 48 44 52" ]
+    ,   0x49444154 //: [ "IDAT" / "49 44 41 54" ]
+    ,   0x49454e44 //: [ "IEND" / "49 45 4e 44" ]
+    ,   0x504c5445 //: [ "PLTE" / "50 4c 54 45" ]
+    
+    ];;//:--------------:SEE[ gep_TES_D00_LUT_chu_kno_Chk() ]://
 
 
 
@@ -121,7 +194,7 @@
         mal_arr
     )
     { "use strict"
-        console.log("[FREEING]:" , mal_arr );
+        gep_Log_C99("[FREEING]:" , mal_arr );
     };;
 
     //:Value Array: Of CHaRacters:
@@ -185,9 +258,9 @@
     
     //:[ png_sob ]:------------------------------------------://
 
-    //:ABOUT: png_sob (png_StateObjectBundle) will contain
-    //:       all the necessary state for GEP_Encode or
-    //:       GEP_Decode.
+    //:ABOUT: png_sob (png_StateObjectBundle) will contain   ://
+    //:       all the necessary state for GEP_Encode or      ://
+    //:       GEP_Decode.                                    ://
   
     const GEP_NEW_png_sob=function( /** void **/ ){
     "use strict"
@@ -211,6 +284,12 @@
 
         ,   has_err :  0
         ,   msg_err : ""
+
+            //: Totals of different chunk types:
+        ,   num_IHDR: (0-374) 
+        ,   num_IDAT: (0-374) 
+        ,   num_IEND: (0-374) 
+        ,   num_PLTE: (0-374) 
 
         };;
         let     NEW_png_sob=( GEP_FAD_New( STRUCT_png_sob ) );
