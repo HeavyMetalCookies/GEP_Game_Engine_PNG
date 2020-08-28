@@ -1135,12 +1135,14 @@
             };;
         };;
 
+        //: CHUNK_ROLL_CALL_SCAN:----------------------------://
+        //:                                                  ://
         //: Do a first pass where we check for the chunks    ://
         //: we are going to support. If we see a pallet      ://
         //: chunk, we are going to have to abort, since I    ://
         //: don't want to figure out palletized color right  ://
         //: at this moment.                                  ://
-        if( o_k > 0 ){ //:--------------:CHUNK_ROLL_CALL_SCAN://
+        if( o_k > 0 ){  //:------:CHUNK_ROLL_CALL_SCAN:------://
         
             //: Before figuring out how we are going to      ://
             //: break up the binary data, let's just get a   ://
@@ -1225,7 +1227,15 @@
                     case "PLTE" :{ num_PLTE++; };break;
                     default     :{
                         
-                        throw("[Found_But_Not_Handled]");
+                        let msg_err=(
+
+                            "[Found_But_Not_Handled]"
+        
+                        );;
+                        gep_Log_ALG(msg_err);
+                        png_sob.has_err=(    1    );
+                        png_sob.msg_err=( msg_err );
+                        o_k=( 0 );
 
                     };; };;
 
@@ -1251,8 +1261,13 @@
                     + chu_val_str             +")"
                     );;
     
-                    throw( msg_err );
+                    gep_Log_ALG(      msg_err );
+                    png_sob.has_err=(    1    );
+                    png_sob.msg_err=( msg_err );
+                    o_k=( 0 );
                 };;
+
+                if( !( o_k > 0 )){ break; }; //:EXIT_LOOP
 
                 //:Find length of data section of current chunk:
                 let dat_len_dex=( png_dex - 4 );
@@ -1299,12 +1314,328 @@
 
         };; //:-------------------------:CHUNK_ROLL_CALL_SCAN://
 
-        //:Extract_Chunks by reading png headers:
+        //:ERROR_CHECK_CHUNK_TYPE_HISTOGRAM:-----------------://
+        if( o_k > 0 ){
+
+            let msg_err=("[NO_ERROR]");
+
+            //:ASSERT_ONLY_ONE_IHDR_CHUNK:-------------------://
+            if( png_sob.num_IHDR <= 0 ){
+
+                if( o_k > 0 ){ //:Record_Only_First_Error
+                    msg_err=("[NO_IHDR]");
+                    o_k =(         0    );
+                };;
+
+            }else
+            if( png_sob.num_IHDR == 1 ){
+
+                //:Good. Only One Is Allowed
+
+            }else
+            if( png_sob.num_IHDR  > 1 ){
+
+                if( o_k > 0 ){ //:Record_Only_First_Error
+                    msg_err=("[MORE_THAN_ONE_IHDR]");
+                    o_k =(              0          );
+                };;
+
+            }else{
+
+                //:Only throw if you plan on crashing.
+                throw("[PROGRAMMER_LOGIC_ERROR]");
+
+            };; //:---------------:ASSERT_ONLY_ONE_IHDR_CHUNK://
+
+            //:ASSERT_NO_CRITICAL_PALLET_CHUNK:--------------://
+            if( png_sob.num_PLTE != 0 ){
+                if( o_k > 0 ){ //:Record_Only_First_Error
+
+                    //: 1:  Don't support features           ://
+                    //:     not in your .PNG files.          ://
+                    //:                                      ://
+                    //: 2:  Even if you wanted to support it,://
+                    //:     you CANT unless you have a .PNG  ://
+                    //:     hex dump containing a PLTE chunk ://
+                    //:     to put in your code tests.       ://
+
+                    msg_err=("[TODO_PROGRAM_PLTE_HANDLING]");
+                    o_k =(         0    );
+                };;
+            };; //:----------:ASSERT_NO_CRITICAL_PALLET_CHUNK://
+
+            //:ASSERT_ONE_IEND_CHUNK_EXISTS:-----------------://
+            if( png_sob.num_IEND != 1 ){
+                if( o_k > 0 ){ //:Record_Only_First_Error
+                    msg_err=("[NO_IEND_CHUNK_IN_PNG_BINARY]");
+                    o_k =(         0    );
+                };;
+            };; //:-------------:ASSERT_ONE_IEND_CHUNK_EXISTS://
+
+            //:Before_Exiting:
+            if( !( o_k > 0 ) ){
+                gep_Log_ALG(      msg_err );
+                png_sob.has_err=(    1    );
+                png_sob.msg_err=( msg_err );
+            };;
+        };; //:-------------:ERROR_CHECK_CHUNK_TYPE_HISTOGRAM://
+
+        
+        //: DATA_SEGMENT_MARKER_COLLECTION:------------------://
+        //:                                                  ://
+        //: Loop through chunks by jumping from the heads    ://
+        //: (length fields) of each chunk. Just collect      ://
+        //: inclusive indexes of where chunk data ends and   ://
+        //: begins. Don't do anything more. Try to make this ://
+        //: loop more concise than previous loop.            ://
+        //:                                                  ://
+        if( o_k > 0 ){ //:--:DATA_SEGMENT_MARKER_COLLECTION--://
+
+            //:Chunk data only collected if you explicitly
+            //:declare you recognize the chunk.
+            let i_know_that_chunk=( 0 );
+
+            const BIN=( png_sob.png_bin );
+            const  B =(        8        );
+
+            let png_dex=(  0 ); //:First_Byte_Of_PNG_File_Binary
+            let png_jum=(  8 ); //:JUMPTO:LENGTH field of IHDR
+            let dat_len=(  0 ); //:data_section_length
+            let dat_typ=(0x00); //:AKA:ChunkName( chu_val_u32 )
+
+            let dex_arr=( 0-333 ); //:Current_Index
+            let cur_arr=(  null ); //:Current_Array
+
+            //:next index to use of: arr_**** variables:
+            let nex_arr_IHDR =( 0 );
+            let nex_arr_IDAT =( 0 );
+            let nex_arr_IEND =( 0 );
+            let nex_arr_PLTE =( 0 );
+
+            //:DATA_SEGMENT_MARKER_COLLECTION_LOOP:----------://
+            while( 1 ){
+
+                //:INCREMENT_LOGIC:
+                (( png_dex )+=( png_jum ))  
+
+                //:BAIL_OUT_LOGIC:
+                if( 0x49454e44 == dat_typ ){ break; }; //:IEND
+                if(        !(o_k>0)       ){ break; }; //:ERROR
+
+                //:EXTRACT_LENGTH_AND_TYPE_FIELDS:-----------://
+                    //:--------------------------------------://
+                    //:  Broken Out of Original Statements   ://
+                    //:  for easier debugging in chrome:     ://
+                    //:--------------------------------------://
+                    let b_0=( BIN[ png_dex + 0 ] );   
+                    let b_1=( BIN[ png_dex + 1 ] );   
+                    let b_2=( BIN[ png_dex + 2 ] );   
+                    let b_3=( BIN[ png_dex + 3 ] );   
+                    
+                    let b_4=( BIN[ png_dex + 4 ] );   
+                    let b_5=( BIN[ png_dex + 5 ] );   
+                    let b_6=( BIN[ png_dex + 6 ] );   
+                    let b_7=( BIN[ png_dex + 7 ] );  
+                    //:--------------------------------------://
+                
+                dat_len=(0x00 
+                    |    ( (b_0<<(3*B))>>>0 )
+                    |    ( (b_1<<(2*B))>>>0 )
+                    |    ( (b_2<<(1*B))>>>0 )
+                    |    ( (b_3<<(0*B))>>>0 )
+                );;
+                dat_typ=(0x00
+                    |    ( (b_4<<(3*B))>>>0 )
+                    |    ( (b_5<<(2*B))>>>0 )
+                    |    ( (b_6<<(1*B))>>>0 )
+                    |    ( (b_7<<(0*B))>>>0 )
+                );; 
+                    if( dat_len < 0 ){ 
+                        throw("[NEGATIVES_HOW:dat_len]");
+                    };;
+                    if( dat_typ < 0 ){
+                        throw("[NEGATIVES_HOW:dat_typ]");
+                    };;
+                //:-----------:EXTRACT_LENGTH_AND_TYPE_FIELDS://
+
+                //:CHUNK_TYPE_SWITCHBOARD:-------------------://
+
+                i_know_that_chunk=( 0 );
+
+                switch( dat_typ ){
+                case 0x49484452   /** IHDR:"49 48 44 52" **/ :
+                dex_arr=(     nex_arr_IHDR );
+                        (     nex_arr_IHDR )++;
+                cur_arr=( png_sob.arr_IHDR );
+                i_know_that_chunk=( 1 );
+            break;
+                case 0x49444154   /** IDAT:"49 44 41 54" **/ :
+                dex_arr=(     nex_arr_IDAT );
+                        (     nex_arr_IDAT )++;
+                cur_arr=( png_sob.arr_IDAT );
+                i_know_that_chunk=( 2 );
+            break;
+                case 0x49454e44   /** IEND:"49 45 4e 44" **/ :
+                dex_arr=(     nex_arr_IEND );
+                        (     nex_arr_IEND )++;
+                cur_arr=( png_sob.arr_IEND );
+                i_know_that_chunk=( 3 );
+            break;
+                case 0x504c5445   /** PLTE:"50 4c 54 45" **/ :
+                dex_arr=(     nex_arr_PLTE );
+                        (     nex_arr_PLTE )++;
+                cur_arr=( png_sob.arr_PLTE );
+                i_know_that_chunk=( 4 );
+            break;
+                case 0x73524742   /** sRGB:"73 52 47 42" **/ :
+
+                //: Ignore sRGB, not a critical chunk and    ://
+                //: not relevant to extracting data from     ://
+                //: pixel RGB values.                        ://
+            break;
+                case 0x67414D41   /** gAMA:"67 41 4D 41" **/ :
+    
+                //: Ignore gAMA , same reason we ignore sRGB ://
+
+            break;
+                case 0x70485973   /** pHYs:"70 48 59 73" **/ :
+
+                //: Ignore pHYs , same reason we ignore sRGB ://
+
+            break;
+                case 0x74455874   /** tEXt:"74 45 58 74" **/ :
+
+                //: Ignore tEXt , same reason we ignore sRGB ://
+
+            break;
+                default:{
+
+                    let first_letter=( 
+                        (dat_typ >>> (8*3) )&0xFF );;
+
+                    if( first_letter >= 0x61 //:"a"
+                    &&  first_letter <= 0x7a //:"z"
+                    ){
+                        gep_Log_ALG("[Ignored:NonCritical]");
+
+                        //: For my own purposes, I feel      ://
+                        //: better just adding explicit      ://
+                        //: ignores forunknown ancillary     ://
+                        //: chunks as I encounter them.      ://
+                        //: This way, I don't accidentially  ://
+                        //: ignore bogus data that           ://
+                        //: is coincidentially interpreted   ://
+                        //: as an ancillary chunk.           ://
+                        throw(
+                            "[IF_NOT_JMIM_REMOVE_IF_YOU_WANT]"
+                        );;
+                    }else{
+                    
+                        o_k=( 0 );
+                        png_sob.has_err=( 1 );
+                        png_sob.msg_err=("[WTF_FIX_THIS]");
+
+                        //:TODO: remove this throw statement.
+                        throw( png_sob.msg_err );
+
+                    };;
+        
+                };;};; //:------------:CHUNK_TYPE_SWITCHBOARD://
+
+                //:COLLECT_DATA_SEGMENT_RANGE:---------------://
+                if( i_know_that_chunk > 0 ){
+                    if( dat_len === 0 ){
+                        //:no data segment. Set pointers to
+                        //:negative indicies to communicate this.
+                        cur_arr[ dex_arr ].i_0 = ( 0 - 222 );
+                        cur_arr[ dex_arr ].i_1 = ( 0 - 333 );
+                    }else
+                    if( dat_len   > 0 ){
+                
+                        //:DEX:First_Byte_Of_Current_Chunk:
+                        //:J_0:Jump_Over_Length_And_Name_Bytes:
+                        //:J_1:Jump_To_Last_Byte_Of_Data_Segment:
+                        const DEX =( png_dex     );
+                        const J_0 =(   4+4       );
+                        const J_1 =( dat_len - 1 );
+
+                        const I_0 = ( DEX + J_0      );
+                        const I_1 = ( DEX + J_0 + J_1);
+
+                        cur_arr[ dex_arr ].i_0 = I_0 ;
+                        cur_arr[ dex_arr ].i_1 = I_1 ;
+
+                    }else{
+                        throw("[WTF]");
+                    };; 
+                };; //:-----------:COLLECT_DATA_SEGMENT_RANGE://
+                
+
+                //:PREPARE_FOR_NEXT_LOOP_ITERATION:----------://
+                if( o_k > 0 ){
+
+                    //:Amount to jump to start of next chunk:
+                    png_jum=(0
+                       +     4        //:length ( 4 bytes )
+                       +     4        //:name:example:"IHDR"
+                       +     dat_len  //:size:example:  13
+                       +     4        //:CRC ( 4 bytes )
+                    );;
+            
+                }else{
+
+                    break;
+
+                };;
+                //:----------:PREPARE_FOR_NEXT_LOOP_ITERATION://
+
+            };; //:------:DATA_SEGMENT_MARKER_COLLECTION_LOOP://
+
+        };; //:---------------:DATA_SEGMENT_MARKER_COLLECTION://
+       
+        //:EXTRACT_IHDR_INFO:--------------------------------://
+        if( o_k > 0 ){ //:Extract_Chunks by reading png headers
+
+
+
+        };; //:----------------------------:EXTRACT_IHDR_INFO://
+
+        //:MALLOC_MEMORY_
+        if( o_k > 0 ){
+
+
+        };;
+
+        //::
         throw("[TODO:The_Rest]");
 
     };;
 //:==================:ALG_:ALGorithm_main_algorithm_functions://
 //:PUB_:Public_API_Functions:================================://
+
+    //: **************************************************** ://
+    //: To make C compatible, Decode and Encode functions do ://
+    //: not return any data. You must use the "GET" functions://
+    //: to first query size of data. Make an allocation of   ://
+    //: correct size, and then pass it into the final GET    ://
+    //: function.                                            ://
+    /** **************************************************** ***
+
+        //:Example Decode:
+        GEP_PUB_Decode( png_bin, png_nob );
+        dim = GEP_PUB_Decode_GET_dim( );
+        wid=( dim >>> (4*8) )&0xFF;
+        hig=( dim >>> ( 0 ) )&0xFF;
+        let pix_arr = new Uint8Array( wid * hig * 4 );
+        GEP_PUB_Decode_GET_pix_arr( pix_arr , wid , hig );
+
+        //:Example Encode:
+        GEP_PUB_Encode( pix_arr , pix_wid , pix_hig );
+        let nob = GEP_PUB_Encode_GET_nob( );
+        let png_bin = new Uint8Array( nob );
+        GEP_PUB_Encode_GET_png_bin( png_bin , nob );
+
+    *** **************************************************** **/
 
     /** PNG Binary to RGBA byte array.           *********** ***
     *** @returns [ pix_arr , pix_wid , pix_hig ] *********** **/
@@ -1329,11 +1660,31 @@
 
     };;
 
-    //:Library object for people who like OOP style code.
-    const GEP={
-        vit    : GEP_VIT_GEP
-    ,   Decode : GEP_PUB_Decode
-    ,   Encode : GEP_PUB_Encode
+    function
+    GEP_PUB_Decode_GET_dim()  //:RETURN([ pix_wid , pix_hig ])
+    { "use strict"
+
+    };;
+    function
+    GEP_PUB_Decode_GET_pix_arr( 
+        pix_arr //:Supplied_Pixel_Array_To_Fill
+    ,   pix_nob //:Number_Of_Bytes
+    ,   pix_wid //:Redundancy:Confirm_Image_Width
+    ,   pix_hig //:Redundancy:Confirm_Image_Height
+    )
+    { "use strict"
+
+    };;
+
+    function
+    GEP_PUB_Encode_GET_nob() //:RETURN( nob );
+    { "use strict"
+
+    };;
+    function
+    GEP_PUB_Encode_GET_png_bin( png_bin , png_nob )
+    { "use strict"
+
     };;
     
     //:------------------------------------------------------://
@@ -1373,6 +1724,76 @@
     //:------------------------------------------------------://
 
 //:================================:PUB_:Public_API_Functions://
+//:LIBRARY_OBJECT:===========================================://
+
+    //:Library object for people who like OOP style code.
+    const GEP={
+        vit    : GEP_VIT_GEP
+    ,   Decode : GEP_PUB_Decode
+    ,   Encode : GEP_PUB_Encode
+    };;
+    
+    //:IF_JAVASCRIPT_LOAD_EASY_TO_USE_FUNCTIONS:-------------://
+    if( GEP_MAC_JAS > 0 ){ //:Is running JAS ? (JAvaScript)  ://
+
+        GEP.EasyDecode = GEP_JAVASCRIPTONLY_DECODE ;
+        GEP.EasyEncode = GEP_JAVASCRIPTONLY_ENCODE ;
+
+        function 
+        GEP_JAVASCRIPTONLY_DECODE( png_bin )
+        { "use strict"
+
+            let png_nob = ( png_bin.length );
+
+            //:Actual Decoding:
+            GEP_PUB_Decode( png_bin, png_nob );
+
+            //:Steps To Retrieve Decoded Data:
+            dim = GEP_PUB_Decode_GET_dim( );
+            pix_wid=( dim >>> (4*8) )&0xFF; //:Unpack:WIDTH
+            pix_hig=( dim >>> ( 0 ) )&0xFF; //:Unpack:HEIGHT
+            pix_nob=( pix_wid * pix_hig * 4 );
+            let pix_arr = new Uint8Array( pix_nob );
+            GEP_PUB_Decode_GET_pix_arr( 
+                pix_arr  //:Supplied_Pixel_Array_To_Fill
+            ,   pix_nob  //:Number_Of_Bytes
+            ,   pix_wid  //:Confirm_Width__In_Pixels
+            ,   pix_hig  //:Confirm_Height_In_PIxels
+            );;
+
+            return({
+                pix_arr:pix_arr
+            ,   pix_nob:pix_nob
+            ,   pix_wid:pix_wid
+            ,   pix_hig:pix_hig
+            });
+
+        };;
+
+        function 
+        GEP_JAVASCRIPTONLY_ENCODE( 
+            pix_arr , pix_wid , pix_hig 
+        )
+        { "use strict"
+
+            //:Actual Encoding:
+            GEP_PUB_Encode( pix_arr , pix_wid , pix_hig );
+
+            //:Steps To Retrieve Encoded Data:
+            let png_nob = GEP_PUB_Encode_GET_nob( );
+            let png_bin = new Uint8Array( png_nob );
+            GEP_PUB_Encode_GET_png_bin( png_bin , png_nob );
+
+            return({
+                png_bin:png_bin
+            ,   png_nob:png_nob
+            });
+        };;
+    };; //:---------:IF_JAVASCRIPT_LOAD_EASY_TO_USE_FUNCTIONS://
+
+    Object.seal( GEP );
+
+//:===========================================:LIBRARY_OBJECT://
 //:TES_: Test_Related_Functions:=============================://
 
     function

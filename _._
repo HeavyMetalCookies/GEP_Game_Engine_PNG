@@ -1,0 +1,24 @@
+
+    png_sob --- ---
+                ---
+            vit ---
+                ---
+            wid ---
+            hig ---
+                ---
+        png_bin ---
+        png_nob ---
+                ---
+        has_err ---
+        msg_err ---
+        
+        num_IHDR --
+        num_IDAT --
+        num_IEND --
+        num_PLTE --
+
+        arr_IHDR --
+        arr_IDAT --
+        arr_IEND --
+        arr_PLTE --
+    --- --- --- --- 

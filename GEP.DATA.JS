@@ -78,7 +78,8 @@
 //:VIT_: Variable_Integer_Tags:==============================://
 
     const GEP_VIT_GEP     = ( 1 ); //:GEP library object.
-    const GEP_VIT_png_sob = ( 2 );
+    const GEP_VIT_png_sob = ( 2 ); //:png_StateObjectBundle
+    const GEP_VIT_dex_inc = ( 3 ); //:inclusive_index_struct
 
 //:LUT_: Lookup Tables:======================================://
 
@@ -253,14 +254,92 @@
     let GEP_CAR_LEN =( 0 ); //:NumElementIn:GEP_CAR_POI
     //:------------------------------------------------------://
 
-//:T00: Types_with_Zero_Dependencies:========================://
+//:T00_:Types_with_Zero_Dependencies:========================://
 
-    
+    //:[ dex_inc ]:------------------------------------------://
+
+    //:ABOUT: dex_inc: An inclusive index (range) struct.
+
+    function    
+    GEP_NEW_dex_inc( /** void **/ )
+    { "use strict"
+
+        let STRUCT_dex_inc={
+            vit : 0 //:GEP_VIT_dex_inc
+        ,   i_0 : 0 //:LowerInclusiveBound
+        ,   i_1 : 0 //:UpperInclusiveBound
+        };;
+        let     NEW_dex_inc=( GEP_FAD_New( STRUCT_dex_inc ) );
+        return( NEW_dex_inc );
+    };;
+
+    function
+    GEP_VAL_dex_inc( /** void **/ ){
+    "use strict"
+        
+        let dex_inc=( GEP_NEW_dex_inc() );
+        return( dex_inc );
+
+    };;
+
+    function
+    GEP_INI_dex_inc( dex_inc ){ 
+    "use strict" 
+
+        dex_inc.vit=( GEP_VIT_dex_inc );
+        dex_inc.i_0=( 0 - 123 ); //:Init_With_Trap_Values
+        dex_inc.i_1=( 0 - 456 ); //:Init_With_Trap_Values
+ 
+    };;
+
+    //:Used to declare that member of struct is:-------------://
+    //:     1: A VALUE member (NOT a pointer)                ://
+    //:     2: An ARRAY of [ dex_inc ]                       ://
+    //:     3: Should be converted to C99:                   ://
+    //:                                                      ://
+    //:        C99                                           ://
+    //:        STRUCT_dex_inc   arr_dex_inc[ # ]             ://
+    //:                                                      ://
+    //:        JAS                                           ://
+    //:        arr_dex_inc = GEP_VAM_ARR_dex_inc( # )        ://
+    //:                                                      ://
+    //:     4: ONLY be called within type declarations.      ://
+    //:------------------------------------------------------://
+    function /** VAM_ARR: VAlue_Member_ARRay              **/
+             /** (As apposed to pointer member in struct. **/
+    GEP_VAM_ARR_dex_inc( arr_len )
+    { "use strict"
+
+        let arr_dex_inc=[];
+        for( let i = 0 ; i < arr_len ; i ++ ){
+            
+            arr_dex_inc[ i ] = GEP_NEW_dex_inc( );
+
+            //: NO!:     GEP_INI_dex_inc( arr_dex_inc[ i ] ) ://
+            //: Because: This function really                ://
+            //:          exists to denote C syntax.          ://
+        };;
+        return( arr_dex_inc );
+    };;
+
+    //:------------------------------------------:[ dex_inc ]://
+
+//:========================:T00_:Types_with_Zero_Dependencies://
+//:T01_:Depends_On_At_Least_One_T00_Type_And_No_Higher:======://
+
     //:[ png_sob ]:------------------------------------------://
 
     //:ABOUT: png_sob (png_StateObjectBundle) will contain   ://
     //:       all the necessary state for GEP_Encode or      ://
     //:       GEP_Decode.                                    ://
+
+    //: Maximum capacities for structs telling us where - - -://
+    //: the data-segments begin and end for different   - - -://
+    //: chunk types.                                    - - -://
+    const GEP_MAC_arr_IHDR_cap=(  1 ); //:Exactly 1
+    const GEP_MAC_arr_IDAT_cap=( 10 ); //:One or more
+    const GEP_MAC_arr_IEND_cap=(  1 ); //:Exactly 1
+    const GEP_MAC_arr_PLTE_cap=(  1 ); //:No more than 1
   
     const GEP_NEW_png_sob=function( /** void **/ ){
     "use strict"
@@ -291,6 +370,15 @@
         ,   num_IEND: (0-374) 
         ,   num_PLTE: (0-374) 
 
+            //: Set to some reasonible maximum capacity.- - -://
+            //: Use the "num_****" members to determine - - -://
+            //: which [slots/indexs] actually contain   - - -://
+            //: valid data.                             - - -://
+        ,   arr_IHDR:GEP_VAM_ARR_dex_inc( GEP_MAC_arr_IHDR_cap )
+        ,   arr_IDAT:GEP_VAM_ARR_dex_inc( GEP_MAC_arr_IDAT_cap )
+        ,   arr_IEND:GEP_VAM_ARR_dex_inc( GEP_MAC_arr_IEND_cap )
+        ,   arr_PLTE:GEP_VAM_ARR_dex_inc( GEP_MAC_arr_PLTE_cap )
+
         };;
         let     NEW_png_sob=( GEP_FAD_New( STRUCT_png_sob ) );
         return( NEW_png_sob );
@@ -311,6 +399,24 @@
         png_sob.png_bin=( null );
         png_sob.png_nob=(  0   );
 
+ 
+        //:INIT_CHILDREN_STRUCTS:ARR:------------------------://
+        let i = 0;
+        for( i = 0   ;   i < GEP_MAC_arr_IHDR_cap ; i++ ){
+            GEP_INI_dex_inc( png_sob.arr_IHDR[ i ] );
+        };;
+        for( i = 0   ;   i < GEP_MAC_arr_IDAT_cap ; i++ ){
+            GEP_INI_dex_inc( png_sob.arr_IDAT[ i ] );
+        };;
+        for( i = 0   ;   i < GEP_MAC_arr_IEND_cap ; i++ ){
+            GEP_INI_dex_inc( png_sob.arr_IEND[ i ] );
+        };;
+        for( i = 0   ;   i < GEP_MAC_arr_PLTE_cap ; i++ ){
+            GEP_INI_dex_inc( png_sob.arr_PLTE[ i ] );
+        };; //:--------------------:INIT_CHILDREN_STRUCTS:ARR://
+
     };;
 
     //:------------------------------------------:[ png_sob ]://
+
+//:======:T01_:Depends_On_At_Least_One_T00_Type_And_No_Higher://
