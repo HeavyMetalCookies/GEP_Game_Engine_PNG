@@ -5,9 +5,9 @@
 
 //:REFERENCE[ GEP.FUNC.JS ]
 //:     gep_Log
-//:
+ 
 //:     gep_CFN_Str_Len
-//:
+ 
 //:     gep_ASC_asc_ISA_hec
 //:     gep_ASC_hec_ISA_asc
 //:     gep_ASC_hec_CTO_heb
@@ -16,15 +16,18 @@
 //:     gep_ASC_asc_ISA_bad
 //:     gep_ASC_TRICKY_TO_TRANSPILE_asc_CTO_int
 //:     gep_ASC_TRICKY_TO_TRANSPILE_int_CTO_asc
-//:
+ 
 //:     gep_DUM_hex_dum_CTO_png_nob
 //:     gep_DUM_Str_CTO_Hex_001
 //:     gep_DUM_Str_CTO_Hex_002
 //:     gep_DUM_hex_dum_CTO_png_bin
 //:     gep_DUM_hex_CTO_str
 //:     gep_DUM_hex_CTO_str_UNSAFE
-//:
 
+//:     gep_BAH_u8a_Get_u08
+//:     gep_BAH_u8a_Get_u32
+//:     gep_BAH_u32_CTO_str  USE[ gep_ALG_u32_CTO_cus ]
+//:     gep_BAH_str_CTO_u32  USE[ gep_ALG_cus_CTO_u32 ]
 
 //:     gep_ALG_cus_CTO_u32 :EXAMPLE: "IHDR"     --> 0x49484452
 //:     gep_ALG_u32_CTO_cus :EXAMPLE: 0x49484452 -->     "IHDR"
@@ -52,6 +55,10 @@
     const   GEP_MAC_DEB=( 1 ); //:IF: >= 1, debug mode is on.
     const   GEP_MAC_JAS=( 1 ); //:This_Is_JavaScript_Code
     const   GEP_MAC_C99=( 0 ); //:This_Is____NOT_C99_Code
+
+    //: ****   Should be zero unless you are actively    ****://
+    //: ****   developing this file's source code.       ****://
+    const   GEP_MAC_FAIL_FAST_ON_BAD_DATA=( 1 );
 
     //:MAC_LOG:Logging_Macros:- - - - - - - - - - - - - - - -://
 
@@ -176,6 +183,7 @@
         throw("[USE:GEP_AOF|GEP_AOV]");
     };;
 
+    //: - - - - - - - - - - - - ---- - - - - - - - - - - - - ://
     //:Returns a malloced array of characters (bytes)
     function
     GEP_C99_Mal_Arr_Chr(
@@ -187,16 +195,42 @@
         for( let i = 0; i < len; i++ ){
             mal_arr[ i ]=( 0 );
         };;
-        return( mal_arr );
+        return( mal_arr /** ArrayOfCharacters (Arr_Chr) **/ );
     };;
-
     function 
     GEP_C99_Fre_Arr_Chr(
-        mal_arr
+        mal_arr /** ArrayOfCharacters (Arr_Chr) **/ 
     )
     { "use strict"
         gep_Log_C99("[FREEING]:" , mal_arr );
     };;
+    //: - - - - - - - - - - - - ---- - - - - - - - - - - - - ://
+    function
+    GEP_C99_Mal_pix_arr(  /** Pixel__Array (RGBA byte array) **/
+    /**/        pix_wid   /** Pixel__Width * * * * * * * * * **/
+    ,           pix_hig   /** Pixel_Height * * * * * * * * * **/
+    )
+    { "use strict"
+        
+        /** 4 components per pixel: R,G,B,A **/
+        const NUM_COM=( 4 /** RGBA **/ );
+
+        let len=( pix_wid * pix_hig * NUM_COM );
+
+        let mal_arr = new Uint8Array( len );
+        for( let i = 0; i < len; i++ ){
+            mal_arr[ i ]=( 0 );
+        };;
+        return( mal_arr /** pix_arr **/ );
+    };;
+    function 
+    GEP_C99_Fre_pix_arr(
+        mal_arr /** pix_arr **/
+    )
+    { "use strict"
+        gep_Log_C99("[FREEING]:" , mal_arr );
+    };;
+    //: - - - - - - - - - - - - ---- - - - - - - - - - - - - ://
 
     //:Value Array: Of CHaRacters:
     //: JS: let   arr = GEP_VAL_ARR_CHR( len );
@@ -348,8 +382,21 @@
 
             vit : 0 //:GEP_VIT_png_sob
 
-        ,   wid : 0 //:Width__In_Pixels
-        ,   hig : 0 //:Height_In_Pixels
+            //:LOADED_WHEN_ENCODING_OR_DECODING:-------------://
+    
+            //:FOUND_IN[ IHDR ]CHUNK, www.w3.org/TR/PNG/#11IHDR
+        ,   pix_wid : 0 //: Width___In__Pixels ://
+        ,   pix_hig : 0 //: Height__In__Pixels ://
+
+            //:-------------:LOADED_WHEN_ENCODING_OR_DECODING://
+            //:LOADED_WHEN_DECODING:-------------------------://
+
+            //:FOUND_IN[ IHDR ]CHUNK, www.w3.org/TR/PNG/#11IHDR
+        ,   bit_dep : 0 //: Bit__________Depth ://
+        ,   col_typ : 0 //: Color_________Type ://
+        ,   com_met : 0 //: Compression_Method ://
+        ,   fil_met : 0 //: Filter______Method ://
+        ,   int_met : 0 //: Interlace___Method ://
 
             //: PNG Binary Data Byte Buffer To Be Parsed:    ://
             //: AKA[ png_bin === buf_poi ]( PREFER: png_bin )://
@@ -357,12 +404,6 @@
 
         ,   png_bin : null //:Buffer:Pointer (Array_Of_Bytes)
         ,   png_nob :  0   //:Buffer:Number_Of_Bytes
-
-            //: Try to not use "throw" as that is not        ://
-            //: C99 compatible without longjmp weirdness.    ://
-
-        ,   has_err :  0
-        ,   msg_err : ""
 
             //: Totals of different chunk types:
         ,   num_IHDR: (0-374) 
@@ -379,6 +420,19 @@
         ,   arr_IEND:GEP_VAM_ARR_dex_inc( GEP_MAC_arr_IEND_cap )
         ,   arr_PLTE:GEP_VAM_ARR_dex_inc( GEP_MAC_arr_PLTE_cap )
 
+            //:-------------------------:LOADED_WHEN_DECODING://
+            //:LOADED_WHEN_ENCODING:-------------------------://
+
+        ,   pix_arr:null //:Pixel_Array
+
+            //:-------------------------:LOADED_WHEN_ENCODING://
+
+            //: Try to not use "throw" as that is not        ://
+            //: C99 compatible without longjmp weirdness.    ://
+
+        ,   has_err :  0
+        ,   msg_err : ""
+
         };;
         let     NEW_png_sob=( GEP_FAD_New( STRUCT_png_sob ) );
         return( NEW_png_sob );
@@ -394,8 +448,8 @@
     "use strict" 
 
         png_sob.vit=( GEP_VIT_png_sob );
-        png_sob.wid=( 0 );
-        png_sob.hig=( 0 );
+        png_sob.pix_wid=( 0 );
+        png_sob.pix_hig=( 0 );
         png_sob.png_bin=( null );
         png_sob.png_nob=(  0   );
 

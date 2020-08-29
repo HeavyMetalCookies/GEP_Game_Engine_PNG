@@ -778,6 +778,34 @@
 //:=======================:DUM_:Hex_Dump_Conversion_Functions://
 //:BAH_:Byte_Array_Helpers:==================================://
 
+
+    function /** Modifed version of[ gep_BAH_u8a_Get_u32 ] **/
+    gep_BAH_u8a_Get_u08(
+    /**/    u8a //:[ u8a | png_bin | Uint8ArrayToReadFrom      ]
+    ,       nob //:[ u8a_nob | NumberOfBytesInUint8Array       ]
+    ,       dex //:[ dex | png_dex | subOctet's first(MSB)byte ]
+    )
+    { "use strict"
+        if( GEP_MAC_DEB > 0 ){
+            if( (!u8a) || (!nob) || (!(dex>=0)) ){
+                throw("[INVALID_INPUTS:gep_BAH_u8a_Get_u08]");
+            };; 
+        };;
+
+        let sub_oct=( 0x00 /** u32 | sub_oct | SubOctet **/ );  
+
+        //:Extracted_From_Statement_Below_To_Help_Debugging:
+        let b_0=( u8a[ dex + 0 ] ); //:MSB
+
+        //:Bug_Fix:Dont_Forget_To_Multiply_Shifts_By_8
+        const B=( 8 ); //:Byte_Is_8_Bits:
+
+        //:BIT_PACKING_IS_IN[ NETWORK_BYTE_ORDER ]://
+        sub_oct=( sub_oct | ((b_0 << (0*B) )>>>0) );
+
+        return( sub_oct    /** u08 | sub_oct | SubOctet **/ );
+    };;
+    
     function
     gep_BAH_u8a_Get_u32(
     /**/    u8a //:[ u8a | png_bin | Uint8ArrayToReadFrom      ]
@@ -785,6 +813,12 @@
     ,       dex //:[ dex | png_dex | subOctet's first(MSB)byte ]
     )
     { "use strict"
+        if( GEP_MAC_DEB > 0 ){
+            if( (!u8a) || (!nob) || (!(dex>=0)) ){
+                throw("[INVALID_INPUTS:gep_BAH_u8a_Get_u32]");
+            };; 
+        };;
+
         let sub_oct=( 0x00 /** u32 | sub_oct | SubOctet **/ );  
 
         //:Extracted_From_Statement_Below_To_Help_Debugging:
@@ -1322,7 +1356,7 @@
             //:ASSERT_ONLY_ONE_IHDR_CHUNK:-------------------://
             if( png_sob.num_IHDR <= 0 ){
 
-                if( o_k > 0 ){ //:Record_Only_First_Error
+                if( o_k > 0 ){ //:#Record_Only_First_Error#
                     msg_err=("[NO_IHDR]");
                     o_k =(         0    );
                 };;
@@ -1335,7 +1369,7 @@
             }else
             if( png_sob.num_IHDR  > 1 ){
 
-                if( o_k > 0 ){ //:Record_Only_First_Error
+                if( o_k > 0 ){ //:#Record_Only_First_Error#
                     msg_err=("[MORE_THAN_ONE_IHDR]");
                     o_k =(              0          );
                 };;
@@ -1349,7 +1383,7 @@
 
             //:ASSERT_NO_CRITICAL_PALLET_CHUNK:--------------://
             if( png_sob.num_PLTE != 0 ){
-                if( o_k > 0 ){ //:Record_Only_First_Error
+                if( o_k > 0 ){ //:#Record_Only_First_Error#
 
                     //: 1:  Don't support features           ://
                     //:     not in your .PNG files.          ://
@@ -1366,7 +1400,7 @@
 
             //:ASSERT_ONE_IEND_CHUNK_EXISTS:-----------------://
             if( png_sob.num_IEND != 1 ){
-                if( o_k > 0 ){ //:Record_Only_First_Error
+                if( o_k > 0 ){ //:#Record_Only_First_Error#
                     msg_err=("[NO_IEND_CHUNK_IN_PNG_BINARY]");
                     o_k =(         0    );
                 };;
@@ -1595,18 +1629,151 @@
        
         //:EXTRACT_IHDR_INFO:--------------------------------://
         if( o_k > 0 ){ //:Extract_Chunks by reading png headers
+        /** ************************************************ ***
+        https://www.w3.org/TR/PNG/#11IHDR
+        --------------------------- 
+        Width	            4 bytes \
+        Height	            4 bytes  \
+        ---------------------------   \
+        Bit depth	        1 byte     \___( 13_Bytes )
+        Colour type	        1 byte     /
+        Compression method	1 byte    /
+        Filter method	    1 byte   /
+        Interlace method	1 byte  /
+        ---------------------------
+        *** ************************************************ **/
 
+        let pix_wid = 0x00000000;
+        let pix_hig = 0x00000000;
 
+        let bit_dep = 0x00; //:bit_depth
+        let col_typ = 0x00; //:color_type
+        let com_met = 0x00; //:compression_metho    
+        let fil_met = 0x00; //:filter_method
+        let int_met = 0x00; //:interlace_method
+
+        const   B  = png_sob.png_bin;
+        const   N  = png_sob.png_nob;
+        const   D  = ( png_sob.arr_IHDR[0].i_0 );/** png_dex **/
+
+        //:--------------------------| B|N | 1ST_BYTE_INDEX |://
+        pix_wid = gep_BAH_u8a_Get_u32( B,N,   D+(  0 )  );
+        pix_hig = gep_BAH_u8a_Get_u32( B,N,   D+(  4 )  );
+                                                   
+        bit_dep = gep_BAH_u8a_Get_u08( B,N,   D+(  8 )  );
+        col_typ = gep_BAH_u8a_Get_u08( B,N,   D+(  9 )  );
+        com_met = gep_BAH_u8a_Get_u08( B,N,   D+( 10 )  );
+        fil_met = gep_BAH_u8a_Get_u08( B,N,   D+( 11 )  );
+        int_met = gep_BAH_u8a_Get_u08( B,N,   D+( 12 )  );
+        //:--------------------------| B|N | 1ST_BYTE_INDEX |://
+
+            //:CHECK_COMPRESSION_METHOD_AND_FILTER_METHOD:---://
+            if( o_k > 0 ){ //:-------------------------------://
+
+                if( com_met != 0 ){ o_k=( 0 );
+                if( png_sob.has_err <= 0 ){ //:#Error_Gaurd#
+                    png_sob.has_err=(  1 );
+                    png_sob.msg_err=("[BAD:COM_MET]");
+                };;};;
+                if( fil_met != 0 ){ o_k=( 0 );
+                if( png_sob.has_err <= 0 ){ //:#Error_Gaurd#
+                    png_sob.has_err=(  1 );
+                    png_sob.msg_err=("[BAD:FIL_MET]");
+                };;};;
+
+            };; //:CHECK_COMPRESSION_METHOD_AND_FILTER_METHOD://
+    
+            //:DO_NOT_SUPPORT_INTERLACING_FOR_NOW:-----------://
+            if( o_k > 0 ){ //:-------------------------------://
+
+                //:If ADAM7 interlacing ends up being used in
+                //:MY data a lot, then I will add this feature.
+
+                if( int_met != 0 ){ o_k=( 0 );
+                if( png_sob.has_err <= 0 ){ //:#Error_Gaurd#
+                    png_sob.has_err=(  1 );
+                    png_sob.msg_err=("[NOT_SUPPORTED:INT_MET]");
+                };;};;
+
+            };; //:-------:DO_NOT_SUPPORT_INTERLACING_FOR_NOW://
+
+            //:CHECK_BIT_DEPTH_AND_COLOR_TYPE:---------------://
+            if( o_k > 0 ){ //:-------------------------------://
+
+                //:bit_dep: Bit Depth  (8 : OneBytePerChannel )
+                //:col_typ: Color Type (6 : TrueColorWithAlpha)
+                //:                    (2 : TrueColor_NO_Alpha)
+
+                if( (col_typ != 6)&&( col_typ != 2) ){ 
+                o_k=( 0 );
+                if( png_sob.has_err <= 0 ){ //:#Error_Gaurd#
+                    png_sob.has_err=(  1 );
+                    png_sob.msg_err=("[NOT_SUPPORTED:COL_TYP]");
+                };;};;
+                if( bit_dep != 8 ){ o_k=( 0 );
+                if( png_sob.has_err <= 0 ){ //:#Error_Gaurd#
+                    png_sob.has_err=(  1 );
+                    png_sob.msg_err=("[NOT_SUPPORTED:BIT_DEP]");
+                };;};;
+
+            };; //:-----------:CHECK_BIT_DEPTH_AND_COLOR_TYPE://
+
+            png_sob.pix_wid =( pix_wid );
+            png_sob.pix_hig =( pix_hig );
+
+            png_sob.bit_dep =( bit_dep );
+            png_sob.col_typ =( col_typ );
+            png_sob.com_met =( com_met );
+            png_sob.fil_met =( fil_met );
+            png_sob.int_met =( int_met );
 
         };; //:----------------------------:EXTRACT_IHDR_INFO://
 
-        //:MALLOC_MEMORY_
+        //:MALLOC_MEMORY:RGBA_PIXEL_ARRAY:-------------------://
         if( o_k > 0 ){
 
+            //:Free previous allocation if exists:
+            if( png_sob.pix_arr ){
+                GEP_C99_Fre_pix_arr( png_sob.pix_arr );
+            };;
 
+            //:Allocate Pixel Array:
+            png_sob.pix_arr=(GEP_C99_Mal_pix_arr(
+                png_sob.pix_wid , png_sob.pix_hig
+            ));;
+
+            if( GEP_MAC_DEB > 0 ){
+            if( GEP_MAC_JAS > 0 ){
+
+                if( png_sob.pix_arr.length 
+                != ( png_sob.pix_wid * png_sob.pix_hig * 4 )
+                ){
+                    throw("[INVALID_ALLOCATION_SIZE]");
+                }else{
+                    gep_Log_ALG("[Allocation_OK_Size]");
+                };;
+
+            };;};;
+        };; //:---------------:MALLOC_MEMORY:RGBA_PIXEL_ARRAY://
+
+        //:INFLATE_DATA:-------------------------------------://
+        if( o_k > 0 ){
+        //:REFERENCES:
+        //:Zlib_Format: https://tools.ietf.org/html/rfc1950
+        //:www.libpng.org/pub/png/spec/1.2/PNG-Compression.html
+        //:github.com/madler/zlib/blob/master/contrib/puff
+
+            throw("[TODO:Inflate Data]");
+
+        };; //:---------------------------------:INFLATE_DATA://
+
+        /** for_development_purposes_only **/
+        if( GEP_MAC_FAIL_FAST_ON_BAD_DATA > 0 ){
+            if(   !( o_k > 0 )   ){
+                throw("[SOMETHING_WENT_HORRIBLY_WRONG]");
+            };;
         };;
 
-        //::
         throw("[TODO:The_Rest]");
 
     };;
@@ -1767,7 +1934,6 @@
             ,   pix_wid:pix_wid
             ,   pix_hig:pix_hig
             });
-
         };;
 
         function 

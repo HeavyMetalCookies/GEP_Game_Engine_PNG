@@ -50,6 +50,17 @@
    
         YAGNI: You_Arent_Going_To_Need_It
 
+        #Error_Gaurd# / #Record_Only_First_Error#
+
+            Check to see if a previous error has occured so
+            that a newer error does not override previous
+            error message. The first error that occurs is
+            always the most important error we want to 
+            address first, because after the first error 
+            occurs, the program is in an undefined state    
+            and subsequent errors might not indicate a problem,
+            but rather be a consequence of that undefined state.
+
     *** ****************************************** **/ </script>
 
 

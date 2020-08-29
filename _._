@@ -1,11 +1,17 @@
 
     png_sob --- ---
-                ---
+                
             vit ---
-                ---
+                 
             wid ---
             hig ---
-                ---
+
+        bit_dep ---
+        col_typ ---
+        com_met ---
+        fil_met ---
+        int_met ---
+               
         png_bin ---
         png_nob ---
                 ---
