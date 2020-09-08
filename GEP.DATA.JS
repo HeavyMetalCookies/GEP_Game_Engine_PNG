@@ -3,6 +3,27 @@
 //:RULE 2: "GEP_" always followed sub category (MAC_,VIT_,...).
 //:RULE 3: Offboard long comments using tags maybe?
 
+/** ******************************************************** ***
+NAMESPACE_INDEX:
+
+    MAC_* : Macros 
+    GSF_* : Global State Flags
+    VIT_* : Variable_Integer_Type
+    LUT_* : Lookup Tables
+    FAD_* : Functions As Data
+    C99_* : C99 Polyfill
+    PNG_* : PNG_Test_data_namespace
+
+    HE1_* : Test data for huffman encoding 1 (JMIM_Format)
+    BM1_* : Test data for "BM1" format. (JMIM_Format)
+
+    CAR_* : Character Array functions
+    T00_* : Types with zero dependencies
+    T01_* : Types with  one dependency
+
+
+*** ******************************************************** **/
+
 //:REFERENCE[ GEP.FUNC.JS ]
 //:     gep_Log
  
@@ -50,7 +71,7 @@
 
 
 
-//:MAC_: Macros:=============================================://
+//:MAC_*: Macros:============================================://
             
     const   GEP_MAC_DEB=( 1 ); //:IF: >= 1, debug mode is on.
     const   GEP_MAC_JAS=( 1 ); //:This_Is_JavaScript_Code
@@ -77,18 +98,18 @@
 
         //:--------------------------------------------------://
 
-//:GSF_: Global_State_Flags:=================================://
+//:GSF_*: Global_State_Flags:================================://
 
     let   GEP_GSF_tes_ran=( 0 );  //:Tests_Ran_At_Least_Once?
     let   GEP_GSF_was_ini=( 0 );  //:Was_library_initialized?
 
-//:VIT_: Variable_Integer_Tags:==============================://
+//:VIT_*: Variable_Integer_Tags:=============================://
 
     const GEP_VIT_GEP     = ( 1 ); //:GEP library object.
     const GEP_VIT_png_sob = ( 2 ); //:png_StateObjectBundle
     const GEP_VIT_dex_inc = ( 3 ); //:inclusive_index_struct
 
-//:LUT_: Lookup Tables:======================================://
+//:LUT_*: Lookup Tables:=====================================://
 
     //:SEE[ gep_TES_D00_LUT_chu_kno_Chk() ]:-----------------://
 
@@ -124,7 +145,7 @@
 
 
 
-//:FAD_: Functions_As_Data:==================================://
+//:FAD_*: Functions_As_Data:=================================://
 
     //:Stk_Arr[ Stack_Array ]U8A[ Uint 8 Array ]
     const GEP_FAD_Stk_Arr_U8A = function( len ){
@@ -142,7 +163,7 @@
         return(        obj_out       );
     };;
 
-//:C99_: C99 polyfills to help convey code intention.========://
+//:C99_*: C99 polyfills to help convey code intention.=======://
 
     //:AOF:Address_Of_Function:
     //:    JS: GEP_C99_AOF( someFunction )
@@ -256,7 +277,7 @@
         throw("[Do_You_Really_Want_A_Pointer_To_A_Pointer?]");
     };;
 
-//:PNG_: PNG_Test_data_namespace:============================://
+//:PNG_*: PNG_Test_data_namespace:===========================://
 
     //:USED_BY[ GEP_Put_Tes_Dat ]
     //:------------------------------------------------------://
@@ -279,8 +300,60 @@
 
     //:------------------------------------------------------://
 
+//:HE1*::HuffmanEncoding01:JMIM_FORMAT:======================://
 
-//:CAR: Character_array_namespace:===========================://
+    //:TODO:
+
+//:======================:HE1*::HuffmanEncoding01:JMIM_FORMAT://
+//:BM1*::Bitmap01:JMIM_FORMAT:===============================://
+
+    const BM1_MagicNumberAsHexDump=(               //[BM1_DAT]//
+            "89 5b 42 4d   31 5d 00 03" );;        //[BM1_DAT]//
+                                                   //[BM1_DAT]//
+    const BM1_MagicNumberAsByteArray=[             //[BM1_DAT]//
+    /**/    0x89  //: 0x89                         //[BM1_DAT]//
+    ,       0x5b  //: "["                          //[BM1_DAT]//
+    ,       0x42  //: "B"                          //[BM1_DAT]//
+    ,       0x4d  //: "M"                          //[BM1_DAT]//
+    //:--------------------------------://         //[BM1_DAT]//
+    ,       0x31  //: "1"                          //[BM1_DAT]//
+    ,       0x5d  //: "]"                          //[BM1_DAT]//
+    ,       0x00  //: 0x00                         //[BM1_DAT]//
+    ,       0x03  //: ^c                           //[BM1_DAT]//
+    ];; //:----------------------------://         //[BM1_DAT]//
+                                                   //[BM1_DAT]//
+    const BM1_MagicNumberAsIntegerArray=[          //[BM1_DAT]//
+    /**/     137  //: 0x89                         //[BM1_DAT]//
+    ,         91  //:  "["                         //[BM1_DAT]//
+    ,         66  //:  "B"                         //[BM1_DAT]//
+    ,         77  //:  "M"                         //[BM1_DAT]//
+    //:--------------------------------://         //[BM1_DAT]//
+    ,         49  //:  "1"                         //[BM1_DAT]//
+    ,         93  //:  "]"                         //[BM1_DAT]//
+    ,         00  //:  0x00                        //[BM1_DAT]//
+    ,         03  //:  ^c                          //[BM1_DAT]//
+    ];; //:----------------------------://         //[BM1_DAT]//
+
+
+    const BM1_2X8=("" //:2 x 8 RGBA bitmap, no compression
+    //: 89  [  B  M   1  ]  0  ^c   
+    +  "89 5b 42 4d   31 5d 00 03"
+    +  "00 00 00 00              " //:Width  (in pixels)
+    +  "00 00 00 00              " //:Height (in pixels)
+    +  "                         "
+    +  "00 00 00 00   00 00 00 00" //:2 pixels  | 01 |
+    +  "00 00 00 00   00 00 00 00" //:2 pixels  | 02 |
+    +  "00 00 00 00   00 00 00 00" //:2 pixels  | 03 |
+    +  "00 00 00 00   00 00 00 00" //:2 pixels  | 04 |
+    +  "                         " //:          | -- |
+    +  "00 00 00 00   00 00 00 00" //:2 pixels  | 05 |
+    +  "00 00 00 00   00 00 00 00" //:2 pixels  | 06 |
+    +  "00 00 00 00   00 00 00 00" //:2 pixels  | 07 |
+    +  "00 00 00 00   00 00 00 00" //:2 pixels  | 08 |
+    );;
+
+//:===============================:BM1*::Bitmap01:JMIM_FORMAT://
+//:CAR*: Character_array_namespace:==========================://
 
     //:USED_BY[ GEP_Put_Tes_Dat ]
     //:------------------------------------------------------://
@@ -288,7 +361,7 @@
     let GEP_CAR_LEN =( 0 ); //:NumElementIn:GEP_CAR_POI
     //:------------------------------------------------------://
 
-//:T00_:Types_with_Zero_Dependencies:========================://
+//:T00_*:Types_with_Zero_Dependencies:=======================://
 
     //:[ dex_inc ]:------------------------------------------://
 
@@ -358,8 +431,8 @@
 
     //:------------------------------------------:[ dex_inc ]://
 
-//:========================:T00_:Types_with_Zero_Dependencies://
-//:T01_:Depends_On_At_Least_One_T00_Type_And_No_Higher:======://
+//:=======================:T00_*:Types_with_Zero_Dependencies://
+//:T01_*:Depends_On_At_Least_One_T00_Type_And_No_Higher:=====://
 
     //:[ png_sob ]:------------------------------------------://
 
@@ -473,4 +546,4 @@
 
     //:------------------------------------------:[ png_sob ]://
 
-//:======:T01_:Depends_On_At_Least_One_T00_Type_And_No_Higher://
+//:=====:T01_*:Depends_On_At_Least_One_T00_Type_And_No_Higher://

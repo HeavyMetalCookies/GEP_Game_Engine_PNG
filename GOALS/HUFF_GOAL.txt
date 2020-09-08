@@ -1,0 +1,34 @@
+
+HE1_* namespace: Create your own canonical huffman
+                 code format to get feel for it.
+
+GOAL:
+    1  2  3  4  5  6  7  8
+    89 [  H  E  1  ] ^c  0     <--magic number, 8 bytes
+    00 00 00 00                <--Index of last byte in file.
+
+    00 00 00 00                <--Symbols: Reserved
+    00 00 00 00                <--Symbols: First Byte Index
+    00 00 00 00                <--Symbols: Last  Byte Index
+    00 00 00 00                <--Symbols: Number Of Bytes
+    
+    00 00 00 00                <--Data   : Reserved
+    00 00 00 00                <--Data   : First Byte Index
+    00 00 00 00                <--Data   : Last  Byte Index
+    00 00 00 00                <--Data   : Number Of Bytes
+    
+    S  Y  M  B                 <--Symbols start header.
+
+    00 00 00 00                <-- N number of pairs:
+                               00 : Symbol stored in 1 byte.
+                               00 00 00 : Frequency of symbol.
+    
+    D  A  T  A                 <--Data    start header.
+
+    00 00 00 ...               <--N# of data bytes.
+                                  (Actual format is binary, )
+                                  (but stored as bytes)
+    
+    E  N  D  F                 <--Data    end   header
+
+

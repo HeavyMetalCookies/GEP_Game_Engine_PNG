@@ -1,6 +1,28 @@
 
 //:TODO: png_poi --> png_bin
 
+/** ******************************************************** ***
+NAMESPACE_INDEX:
+
+    C99_  : C99               polyfills
+    CFN_  : C                 FuNctions
+    ASC_  : ASCii             functions
+    DUM_  : hex DUMP          functions
+    BAH_* : Byte_Array_Helper functions
+
+    HE1_* : HuffmanEncoding#1 functions (JMIM's format)
+    BM1_* : Bitmap01 format to help test HE1_*
+
+    ALG_* : Algorithm         section  (Not certain about this)
+    PUB_  : Public            interface
+    LOB_  : Library           OBject
+    TES_  : TESt              functions
+    INI_  : INItializer       functions
+
+
+
+*** ******************************************************** **/
+
 //:C99_:=====================================================://
 //:                                                          ://
 //: SEE: GEP_DATA.JS for C99 polyfills.                      ://
@@ -776,7 +798,7 @@
     //:------------------------------------------------------://
 
 //:=======================:DUM_:Hex_Dump_Conversion_Functions://
-//:BAH_:Byte_Array_Helpers:==================================://
+//:BAH_*:Byte_Array_Helpers:=================================://
 
 
     function /** Modifed version of[ gep_BAH_u8a_Get_u32 ] **/
@@ -851,7 +873,54 @@
         throw("[USE:gep_ALG_cus_CTO_u32]");
     };;
 
-//:ALG_:ALGorithm_main_algorithm_functions:==================://
+//:=================================:BAH_*:Byte_Array_Helpers://
+//:HE1_*:Huffman_Encoding_1(JMIM_Format):====================://
+/** ******************************************************** ***
+HE1_* namespace: Create your own canonical huffman
+                 code format to get feel for it.
+
+GOAL:
+    1  2  3  4  5  6  7  8
+    89 [  H  E  1  ]  0 ^c     <--magic number, 8 bytes
+    00 00 00 00                <--Index of last byte in file.
+
+    00 00 00 00                <--Symbols: Reserved
+    00 00 00 00                <--Symbols: First Byte Index
+    00 00 00 00                <--Symbols: Last  Byte Index
+    00 00 00 00                <--Symbols: Number Of Bytes
+    
+    00 00 00 00                <--Data   : Reserved
+    00 00 00 00                <--Data   : First Byte Index
+    00 00 00 00                <--Data   : Last  Byte Index
+    00 00 00 00                <--Data   : Number Of Bytes
+    
+    S  Y  M  B                 <--Symbols start header.
+
+    00 00 00 00                <-- N number of pairs:
+                               00 : Symbol stored in 1 byte.
+                               00 00 00 : Frequency of symbol.
+    
+    D  A  T  A                 <--Data    start header.
+
+    00 00 00 ...               <--N# of data bytes.
+                                  (Actual format is binary, )
+                                  (but stored as bytes)
+    
+    E  N  D  F                 <--Data    end   header
+*** ******************************************************** **/
+
+
+    //:TODO: Functions
+
+
+//:====================:HE1_*:Huffman_Encoding_1(JMIM_Format)://
+//:BM1*::Bitmap01:JMIM_FORMAT:===============================://
+
+    //:TODO: Functions
+
+
+//:===============================:BM1*::Bitmap01:JMIM_FORMAT://
+//:ALG_*:ALGorithm_main_algorithm_functions:=================://
 
 
     //:------------------------------------------------------://
@@ -1777,7 +1846,7 @@
         throw("[TODO:The_Rest]");
 
     };;
-//:==================:ALG_:ALGorithm_main_algorithm_functions://
+//:=================:ALG_*:ALGorithm_main_algorithm_functions://
 //:PUB_:Public_API_Functions:================================://
 
     //: **************************************************** ://
@@ -1891,7 +1960,7 @@
     //:------------------------------------------------------://
 
 //:================================:PUB_:Public_API_Functions://
-//:LIBRARY_OBJECT:===========================================://
+//:LOB_:LIBRARY_OBJECT:======================================://
 
     //:Library object for people who like OOP style code.
     const GEP={
@@ -1959,7 +2028,7 @@
 
     Object.seal( GEP );
 
-//:===========================================:LIBRARY_OBJECT://
+//:======================================:LOB_:LIBRARY_OBJECT://
 //:TES_: Test_Related_Functions:=============================://
 
     function
